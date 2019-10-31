@@ -135,4 +135,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+----------------------------------------------------------------------
+
+## Logo
+
+Logo: Copyright Bjørn Bredesen
+
+Font: Emporium. Credit: emnazar. https://www.dafont.com/emporium-2.font
 
