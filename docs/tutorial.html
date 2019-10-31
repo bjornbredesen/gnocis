@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Gnocis tutorial &#8212; Gnocis 0.9.0 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gnocis" href="gnocis.html" />
+    <link rel="prev" title="License" href="license.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gnocis.html" title="gnocis"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="license.html" title="License"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gnocis-tutorial">
+<h1>Gnocis tutorial<a class="headerlink" href="#gnocis-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>Bjørn Bredesen, 2018-2019</p>
+<div class="section" id="set-up">
+<h2>Set-up<a class="headerlink" href="#set-up" title="Permalink to this headline">¶</a></h2>
+<p>Here, we will train a PREdictor (Ringrose <em>et al.</em> 2003) model on the Kahn <em>et al.</em> (2014) Polycomb targets, and predict candidate PREs genome-wide. We will go through all steps that must be executed, from loading a General Feature Format (GFF) file with genomic coordinates for Polycomb targets, extract the underlying sequences, train the model, calibrate the threshold, and predict candidate PREs genome-wide.</p>
+<p>This tutorial assumes that Gnocis has been successfully installed.</p>
+<p>We will use the <em>Drosophila melanogaster</em> genome throughout this tutorial.</p>
+<ul class="simple">
+<li><p><strong>Either</strong>: Download and unpack the genome sequence to the folder with the tutorial data: ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz</p></li>
+<li><p><strong>Or</strong>: In a Linux terminal, navigate to the folder with the tutorial data, and execute the following command: <code class="docutils literal notranslate"><span class="pre">wget</span> <span class="pre">ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz</span> <span class="pre">&amp;&amp;</span> <span class="pre">gunzip</span> <span class="pre">dmel-all-chromosome-r5.57.fasta.gz</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="preparing-training-data-using-gnocis">
+<h2>Preparing training data using Gnocis<a class="headerlink" href="#preparing-training-data-using-gnocis" title="Permalink to this headline">¶</a></h2>
+<p>Download the Gnocis repository, and in a terminal, navigate to the Gnocis <code class="docutils literal notranslate"><span class="pre">tutorial/</span></code> folder. Open the Python3 Read-Eval Print Loop (REPL) by running <code class="docutils literal notranslate"><span class="pre">python3</span></code>.</p>
+<p>Run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the library</span>
+<span class="kn">import</span> <span class="nn">gnocis</span> <span class="kn">as</span> <span class="nn">cis</span>
+
+<span class="c1"># Load the Kahn et al. (2014) Polycomb targets</span>
+<span class="n">Kahn2014Rgn</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">loadGFF</span><span class="p">(</span><span class="s1">&#39;Kahn2014.GFF&#39;</span><span class="p">)</span>
+
+<span class="c1"># Resize and extract from genome</span>
+<span class="n">Kahn2014Seq</span> <span class="o">=</span> <span class="n">Kahn2014Rgn</span>\
+          <span class="o">.</span><span class="n">getRandomlyRecentered</span><span class="p">(</span><span class="mi">3000</span><span class="p">)</span>\
+          <span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s1">&#39;dmel-all-chromosome-r5.57.fasta&#39;</span><span class="p">)</span>
+
+<span class="c1"># Split into independent training and test sets</span>
+<span class="n">tpos</span><span class="p">,</span> <span class="n">vpos</span> <span class="o">=</span> <span class="n">Kahn2014Seq</span><span class="o">.</span><span class="n">getRandomSplit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This loads the Kahn <em>et al.</em> (2014) Polycomb target regions, resizes them to 3kb each, and extracts the underlying sequences from the fruit fly genome. Information about the loaded and processed data can be output by running the following.</p>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Kahn2014Rgn</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
+<span class="n">tpos</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We will now generate negative training sequences. To this end, we train a 4th order Markov chain on the PREs, as we did previously (Bredesen <em>et al.</em> 2019). Sequences generated by a 4th order Markov chain trained on PREs retains motif-enrichment, but lack the pairing that is characteristic of PREs.</p>
+<p>Run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MCPRE</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">generatorMarkovChain</span><span class="p">(</span><span class="n">trainingSequences</span> <span class="o">=</span> <span class="n">Kahn2014Seq</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">tneg</span> <span class="o">=</span> <span class="n">MCPRE</span><span class="o">.</span><span class="n">generateSet</span><span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tpos</span><span class="p">),</span> <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tpos</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">vneg</span> <span class="o">=</span> <span class="n">MCPRE</span><span class="o">.</span><span class="n">generateSet</span><span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vpos</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vpos</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>This trains the Markov chain a Markov chain on the Kahn <em>et al.</em> (2014) set, and randomly generates a set of as many sequences as are in the Kahn <em>et al.</em> (2014) set, with the same length as the first sequence.</p>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tneg</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
+<span class="n">tneg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">seq</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="training-a-basic-model-of-cis-regulatory-module-crm-sequences">
+<h2>Training a basic model of <em>cis</em>-regulatory module (CRM) sequences<a class="headerlink" href="#training-a-basic-model-of-cis-regulatory-module-crm-sequences" title="Permalink to this headline">¶</a></h2>
+<p>Run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mdl</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">trainPREdictorModel</span><span class="p">(</span><span class="n">motifs</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">motifs</span><span class="o">.</span><span class="n">getRingrose2003Motifs_GTGT</span><span class="p">(),</span>
+                              <span class="n">positives</span> <span class="o">=</span> <span class="n">tpos</span><span class="p">,</span>
+                              <span class="n">negatives</span> <span class="o">=</span> <span class="n">tneg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This trains a PREdictor model, using the positives and negatives, and the motifs used in Bredesen <em>et al.</em> (2019). To manually specify motifs, the following syntax is used:</p>
+<p>Run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mdlC</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">trainPREdictorModel</span><span class="p">(</span><span class="n">motifs</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">motifs</span><span class="p">(</span><span class="s1">&#39;Custom motif set&#39;</span><span class="p">,</span> <span class="p">[</span>
+                                  <span class="n">cis</span><span class="o">.</span><span class="n">IUPACMotif</span><span class="p">(</span><span class="s1">&#39;GAF&#39;</span><span class="p">,</span> <span class="s1">&#39;GAGAG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                  <span class="n">cis</span><span class="o">.</span><span class="n">IUPACMotif</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;YGAGYG&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                  <span class="n">cis</span><span class="o">.</span><span class="n">IUPACMotif</span><span class="p">(</span><span class="s1">&#39;Grh&#39;</span><span class="p">,</span> <span class="s1">&#39;TGTTTTTT&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                  <span class="n">cis</span><span class="o">.</span><span class="n">IUPACMotif</span><span class="p">(</span><span class="s1">&#39;Dsp1&#39;</span><span class="p">,</span> <span class="s1">&#39;GAAAA&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                               <span class="p">]),</span>
+                               <span class="n">positives</span> <span class="o">=</span> <span class="n">tpos</span><span class="p">,</span>
+                               <span class="n">negatives</span> <span class="o">=</span> <span class="n">tneg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The model weights can be inspected.</p>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mdl</span><span class="o">.</span><span class="n">weights</span>
+<span class="n">mdlC</span><span class="o">.</span><span class="n">weights</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="predicting-genome-wide">
+<h2>Predicting genome-wide<a class="headerlink" href="#predicting-genome-wide" title="Permalink to this headline">¶</a></h2>
+<p>In order to make genome-wide predictions, we need to calibrate the threshold of our model. After calibrating, we can apply our model for genome-wide prediction.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calibrate threshold</span>
+<span class="n">mdl</span><span class="o">.</span><span class="n">calibrateGenomewidePrecision</span><span class="p">(</span><span class="n">positives</span> <span class="o">=</span> <span class="n">vpos</span><span class="p">,</span>
+                                    <span class="n">genome</span> <span class="o">=</span> <span class="s1">&#39;dmel-all-chromosome-r5.57.fasta&#39;</span><span class="p">,</span>
+                                    <span class="n">factor</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                                    <span class="n">precision</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+                                    <span class="n">bgModelOrder</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Predict candidate PREs genome-wide</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s1">&#39;dmel-all-chromosome-r5.57.fasta&#39;</span><span class="p">)</span>
+
+<span class="c1"># Save predictions to GFF-file</span>
+<span class="n">predictions</span><span class="o">.</span><span class="n">saveGFF</span><span class="p">(</span><span class="s1">&#39;predictions.GFF&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Calibration can take some time. However, on multi-core systems, parallel processing can be enabled by by following command.</p>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cis</span><span class="o">.</span><span class="n">setNCores</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The entire training, calibration and prediction procedure can be written more compactly, as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cis</span><span class="o">.</span><span class="n">trainPREdictorModel</span><span class="p">(</span><span class="n">motifs</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">motifs</span><span class="o">.</span><span class="n">getRingrose2003Motifs_GTGT</span><span class="p">(),</span>
+                              <span class="n">positives</span> <span class="o">=</span> <span class="n">tpos</span><span class="p">,</span>
+                              <span class="n">negatives</span> <span class="o">=</span> <span class="n">tneg</span><span class="p">)</span>\
+         <span class="o">.</span><span class="n">calibrateGenomewidePrecision</span><span class="p">(</span><span class="n">positives</span> <span class="o">=</span> <span class="n">Kahn2014Seq</span><span class="p">,</span>
+                              <span class="n">genome</span> <span class="o">=</span> <span class="s1">&#39;dmel-all-chromosome-r5.57.fasta&#39;</span><span class="p">,</span>
+                              <span class="n">factor</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                              <span class="n">precision</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+                              <span class="n">bgModelOrder</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>\
+         <span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s1">&#39;dmel-all-chromosome-r5.57.fasta&#39;</span><span class="p">)</span>\
+         <span class="o">.</span><span class="n">saveGFF</span><span class="p">(</span><span class="s1">&#39;predictions.GFF&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Bredesen <em>et al.</em> 2019: https://academic.oup.com/nar/article/47/15/7781/5538007</p></li>
+<li><p>Kahn <em>et al.</em> 2014: https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004495</p></li>
+<li><p>FlyBase - : https://academic.oup.com/nar/article/41/D1/D751/1051942</p></li>
+<li><p>Ringrose <em>et al.</em> 2003: https://www.sciencedirect.com/science/article/pii/S153458070300337X</p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/gnocis_icon.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Gnocis tutorial</a><ul>
+<li><a class="reference internal" href="#set-up">Set-up</a></li>
+<li><a class="reference internal" href="#preparing-training-data-using-gnocis">Preparing training data using Gnocis</a></li>
+<li><a class="reference internal" href="#training-a-basic-model-of-cis-regulatory-module-crm-sequences">Training a basic model of <em>cis</em>-regulatory module (CRM) sequences</a></li>
+<li><a class="reference internal" href="#predicting-genome-wide">Predicting genome-wide</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="license.html"
+                        title="previous chapter">License</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gnocis.html"
+                        title="next chapter">gnocis</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tutorial.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gnocis.html" title="gnocis"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="license.html" title="License"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Bjørn Bredesen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
+    </div>
+  </body>
+</html>

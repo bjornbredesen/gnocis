@@ -1,0 +1,2804 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gnocis &#8212; Gnocis 0.9.0 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Gnocis tutorial" href="tutorial.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Gnocis tutorial"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gnocis">
+<h1>gnocis<a class="headerlink" href="#gnocis" title="Permalink to this headline">¶</a></h1>
+<p>Gnocis is divided into a number of modules, with discrete functions.</p>
+<div class="section" id="module-gnocis.biomarkers">
+<span id="gnocis-biomarkers-module"></span><h2>gnocis.biomarkers module<a class="headerlink" href="#module-gnocis.biomarkers" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="gnocis.biomarkers.biomarkers">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.biomarkers.</code><code class="sig-name descname">biomarkers</code><a class="headerlink" href="#gnocis.biomarkers.biomarkers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>biomarkers</cite> class represents a set of biomarker regions. Up to multiple regions marking a phenomenon of interest can be registered in a <cite>biomarker</cite> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the biomarker set.</p></li>
+<li><p><strong>regionSets</strong> (<em>list</em><em>, </em><em>optional</em>) – Name of the biomarker set. Defaults to [].</p></li>
+<li><p><strong>positiveThreshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Threshold for Highly BioMarker-Enriched (HBME) loci. Defaults to -1.</p></li>
+<li><p><strong>negativeThreshold</strong> (<em>int</em><em>, </em><em>optional</em>) – Threshold for Lowly BioMarker-Enriched (LBME) loci. Defaults to -1.</p></li>
+</ul>
+</dd>
+</dl>
+<p>After constructing a <cite>biomarkers</cite> object, for a set of biomarkers <cite>BM</cite>, <cite>len(BM)</cite> gives the number of markers, <cite>BM[‘FACTOR_NAME’]</cite> gives the merged set of regions for factor <cite>FACTOR_NAME</cite>, and <cite>[ x for x in BM ]</cite> gives the list of merged regions per biomarker contained in <cite>BM</cite>.</p>
+<dl class="method">
+<dt id="gnocis.biomarkers.biomarkers.addBiomarker">
+<code class="sig-name descname">addBiomarker</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.biomarkers.biomarkers.addBiomarker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a biomarker to the set, by name and region set. The name of the region set is taken as the name of the biomarker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rs</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Region set to add as biomarker.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.biomarkers.biomarkers.biomarkers">
+<code class="sig-name descname">biomarkers</code><a class="headerlink" href="#gnocis.biomarkers.biomarkers.biomarkers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.biomarkers.biomarkers.getHBMEs">
+<code class="sig-name descname">getHBMEs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.biomarkers.biomarkers.getHBMEs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets highly biomarker-enriched regions of a set. This is determined either by an optional <cite>threshold</cite> argument, or, if unspecified, by the <cite>positiveThreshold</cite> member. The resulting set is the merged biomarker spectrum for enrichment levels &gt;= to the threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rs</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Region set to extract enriched subset of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Highly BioMarker-Enriched regions (HBMEs).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.biomarkers.biomarkers.getLBMEs">
+<code class="sig-name descname">getLBMEs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.biomarkers.biomarkers.getLBMEs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets lowly biomarker-enriched regions of a set. This is determined either by an optional <cite>threshold</cite> argument, or, if unspecified, by the <cite>negativeThreshold</cite> member. The resulting set is the merged biomarker spectrum for enrichment levels &lt;= to the threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rs</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Region set to extract enriched subset of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Highly BioMarker-Enriched regions (HBMEs)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.biomarkers.biomarkers.getRegionSetBiomarkerSpectrum">
+<code class="sig-name descname">getRegionSetBiomarkerSpectrum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.biomarkers.biomarkers.getRegionSetBiomarkerSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the biomarker spectrum. This is a dictionary with numerical keys, containing subsets enriched in N biomarkers, for every valid N as key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rs</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Region set to add as biomarker.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Biomarker spectrum</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.biomarkers.biomarkers.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.biomarkers.biomarkers.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.biomarkers.biomarkers.negativeThreshold">
+<code class="sig-name descname">negativeThreshold</code><a class="headerlink" href="#gnocis.biomarkers.biomarkers.negativeThreshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.biomarkers.biomarkers.positiveThreshold">
+<code class="sig-name descname">positiveThreshold</code><a class="headerlink" href="#gnocis.biomarkers.biomarkers.positiveThreshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.common">
+<span id="gnocis-common-module"></span><h2>gnocis.common module<a class="headerlink" href="#module-gnocis.common" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="gnocis.common.getFloat">
+<code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">getFloat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.getFloat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to get floating point values of the same precision as used for <cite>float</cite> by Cython.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>v</strong> (<em>float</em>) – Value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.common.getReverseComplementaryDNASequence">
+<code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">getReverseComplementaryDNASequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.getReverseComplementaryDNASequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the reverse complement of a DNA sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seq</strong> (<em>str</em>) – Sequence to get reverse complement of.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.common.setSeed">
+<code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">setSeed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.setSeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the random seed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seed</strong> (<em>int</em>) – Sequence to get reverse complement of.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.features">
+<span id="gnocis-features-module"></span><h2>gnocis.features module<a class="headerlink" href="#module-gnocis.features" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="gnocis.features.feature">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">feature</code><a class="headerlink" href="#gnocis.features.feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>feature</cite> class is a base class for sequence features.</p>
+<dl class="method">
+<dt id="gnocis.features.feature.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.feature.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the feature value from a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.featureMotifOccurrenceFrequency">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">featureMotifOccurrenceFrequency</code><a class="headerlink" href="#gnocis.features.featureMotifOccurrenceFrequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.features.feature" title="gnocis.features.feature"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.features.feature</span></code></a></p>
+<p>Occurrence frequency feature for a motif.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>_motif</strong> (<em>motif</em>) – The motif that the feature is for.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gnocis.features.featureMotifOccurrenceFrequency.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.featureMotifOccurrenceFrequency.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the feature value from a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.featureMotifOccurrenceFrequency.m">
+<code class="sig-name descname">m</code><a class="headerlink" href="#gnocis.features.featureMotifOccurrenceFrequency.m" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.featurePREdictorMotifPairOccurrenceFrequency">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">featurePREdictorMotifPairOccurrenceFrequency</code><a class="headerlink" href="#gnocis.features.featurePREdictorMotifPairOccurrenceFrequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.features.feature" title="gnocis.features.feature"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.features.feature</span></code></a></p>
+<p>PREdictor pair occurrence frequency feature for two motifs and a distance cutoff.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>motifA</strong> (<em>motif</em>) – The first motif.</p></li>
+<li><p><strong>motifB</strong> (<em>motif</em>) – The second motif.</p></li>
+<li><p><strong>distanceCutoff</strong> (<em>int</em>) – Pairing cutoff distance. The cutoff is for nucleotides inbetween occurrences of <cite>motifA</cite> and <cite>motifB</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.distCut">
+<code class="sig-name descname">distCut</code><a class="headerlink" href="#gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.distCut" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the feature value from a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.mA">
+<code class="sig-name descname">mA</code><a class="headerlink" href="#gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.mA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.mB">
+<code class="sig-name descname">mB</code><a class="headerlink" href="#gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.mB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.featureScaler">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">featureScaler</code><a class="headerlink" href="#gnocis.features.featureScaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.features.features</span></code></a></p>
+<p>The <cite>featureScaler</cite> class scales an input feature set, based on a binary training set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – The feature set to scale.</p></li>
+<li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
+<li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gnocis.features.featureScaler.getAll">
+<code class="sig-name descname">getAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.featureScaler.getAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the feature values from a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature vector</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.features">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">features</code><a class="headerlink" href="#gnocis.features.features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>features</cite> class represents a set of features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the feature set</p></li>
+<li><p><strong>f</strong> (<em>list</em><em>, </em><em>optional</em>) – Features to include. Defaults to [].</p></li>
+</ul>
+</dd>
+</dl>
+<p>After constructing a <cite>features</cite> object, for a set of features <cite>FS</cite>, <cite>len(FS)</cite> gives the number of features, <cite>FS[i]</cite> gives feature with index <cite>i</cite>, and <cite>[ x for x in FS ]</cite> gives the list of <cite>feature</cite> objects. Two <cite>features</cite> objects <cite>A</cite> and <cite>B</cite> can be added together with <cite>A+B</cite>, yielding a concatenated set of features.</p>
+<dl class="attribute">
+<dt id="gnocis.features.features.features">
+<code class="sig-name descname">features</code><a class="headerlink" href="#gnocis.features.features.features" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.features.getAll">
+<code class="sig-name descname">getAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.features.getAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the feature values from a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature vector</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.features.getKSpectrum">
+<em class="property">static </em><code class="sig-name descname">getKSpectrum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.features.getKSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the k-mer spectrum kernel, the occurrence frequencies of all motifs of length k, with no ambiguous positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – k-mer length.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features">features</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.features.getKSpectrumMM">
+<em class="property">static </em><code class="sig-name descname">getKSpectrumMM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.features.getKSpectrumMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the k-mer spectrum mismatch kernel, the occurrence frequencies of all motifs of length k, with one allowed mismatch in an arbitrary position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – k-mer length.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features">features</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.features.getKSpectrumPDS">
+<em class="property">static </em><code class="sig-name descname">getKSpectrumPDS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.features.getKSpectrumPDS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the k-mer spectrum positional double-stranded kernel, the occurrence frequencies of all motifs of length k, with position represented by grading between sequence ends.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – k-mer length.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features">features</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.features.getMotifSpectrum">
+<em class="property">static </em><code class="sig-name descname">getMotifSpectrum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.features.getMotifSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a feature set for the motif occurrence spectrum, given a set of motifs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>motifs</strong> (<a class="reference internal" href="#gnocis.motifs.motifs" title="gnocis.motifs.motifs"><em>motifs</em></a>) – The motifs to use for the feature space.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features">features</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.features.getPREdictorMotifPairSpectrum">
+<em class="property">static </em><code class="sig-name descname">getPREdictorMotifPairSpectrum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.features.getPREdictorMotifPairSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a feature set for the PREdictor motif pair occurrence spectrum, given a set of motifs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>motifs</strong> (<a class="reference internal" href="#gnocis.motifs.motifs" title="gnocis.motifs.motifs"><em>motifs</em></a>) – The motifs to use for the feature space.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features">features</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.features.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.features.features.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.features.nvalues">
+<code class="sig-name descname">nvalues</code><a class="headerlink" href="#gnocis.features.features.nvalues" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.features.values">
+<code class="sig-name descname">values</code><a class="headerlink" href="#gnocis.features.features.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.kSpectrum">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">kSpectrum</code><a class="headerlink" href="#gnocis.features.kSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Feature set that extracts the occurrence frequencies of all unambiguous motifs of length k. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nspectrum</strong> (<em>int</em>) – Length of motifs, k, to use.</p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrum.bitmask">
+<code class="sig-name descname">bitmask</code><a class="headerlink" href="#gnocis.features.kSpectrum.bitmask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrum.cacheName">
+<code class="sig-name descname">cacheName</code><a class="headerlink" href="#gnocis.features.kSpectrum.cacheName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrum.features">
+<code class="sig-name descname">features</code><a class="headerlink" href="#gnocis.features.kSpectrum.features" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrum.kmerByIndex">
+<code class="sig-name descname">kmerByIndex</code><a class="headerlink" href="#gnocis.features.kSpectrum.kmerByIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrum.nFeatures">
+<code class="sig-name descname">nFeatures</code><a class="headerlink" href="#gnocis.features.kSpectrum.nFeatures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrum.nspectrum">
+<code class="sig-name descname">nspectrum</code><a class="headerlink" href="#gnocis.features.kSpectrum.nspectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.kSpectrumMM">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">kSpectrumMM</code><a class="headerlink" href="#gnocis.features.kSpectrumMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Feature set that extracts the occurrence frequencies of all motifs of length k, with one mismatch allowed in an arbitrary position. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nspectrum</strong> (<em>int</em>) – Length of motifs, k, to use.</p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMM.bitmask">
+<code class="sig-name descname">bitmask</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.bitmask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMM.cacheName">
+<code class="sig-name descname">cacheName</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.cacheName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMM.features">
+<code class="sig-name descname">features</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.features" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMM.kmerByIndex">
+<code class="sig-name descname">kmerByIndex</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.kmerByIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMM.nFeatures">
+<code class="sig-name descname">nFeatures</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.nFeatures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMM.nspectrum">
+<code class="sig-name descname">nspectrum</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.nspectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.kSpectrumPDS">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">kSpectrumPDS</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Feature set that extracts the occurrence frequencies of all motifs of length k, position and strand represented. To represent position and strandedness, four features are generated per k-mer: one for each combination of strandedness and sequence end for proximity. Graded distance to each end of the sequence is used in order to represent position. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nspectrum</strong> (<em>int</em>) – Length of motifs, k, to use.</p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumPDS.bitmask">
+<code class="sig-name descname">bitmask</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.bitmask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumPDS.cacheName">
+<code class="sig-name descname">cacheName</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.cacheName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumPDS.features">
+<code class="sig-name descname">features</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.features" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumPDS.kmerByIndex">
+<code class="sig-name descname">kmerByIndex</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.kmerByIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumPDS.nFeatures">
+<code class="sig-name descname">nFeatures</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.nFeatures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumPDS.nkmers">
+<code class="sig-name descname">nkmers</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.nkmers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumPDS.nspectrum">
+<code class="sig-name descname">nspectrum</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.nspectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.scaledFeature">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">scaledFeature</code><a class="headerlink" href="#gnocis.features.scaledFeature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.features.feature" title="gnocis.features.feature"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.features.feature</span></code></a></p>
+<p>The <cite>scaledFeature</cite> class scales and shifts an input feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_feature</strong> (<a class="reference internal" href="#gnocis.features.feature" title="gnocis.features.feature"><em>feature</em></a>) – The feature to scale.</p></li>
+<li><p><strong>vScale</strong> (<em>float</em>) – Value to scale by.</p></li>
+<li><p><strong>vSub</strong> (<em>float</em>) – Shifting.</p></li>
+</ul>
+</dd>
+</dl>
+<p>After constructing a <cite>biomarkers</cite> object, for a set of biomarkers <cite>BM</cite>, <cite>len(BM)</cite> gives the number of markers, <cite>BM[‘FACTOR_NAME’]</cite> gives the merged set of regions for factor <cite>FACTOR_NAME</cite>, and <cite>[ x for x in BM ]</cite> gives the list of merged regions per biomarker contained in <cite>BM</cite>.</p>
+<dl class="attribute">
+<dt id="gnocis.features.scaledFeature.feature">
+<code class="sig-name descname">feature</code><a class="headerlink" href="#gnocis.features.scaledFeature.feature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.scaledFeature.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.scaledFeature.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the feature value from a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.scaledFeature.vScale">
+<code class="sig-name descname">vScale</code><a class="headerlink" href="#gnocis.features.scaledFeature.vScale" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.scaledFeature.vSub">
+<code class="sig-name descname">vSub</code><a class="headerlink" href="#gnocis.features.scaledFeature.vSub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.models">
+<span id="gnocis-models-module"></span><h2>gnocis.models module<a class="headerlink" href="#module-gnocis.models" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="gnocis.models.createDummyPREdictorModel">
+<code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">createDummyPREdictorModel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.models.createDummyPREdictorModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="gnocis.models.sequenceModel">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">sequenceModel</code><a class="headerlink" href="#gnocis.models.sequenceModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>sequenceModel</cite> class is an abstract class for sequence models. A number of methods are implemented for machine learning and prediction with DNA sequences.</p>
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.calibrateGenomewidePrecision">
+<code class="sig-name descname">calibrateGenomewidePrecision</code><a class="headerlink" href="#gnocis.models.sequenceModel.calibrateGenomewidePrecision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrates the model threshold for an expected precision genome-wide. Returns self to facilitate chaining of operations. However, this operation does mutate the model object. A scaling factor can be applied to the genome with the ‘factor’ argument. If, for instance, the positive set has been divided in half for independent training and calibration, a factor of 0.5 can be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positive sequences.</p></li>
+<li><p><strong>genome</strong> (<em>sequences/sequenceStream/str</em>) – The genome.</p></li>
+<li><p><strong>factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Scaling factor for positive set versus genome.</p></li>
+<li><p><strong>precision</strong> (<em>float</em><em>, </em><em>optional</em>) – The precision to approximate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the maximum window score per sequence</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getConfusionMatrix">
+<code class="sig-name descname">getConfusionMatrix</code><a class="headerlink" href="#gnocis.models.sequenceModel.getConfusionMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns a confusion matrix for sets of positive and negative sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Confusion matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getCrossValidationStatisticsLOO">
+<code class="sig-name descname">getCrossValidationStatisticsLOO</code><a class="headerlink" href="#gnocis.models.sequenceModel.getCrossValidationStatisticsLOO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getCrossValidationStatisticsRandomHalves">
+<code class="sig-name descname">getCrossValidationStatisticsRandomHalves</code><a class="headerlink" href="#gnocis.models.sequenceModel.getCrossValidationStatisticsRandomHalves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getOptimalAccuracyThreshold">
+<code class="sig-name descname">getOptimalAccuracyThreshold</code><a class="headerlink" href="#gnocis.models.sequenceModel.getOptimalAccuracyThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a threshold value optimized for accuracy to a set of positive and a set of negative sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positive sequences.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negative sequences.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the maximum window score per sequence</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getPRC">
+<code class="sig-name descname">getPRC</code><a class="headerlink" href="#gnocis.models.sequenceModel.getPRC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns a Precision/Recall curve (PRC) for sets of positive and negative sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Precision/Recall curve (PRC)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getPRCAUC">
+<code class="sig-name descname">getPRCAUC</code><a class="headerlink" href="#gnocis.models.sequenceModel.getPRCAUC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns the area under a Precision/Recall curve (PRCAUC) for sets of positive and negative sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Area under the Precision/Recall curve (PRCAUC)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getPrecisionThreshold">
+<code class="sig-name descname">getPrecisionThreshold</code><a class="headerlink" href="#gnocis.models.sequenceModel.getPrecisionThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a threshold value for a desired precision to a set of positive and a set of negative sequences. Linear interpolation is used in order to achieve a close approximation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positive sequences.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negative sequences.</p></li>
+<li><p><strong>wantedPrecision</strong> (<em>float</em>) – The precision to approximate.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the maximum window score per sequence</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getROC">
+<code class="sig-name descname">getROC</code><a class="headerlink" href="#gnocis.models.sequenceModel.getROC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns a Receiver Operating Characteristic (ROC) curve for sets of positive and negative sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Receiver Operating Characteristic (ROC) curve</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getROCAUC">
+<code class="sig-name descname">getROCAUC</code><a class="headerlink" href="#gnocis.models.sequenceModel.getROCAUC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns the area under a Receiver Operating Characteristic (ROCAUC) curve for sets of positive and negative sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Area under the Receiver Operating Characteristic (ROCAUC) curve</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getSequenceScores">
+<code class="sig-name descname">getSequenceScores</code><a class="headerlink" href="#gnocis.models.sequenceModel.getSequenceScores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scores a set of sequences, returning the maximum window score for each.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seqs</strong> (<em>sequences/sequenceStream</em>) – Sequences to score.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the maximum window score per sequence</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.getValidationStatistics">
+<code class="sig-name descname">getValidationStatistics</code><a class="headerlink" href="#gnocis.models.sequenceModel.getValidationStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns common model validation statistics (confusion matrix values; ROCAUC; PRCAUC).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation statistics</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.predict">
+<code class="sig-name descname">predict</code><a class="headerlink" href="#gnocis.models.sequenceModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the model using a sliding window across an input sequence stream or sequence set. Windows with a score &gt;= self.threshold are predicted, and predicted windows are merged into non-overlapping predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stream</strong> (<em>sequences/sequenceStream/str</em>) – Sequence material that the model is applied to for prediction.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of non-overlapping (merged) predicted regions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.predictSequenceStreamRegions">
+<code class="sig-name descname">predictSequenceStreamRegions</code><a class="headerlink" href="#gnocis.models.sequenceModel.predictSequenceStreamRegions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the model using a sliding window across an input sequence stream or sequence set. Windows with a score &gt;= self.threshold are predicted, and predicted windows are merged into non-overlapping predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stream</strong> (<em>sequences/sequenceStream/str</em>) – Sequence material that the model is applied to for prediction.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of non-overlapping (merged) predicted regions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.printTestStatistics">
+<code class="sig-name descname">printTestStatistics</code><a class="headerlink" href="#gnocis.models.sequenceModel.printTestStatistics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.scoreSequence">
+<code class="sig-name descname">scoreSequence</code><a class="headerlink" href="#gnocis.models.sequenceModel.scoreSequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scores a single sequence. The score is determined by applying the model with a sliding window, and taking the maximum score.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<em>sequences/sequenceStream</em>) – The sequence.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Maximal window score</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.models.sequenceModelDummy">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">sequenceModelDummy</code><a class="headerlink" href="#gnocis.models.sequenceModelDummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
+<p>This model takes a feature set, and scores input sequences by summing feature values, without weighting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – The feature set.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size to use.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size to use.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModelDummy.getCrossValidationConstructor">
+<code class="sig-name descname">getCrossValidationConstructor</code><a class="headerlink" href="#gnocis.models.sequenceModelDummy.getCrossValidationConstructor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModelDummy.scoreWindow">
+<code class="sig-name descname">scoreWindow</code><a class="headerlink" href="#gnocis.models.sequenceModelDummy.scoreWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.models.sequenceModelLogOdds">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">sequenceModelLogOdds</code><a class="headerlink" href="#gnocis.models.sequenceModelLogOdds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
+<p>Constructs a log-odds model based on an input feature set and binary training set, and scores input sequences by summing log-odds-weighted feature values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – The feature set.</p></li>
+<li><p><strong>trainingPositives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
+<li><p><strong>trainingNegatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size to use.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size to use.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModelLogOdds.getCrossValidationConstructor">
+<code class="sig-name descname">getCrossValidationConstructor</code><a class="headerlink" href="#gnocis.models.sequenceModelLogOdds.getCrossValidationConstructor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModelLogOdds.scoreWindow">
+<code class="sig-name descname">scoreWindow</code><a class="headerlink" href="#gnocis.models.sequenceModelLogOdds.scoreWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.models.setNCores">
+<code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">setNCores</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.models.setNCores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the number of cores to use for multiprocessing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – The number of cores to use.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.models.trainPREdictorModel">
+<code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">trainPREdictorModel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.models.trainPREdictorModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gnocis.models.trainSinglePREdictorModel">
+<code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">trainSinglePREdictorModel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.models.trainSinglePREdictorModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.motifs">
+<span id="gnocis-motifs-module"></span><h2>gnocis.motifs module<a class="headerlink" href="#module-gnocis.motifs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="gnocis.motifs.IUPACMotif">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.motifs.</code><code class="sig-name descname">IUPACMotif</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents an IUPAC motif.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the motif.</p></li>
+<li><p><strong>motif</strong> (<em>str</em>) – Motif sequence, in IUPAC nucleotide codes (<a class="reference external" href="https://www.bioinformatics.org/sms/iupac.html">https://www.bioinformatics.org/sms/iupac.html</a>).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.c">
+<code class="sig-name descname">c</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.c" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.cRC">
+<code class="sig-name descname">cRC</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.cRC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.motifs.IUPACMotif.findOccurrences">
+<code class="sig-name descname">findOccurrences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.motifs.IUPACMotif.findOccurrences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the occurrences of the motif in a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of motif occurrences</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.motif">
+<code class="sig-name descname">motif</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.motif" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.nmismatches">
+<code class="sig-name descname">nmismatches</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.nmismatches" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.regexMotif">
+<code class="sig-name descname">regexMotif</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.regexMotif" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.regexMotifRC">
+<code class="sig-name descname">regexMotifRC</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.regexMotifRC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.motifs.PWMMotif">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.motifs.</code><code class="sig-name descname">PWMMotif</code><a class="headerlink" href="#gnocis.motifs.PWMMotif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents an Position Weight Matrix (PWM) motif.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the motif.</p></li>
+<li><p><strong>pwm</strong> (<em>str</em>) – Position Weight Matrix.</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to file that the PWM was loaded from.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.motifs.PWMMotif.PWMF">
+<code class="sig-name descname">PWMF</code><a class="headerlink" href="#gnocis.motifs.PWMMotif.PWMF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.PWMMotif.PWMRC">
+<code class="sig-name descname">PWMRC</code><a class="headerlink" href="#gnocis.motifs.PWMMotif.PWMRC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.motifs.PWMMotif.findOccurrences">
+<code class="sig-name descname">findOccurrences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.motifs.PWMMotif.findOccurrences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the occurrences of the motif in a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of motif occurrences</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.motifs.PWMMotif.getEValueThreshold">
+<code class="sig-name descname">getEValueThreshold</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.motifs.PWMMotif.getEValueThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrates the threshold for a desired E-value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bgModel</strong> (<em>object</em>) – Background model to use for calibration.</p></li>
+<li><p><strong>Evalue</strong> (<em>float</em>) – The desired E-value.</p></li>
+<li><p><strong>EvalueUnit</strong> (<em>float</em>) – E-value unit.</p></li>
+<li><p><strong>seedThreshold</strong> (<em>float</em>) – Seed threshold.</p></li>
+<li><p><strong>iterations</strong> (<em>int</em>) – Number of iterations.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Threshold</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.PWMMotif.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.motifs.PWMMotif.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.PWMMotif.path">
+<code class="sig-name descname">path</code><a class="headerlink" href="#gnocis.motifs.PWMMotif.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.motifs.PWMMotif.setPWM">
+<code class="sig-name descname">setPWM</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.motifs.PWMMotif.setPWM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the Position Weight Matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pwm</strong> (<em>list</em>) – Position Weight Matrix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.PWMMotif.threshold">
+<code class="sig-name descname">threshold</code><a class="headerlink" href="#gnocis.motifs.PWMMotif.threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.motifs.loadMEMEPWMDatabase">
+<code class="sig-prename descclassname">gnocis.motifs.</code><code class="sig-name descname">loadMEMEPWMDatabase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.motifs.loadMEMEPWMDatabase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="gnocis.motifs.motifOccurrence">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.motifs.</code><code class="sig-name descname">motifOccurrence</code><a class="headerlink" href="#gnocis.motifs.motifOccurrence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents motif occurrences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>motif</strong> (<em>object</em>) – The motif.</p></li>
+<li><p><strong>seq</strong> – Name of the sequence the motif occurred on.</p></li>
+<li><p><strong>start</strong> – Occurrence start nucleotide.</p></li>
+<li><p><strong>end</strong> – Occurrence end nucleotide.</p></li>
+<li><p><strong>strand</strong> – Occurrence strand. <cite>True</cite> is the +/forward strand, and <cite>False</cite> is the -/backward strand.</p></li>
+<li><p><strong>seq</strong> – str</p></li>
+<li><p><strong>start</strong> – int</p></li>
+<li><p><strong>end</strong> – int</p></li>
+<li><p><strong>strand</strong> – bool</p></li>
+</ul>
+</dd>
+</dl>
+<p>After constructing a <cite>biomarkers</cite> object, for a set of biomarkers <cite>BM</cite>, <cite>len(BM)</cite> gives the number of markers, <cite>BM[‘FACTOR_NAME’]</cite> gives the merged set of regions for factor <cite>FACTOR_NAME</cite>, and <cite>[ x for x in BM ]</cite> gives the list of merged regions per biomarker contained in <cite>BM</cite>.</p>
+<dl class="attribute">
+<dt id="gnocis.motifs.motifOccurrence.end">
+<code class="sig-name descname">end</code><a class="headerlink" href="#gnocis.motifs.motifOccurrence.end" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.motifOccurrence.motif">
+<code class="sig-name descname">motif</code><a class="headerlink" href="#gnocis.motifs.motifOccurrence.motif" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.motifOccurrence.seq">
+<code class="sig-name descname">seq</code><a class="headerlink" href="#gnocis.motifs.motifOccurrence.seq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.motifOccurrence.start">
+<code class="sig-name descname">start</code><a class="headerlink" href="#gnocis.motifs.motifOccurrence.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.motifOccurrence.strand">
+<code class="sig-name descname">strand</code><a class="headerlink" href="#gnocis.motifs.motifOccurrence.strand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.motifs.motifs">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.motifs.</code><code class="sig-name descname">motifs</code><a class="headerlink" href="#gnocis.motifs.motifs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>motifs</cite> class represents a set of motifs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the motif set.</p></li>
+<li><p><strong>motifs</strong> – List of motifs.</p></li>
+<li><p><strong>motifs</strong> – list</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.motifs.motifs.getRingrose2003Motifs">
+<code class="sig-name descname">getRingrose2003Motifs</code><a class="headerlink" href="#gnocis.motifs.motifs.getRingrose2003Motifs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preset for generating the Ringrose et al. (2003) motif set.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.motifs.getRingrose2003Motifs_GTGT">
+<code class="sig-name descname">getRingrose2003Motifs_GTGT</code><a class="headerlink" href="#gnocis.motifs.motifs.getRingrose2003Motifs_GTGT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preset for generating the Ringrose et al. (2003) motif set, with GTGT added (as in Bredesen et al. 2019).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.motifs.motifs">
+<code class="sig-name descname">motifs</code><a class="headerlink" href="#gnocis.motifs.motifs.motifs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.motifs.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.motifs.motifs.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.regions">
+<span id="gnocis-regions-module"></span><h2>gnocis.regions module<a class="headerlink" href="#module-gnocis.regions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="gnocis.regions.loadBED">
+<code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">loadBED</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.loadBED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads regions from a BED (<a class="reference external" href="https://www.ensembl.org/info/website/upload/bed.html">https://www.ensembl.org/info/website/upload/bed.html</a>) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.regions.loadBEDGZ">
+<code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">loadBEDGZ</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.loadBEDGZ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads regions from a gzipped BED (<a class="reference external" href="https://www.ensembl.org/info/website/upload/bed.html">https://www.ensembl.org/info/website/upload/bed.html</a>) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.regions.loadCoordinateList">
+<code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">loadCoordinateList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.loadCoordinateList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads regions from a coordinate list file (one region per line, with the format <cite>seq:start..end</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.regions.loadGFF">
+<code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">loadGFF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.loadGFF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads regions from a General Feature Format (<a class="reference external" href="https://www.ensembl.org/info/website/upload/gff.html">https://www.ensembl.org/info/website/upload/gff.html</a>) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.regions.loadGFFGZ">
+<code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">loadGFFGZ</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.loadGFFGZ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads regions from a gzipped General Feature Format (<a class="reference external" href="https://www.ensembl.org/info/website/upload/gff.html">https://www.ensembl.org/info/website/upload/gff.html</a>) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.regions.region">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">region</code><a class="headerlink" href="#gnocis.regions.region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>region</cite> class represents a region within a sequence. A region has a sequence name, a start and end, and a strandedness, with optional additional annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<em>str</em>) – Sequence name.</p></li>
+<li><p><strong>start</strong> (<em>int</em>) – Start coordinate.</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – End coordinate (inclusive).</p></li>
+<li><p><strong>strand</strong> (<em>bool</em><em>, </em><em>optional</em>) – Strandedness. <cite>True</cite> for the + (forward) strand (default), and <cite>False</cite> for the - (reverse) strand.</p></li>
+<li><p><strong>score</strong> (<em>float</em><em>, </em><em>optional</em>) – Score.</p></li>
+<li><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) – Soure.</p></li>
+<li><p><strong>feature</strong> (<em>str</em><em>, </em><em>optional</em>) – Feature.</p></li>
+<li><p><strong>group</strong> (<em>str</em><em>, </em><em>optional</em>) – Group.</p></li>
+<li><p><strong>dropChr</strong> (<em>bool</em><em>, </em><em>optional</em>) – <cite>True</cite> if a leading <cite>chr</cite> in <cite>seq</cite> is to be dropped (default).</p></li>
+</ul>
+</dd>
+</dl>
+<p>The length of a region <cite>r</cite> can be calculated with <cite>len(r)</cite>.</p>
+<dl class="method">
+<dt id="gnocis.regions.region.bstr">
+<code class="sig-name descname">bstr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.region.bstr" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns the region formatted as a string: <cite>seq:start..end (strand)</cite>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.end">
+<code class="sig-name descname">end</code><a class="headerlink" href="#gnocis.regions.region.end" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.ext">
+<code class="sig-name descname">ext</code><a class="headerlink" href="#gnocis.regions.region.ext" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.feature">
+<code class="sig-name descname">feature</code><a class="headerlink" href="#gnocis.regions.region.feature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.group">
+<code class="sig-name descname">group</code><a class="headerlink" href="#gnocis.regions.region.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.markers">
+<code class="sig-name descname">markers</code><a class="headerlink" href="#gnocis.regions.region.markers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.score">
+<code class="sig-name descname">score</code><a class="headerlink" href="#gnocis.regions.region.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.seq">
+<code class="sig-name descname">seq</code><a class="headerlink" href="#gnocis.regions.region.seq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.source">
+<code class="sig-name descname">source</code><a class="headerlink" href="#gnocis.regions.region.source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.start">
+<code class="sig-name descname">start</code><a class="headerlink" href="#gnocis.regions.region.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.region.strand">
+<code class="sig-name descname">strand</code><a class="headerlink" href="#gnocis.regions.region.strand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.regions.regions">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">regions</code><a class="headerlink" href="#gnocis.regions.regions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>regions</cite> class represents a set of regions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name for the sequence set.</p></li>
+<li><p><strong>rgns</strong> (<em>list</em>) – List of regions to include.</p></li>
+<li><p><strong>initialSort</strong> (<em>bool</em>) – Whether or not to sort the regions (default is <cite>True</cite>).</p></li>
+</ul>
+</dd>
+</dl>
+<p>For a region set <cite>RS</cite>, <cite>len(RS)</cite> gives the number of regions, <cite>RS[i]</cite> gives the <cite>i`th region in the set, and `[ r for r in RS ]</cite> lists regions in the set. For sets <cite>A</cite> and <cite>B</cite>, <cite>A+B</cite> gives a sorted region set of regions from both sets, <cite>A|B</cite> gives the merged set, <cite>A&amp;B</cite> the conjunction, and <cite>A^B</cite> the regions of <cite>A</cite> with <cite>B</cite> excluded.</p>
+<dl class="method">
+<dt id="gnocis.regions.regions.bstr">
+<code class="sig-name descname">bstr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.bstr" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a concatenated list of regions formatted as <cite>seq:start..end (strand)</cite>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.extract">
+<code class="sig-name descname">extract</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.extract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts region sequences from a sequence set, sequence stream, or a file by path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>src</strong> (<em>sequences/sequenceStream/str</em>) – Sequence set, sequence stream, or sequence file path.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Extracted region sequences.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.extractSequences">
+<code class="sig-name descname">extractSequences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.extractSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts region sequences from a sequence set or stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seqs</strong> (<em>sequences/sequenceStream</em>) – Sequences/sequence stream to extract region sequences from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Extracted region sequences.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.extractSequencesFrom2bit">
+<code class="sig-name descname">extractSequencesFrom2bit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.extractSequencesFrom2bit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts region sequences from a 2bit file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to 2bit file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Extracted region sequences.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.extractSequencesFromFASTA">
+<code class="sig-name descname">extractSequencesFromFASTA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.extractSequencesFromFASTA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts region sequences from a FASTA file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to FASTA file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Extracted region sequences.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getDeltaResized">
+<code class="sig-name descname">getDeltaResized</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getDeltaResized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a set of resized regions. The delta size is subtracted from the start and added to the end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sizeDelta</strong> – Desired region size change.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of resized regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getExcluded">
+<code class="sig-name descname">getExcluded</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getExcluded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the regions of this set with regions of another set excluded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Other region set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Excluded region set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getFiltered">
+<code class="sig-name descname">getFiltered</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getFiltered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a region set filtered with the input lambda function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fltName</strong> (<em>str</em>) – Name of the filter. Appended to the region set name.</p></li>
+<li><p><strong>flt</strong> (<em>lambda</em>) – Lambda function to be applied to every region, returning <cite>True</cite> if the region is to be included, or otherwise <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Region set filtered with the lambda function.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getIntersection">
+<code class="sig-name descname">getIntersection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getIntersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the intersection of regions in this set and another.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Other region set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Intersection region set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getMerged">
+<code class="sig-name descname">getMerged</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getMerged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the merged set of regions in this set and another.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Other region set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Merged region set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getNonOverlap">
+<code class="sig-name descname">getNonOverlap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getNonOverlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the regions in this set that do not overlap with another.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Other region set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of non-overlapping regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getOverlap">
+<code class="sig-name descname">getOverlap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getOverlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the regions in this set that overlap with another.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Other region set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of overlapping regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getRandomSplit">
+<code class="sig-name descname">getRandomSplit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getRandomSplit" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ratio</strong> (<em>float</em>) – Ratio for the split, between 0 and 1. For the return touple, <cite>(A, B)</cite>, a ratio of 0 means all the regions are in <cite>B</cite>, and opposite for a ratio of 1.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a random split of the regions into two independent sets, with the given ratio.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getRandomlyRecentered">
+<code class="sig-name descname">getRandomlyRecentered</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getRandomlyRecentered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a set of randomly recentered regions. If the target size is smaller than a given region, a region of the desired size is randomly placed within the region. If the desired size is larger, a region of the desired size is placed with equal center to the center of the region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>int</em>) – Desired region size.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of randomly recentered regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.getRenamed">
+<code class="sig-name descname">getRenamed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.getRenamed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newname</strong> (<em>str</em>) – New name.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Renamed region set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.regions.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.regions.regions.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.printStatistics">
+<code class="sig-name descname">printStatistics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.printStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Outputs basic statistics.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.regions.regions.regions">
+<code class="sig-name descname">regions</code><a class="headerlink" href="#gnocis.regions.regions.regions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.saveBED">
+<code class="sig-name descname">saveBED</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.saveBED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the regions to a BED (<a class="reference external" href="https://www.ensembl.org/info/website/upload/bed.html">https://www.ensembl.org/info/website/upload/bed.html</a>) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Output file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.saveCoordinateList">
+<code class="sig-name descname">saveCoordinateList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.saveCoordinateList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the regions to a coordinate list file (a coordinate per line, with the format <cite>seq:start..end</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Output file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.saveGFF">
+<code class="sig-name descname">saveGFF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.saveGFF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the regions to a General Feature Format (<a class="reference external" href="https://www.ensembl.org/info/website/upload/gff.html">https://www.ensembl.org/info/website/upload/gff.html</a>) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Output file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.sort">
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts the set, first by start coordinate, then by sequence.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.sequences">
+<span id="gnocis-sequences-module"></span><h2>gnocis.sequences module<a class="headerlink" href="#module-gnocis.sequences" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="gnocis.sequences.generatorIID">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">generatorIID</code><a class="headerlink" href="#gnocis.sequences.generatorIID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.sequences.sequenceGenerator" title="gnocis.sequences.sequenceGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.sequences.sequenceGenerator</span></code></a></p>
+<p>The <cite>generatorIID</cite> class trains an i.i.d. model for generating sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainingSequences</strong> (<em>sequences/sequenceStream/str</em>) – Training sequences.</p></li>
+<li><p><strong>pseudoCounts</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to use pseudocounts. Default is <cite>True</cite>.</p></li>
+<li><p><strong>addComplements</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to add complements. Default is <cite>True</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorIID.addComplements">
+<code class="sig-name descname">addComplements</code><a class="headerlink" href="#gnocis.sequences.generatorIID.addComplements" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.generatorIID.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.generatorIID.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> (<em>int</em>) – Length of the sequence to generate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Random sequence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence">sequence</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorIID.nGenerated">
+<code class="sig-name descname">nGenerated</code><a class="headerlink" href="#gnocis.sequences.generatorIID.nGenerated" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorIID.ntDistribution">
+<code class="sig-name descname">ntDistribution</code><a class="headerlink" href="#gnocis.sequences.generatorIID.ntDistribution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorIID.prepared">
+<code class="sig-name descname">prepared</code><a class="headerlink" href="#gnocis.sequences.generatorIID.prepared" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorIID.pseudoCounts">
+<code class="sig-name descname">pseudoCounts</code><a class="headerlink" href="#gnocis.sequences.generatorIID.pseudoCounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorIID.spectrum">
+<code class="sig-name descname">spectrum</code><a class="headerlink" href="#gnocis.sequences.generatorIID.spectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorIID.trainingSequences">
+<code class="sig-name descname">trainingSequences</code><a class="headerlink" href="#gnocis.sequences.generatorIID.trainingSequences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sequences.generatorMarkovChain">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">generatorMarkovChain</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.sequences.sequenceGenerator" title="gnocis.sequences.sequenceGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.sequences.sequenceGenerator</span></code></a></p>
+<p>The <cite>generatorMarkovChain</cite> class trains a Markov chain for generating sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainingSequences</strong> (<em>sequences/sequenceStream/str</em>) – Training sequences.</p></li>
+<li><p><strong>degree</strong> (<em>int</em><em>, </em><em>optional</em>) – Markov chain degree. Default is 4.</p></li>
+<li><p><strong>pseudoCounts</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to use pseudocounts. Default is <cite>True</cite>.</p></li>
+<li><p><strong>addReverseComplements</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to add reverse complements. Default is <cite>True</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.addReverseComplements">
+<code class="sig-name descname">addReverseComplements</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.addReverseComplements" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.comparableSpectrum">
+<code class="sig-name descname">comparableSpectrum</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.comparableSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.degree">
+<code class="sig-name descname">degree</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.degree" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.generatorMarkovChain.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> (<em>int</em>) – Length of the sequence to generate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Random sequence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence">sequence</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.initialDistribution">
+<code class="sig-name descname">initialDistribution</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.initialDistribution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.nGenerated">
+<code class="sig-name descname">nGenerated</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.nGenerated" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.prepared">
+<code class="sig-name descname">prepared</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.prepared" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.probspectrum">
+<code class="sig-name descname">probspectrum</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.probspectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.pseudoCounts">
+<code class="sig-name descname">pseudoCounts</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.pseudoCounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.spectrum">
+<code class="sig-name descname">spectrum</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.spectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.generatorMarkovChain.trainOnSequences">
+<code class="sig-name descname">trainOnSequences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.trainOnSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trains on sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trainingSequences</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Training sequences.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.generatorMarkovChain.trainingSequences">
+<code class="sig-name descname">trainingSequences</code><a class="headerlink" href="#gnocis.sequences.generatorMarkovChain.trainingSequences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.sequences.getSequenceStreamFromPath">
+<code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">getSequenceStreamFromPath</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.getSequenceStreamFromPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a sequence stream from a path, deducing the file type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p></li>
+<li><p><strong>wantBlockSize</strong> (<em>int</em><em>, </em><em>optional</em>) – Desired block size.</p></li>
+<li><p><strong>spacePrune</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to prune sequence name spaces.</p></li>
+<li><p><strong>dropChr</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to prune sequence name “chr”-prefixes.</p></li>
+<li><p><strong>restrictToSequences</strong> (<em>list</em><em>, </em><em>optional</em>) – List of sequence names to restrict to/focus on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated sequence stream.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequenceStream" title="gnocis.sequences.sequenceStream">sequenceStream</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.sequences.getSequenceWindowRegions">
+<code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">getSequenceWindowRegions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.getSequenceWindowRegions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates sequence window regions for a sequence set or stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stream</strong> (<em>sequences/sequenceStream</em>) – Input sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sequence window regions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.sequences.loadFASTA">
+<code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">loadFASTA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.loadFASTA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads sequences from a FASTA filer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded sequences.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sequences.sequence">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">sequence</code><a class="headerlink" href="#gnocis.sequences.sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>sequence</cite> class represents a DNA sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the sequence.</p></li>
+<li><p><strong>seq</strong> (<em>str</em>) – Sequence.</p></li>
+<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – Source file path.</p></li>
+<li><p><strong>sourceRegion</strong> (<a class="reference internal" href="#gnocis.regions.region" title="gnocis.regions.region"><em>region</em></a><em>, </em><em>optional</em>) – Source region.</p></li>
+<li><p><strong>annotation</strong> (<em>str</em><em>, </em><em>optional</em>) – Annotation.</p></li>
+</ul>
+</dd>
+</dl>
+<p>For a <cite>sequence</cite> instance <cite>S</cite>, <cite>len(S)</cite> gives the sequence length. <cite>[ nt for nt in S ]</cite> lists the nucleotides. For two sequences <cite>A</cite> and <cite>B</cite>, <cite>A+B</cite> gives the concatenated sequence.</p>
+<dl class="attribute">
+<dt id="gnocis.sequences.sequence.annotation">
+<code class="sig-name descname">annotation</code><a class="headerlink" href="#gnocis.sequences.sequence.annotation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.sequence.cache">
+<code class="sig-name descname">cache</code><a class="headerlink" href="#gnocis.sequences.sequence.cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequence.getWindows">
+<code class="sig-name descname">getWindows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequence.getWindows" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>step</strong> (<em>int</em>) – Window step size.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to use cached data. Default is <cite>True</cite>.</p></li>
+<li><p><strong>includeCroppedEnds</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to include cropped windows on ends of sequence. Default is <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a sequence set of sliding window sequences over the sequence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.sequence.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.sequences.sequence.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.sequence.path">
+<code class="sig-name descname">path</code><a class="headerlink" href="#gnocis.sequences.sequence.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.sequence.seq">
+<code class="sig-name descname">seq</code><a class="headerlink" href="#gnocis.sequences.sequence.seq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.sequence.sourceRegion">
+<code class="sig-name descname">sourceRegion</code><a class="headerlink" href="#gnocis.sequences.sequence.sourceRegion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sequences.sequenceGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">sequenceGenerator</code><a class="headerlink" href="#gnocis.sequences.sequenceGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>sequenceGenerator</cite> class is an abstract class for sequence generators.</p>
+<dl class="method">
+<dt id="gnocis.sequences.sequenceGenerator.generateFASTA">
+<code class="sig-name descname">generateFASTA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequenceGenerator.generateFASTA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates sequences and saves them to a FASTA file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Output path.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – Number of sequences to generate.</p></li>
+<li><p><strong>length</strong> (<em>int</em>) – Length of each sequence to generate.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequenceGenerator.generateSet">
+<code class="sig-name descname">generateSet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequenceGenerator.generateSet" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Number of sequences to generate.</p></li>
+<li><p><strong>length</strong> (<em>int</em>) – Length of each sequence to generate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sequence set of <cite>n</cite> randomly generated sequences, each of length <cite>length</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequenceGenerator.generateStream">
+<code class="sig-name descname">generateStream</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequenceGenerator.generateStream" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Number of sequences to generate.</p></li>
+<li><p><strong>length</strong> (<em>int</em>) – Length of each sequence to generate.</p></li>
+<li><p><strong>wantBlockSize</strong> (<em>int</em><em>, </em><em>optional</em>) – Desired block size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sequence stream of <cite>n</cite> randomly generated sequences, each of length <cite>length</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>sequencesStream</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sequences.sequenceStream">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">sequenceStream</code><a class="headerlink" href="#gnocis.sequences.sequenceStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>sequenceStream</cite> class represents sequence streams.</p>
+<dl class="method">
+<dt id="gnocis.sequences.sequenceStream.fetch">
+<code class="sig-name descname">fetch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequenceStream.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches n sequences (or less, if fewer or none are left).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Number of sequences to fetch.</p></li>
+<li><p><strong>maxnt</strong> (<em>int</em>) – Maximum number of nucleotides to fetch.</p></li>
+</ul>
+</dd>
+</dl>
+<p>:return Yields sequences.
+:rtype: sequences (yield)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequenceStream.getSequenceLengths">
+<code class="sig-name descname">getSequenceLengths</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequenceStream.getSequenceLengths" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a dictionary of the lengths of all sequences in the stream.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequenceStream.getWindows">
+<code class="sig-name descname">getWindows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequenceStream.getWindows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates and returns a set of sliding window sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>step</strong> (<em>int</em>) – Window step size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sequence set of all sliding window sequences across all sequences in the stream.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequenceStream.streamFullSequences">
+<code class="sig-name descname">streamFullSequences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequenceStream.streamFullSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Streams and yields whole sequences.</p>
+<p>:return Yields whole sequence.
+:rtype: sequence (yield)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sequences.sequenceStream2bit">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">sequenceStream2bit</code><a class="headerlink" href="#gnocis.sequences.sequenceStream2bit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.sequences.sequenceStream" title="gnocis.sequences.sequenceStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.sequences.sequenceStream</span></code></a></p>
+<p>Streams a 2bit file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p></li>
+<li><p><strong>wantBlockSize</strong> (<em>int</em>) – Desired block size.</p></li>
+<li><p><strong>spacePrune</strong> (<em>bool</em>) – Whether or not to prune sequence name spaces.</p></li>
+<li><p><strong>dropChr</strong> (<em>bool</em>) – Whether or not to prune sequence name “chr”-prefixes.</p></li>
+<li><p><strong>restrictToSequences</strong> (<em>list</em>) – List of sequence names to restrict to/focus on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sequences.sequenceStreamFASTA">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">sequenceStreamFASTA</code><a class="headerlink" href="#gnocis.sequences.sequenceStreamFASTA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.sequences.sequenceStream" title="gnocis.sequences.sequenceStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.sequences.sequenceStream</span></code></a></p>
+<p>Streams a FASTA file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p></li>
+<li><p><strong>wantBlockSize</strong> (<em>int</em>) – Desired block size.</p></li>
+<li><p><strong>spacePrune</strong> (<em>bool</em>) – Whether or not to prune sequence name spaces.</p></li>
+<li><p><strong>dropChr</strong> (<em>bool</em>) – Whether or not to prune sequence name “chr”-prefixes.</p></li>
+<li><p><strong>restrictToSequences</strong> (<em>list</em>) – List of sequence names to restrict to/focus on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sequences.sequences">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">sequences</code><a class="headerlink" href="#gnocis.sequences.sequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>sequences</cite> class represents a set of DNA sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the sequence set.</p></li>
+<li><p><strong>seq</strong> (<em>list</em>) – List of sequences to include.</p></li>
+</ul>
+</dd>
+</dl>
+<p>For a <cite>sequence</cite> instance <cite>S</cite>, <cite>len(S)</cite> gives the sequence length, and <cite>[ s for s in S ]</cite> lists the sequences. For two sequence sets <cite>A</cite> and <cite>B</cite>, <cite>A+B</cite> gives the set containing all sequences from both sets.</p>
+<dl class="method">
+<dt id="gnocis.sequences.sequences.getRandomSplit">
+<code class="sig-name descname">getRandomSplit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.getRandomSplit" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ratio</strong> (<em>float</em>) – Ratio for the split, between 0 and 1. For the return touple, <cite>(A, B)</cite>, a ratio of 0 means all the sequences are in <cite>B</cite>, and opposite for a ratio of 1.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a random split of the sequences into two independent sets, with the given ratio.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.getRenamed">
+<code class="sig-name descname">getRenamed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.getRenamed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newname</strong> (<em>str</em>) – New name.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Renamed sequence set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.getSequenceLengths">
+<code class="sig-name descname">getSequenceLengths</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.getSequenceLengths" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a dictionary of the lengths of all sequences in the set.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.getSourceRegions">
+<code class="sig-name descname">getSourceRegions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.getSourceRegions" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Region set of source regions for all sequences in the set.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.getWindows">
+<code class="sig-name descname">getWindows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.getWindows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates and returns a set of sliding window sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>step</strong> (<em>int</em>) – Window step size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sequence set of all sliding window sequences across all sequences in the set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.sequences.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.sequences.sequences.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.printStatistics">
+<code class="sig-name descname">printStatistics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.printStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Outputs basic statistics.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.saveFASTA">
+<code class="sig-name descname">saveFASTA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.saveFASTA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the regions to a FASTA file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Output file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.sequences.sequences">
+<code class="sig-name descname">sequences</code><a class="headerlink" href="#gnocis.sequences.sequences.sequences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.split">
+<code class="sig-name descname">split</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.split" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – Number of sets to split into.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a list of <cite>n</cite> independent splits of the sequence set, without shuffling.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.sequences.stream2bit">
+<code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">stream2bit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.stream2bit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Streams a 2bit file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p></li>
+<li><p><strong>wantBlockSize</strong> (<em>int</em><em>, </em><em>optional</em>) – Desired block size.</p></li>
+<li><p><strong>spacePrune</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to prune sequence name spaces.</p></li>
+<li><p><strong>dropChr</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to prune sequence name “chr”-prefixes.</p></li>
+<li><p><strong>restrictToSequences</strong> (<em>list</em><em>, </em><em>optional</em>) – List of sequence names to restrict to/focus on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated sequence stream.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequenceStream" title="gnocis.sequences.sequenceStream">sequenceStream</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.sequences.streamFASTA">
+<code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">streamFASTA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.streamFASTA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Streams a FASTA file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p></li>
+<li><p><strong>wantBlockSize</strong> (<em>int</em><em>, </em><em>optional</em>) – Desired block size.</p></li>
+<li><p><strong>spacePrune</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to prune sequence name spaces.</p></li>
+<li><p><strong>dropChr</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to prune sequence name “chr”-prefixes.</p></li>
+<li><p><strong>restrictToSequences</strong> (<em>list</em><em>, </em><em>optional</em>) – List of sequence names to restrict to/focus on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated sequence stream.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequenceStream" title="gnocis.sequences.sequenceStream">sequenceStream</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.sequences.streamSequenceWindows">
+<code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">streamSequenceWindows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.streamSequenceWindows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields sequence windows for a sequence set, sequence stream or a path to a sequence file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>sequences/sequenceStream/str</em>) – Input sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sequence windows.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence">sequence</a> (yield)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.sklearnModels">
+<span id="gnocis-sklearnmodels-module"></span><h2>gnocis.sklearnModels module<a class="headerlink" href="#module-gnocis.sklearnModels" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="gnocis.sklearnModels.sequenceModelRF">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelRF</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">nTrees</em>, <em class="sig-param">maxDepth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
+<p>The <cite>sequenceModelRF</cite> class trains a Random Forest (RF) model using scikit-learn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
+<li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
+<li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size.</p></li>
+<li><p><strong>nTrees</strong> (<em>int</em>) – Number of trees.</p></li>
+<li><p><strong>maxDepth</strong> (<em>int</em>) – Maximum tree depth.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelRF.getCrossValidationConstructor">
+<code class="sig-name descname">getCrossValidationConstructor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF.getCrossValidationConstructor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF.getCrossValidationConstructor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelRF.getSequenceFeatureVector">
+<code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelRF.scoreWindow">
+<code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF.scoreWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sklearnModels.sequenceModelSVM">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelSVM</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
+<p>The <cite>sequenceModelSVM</cite> class trains a Support Vector Machine (SVM) using scikit-learn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
+<li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
+<li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size.</p></li>
+<li><p><strong>kDegree</strong> (<em>float</em>) – Kernel degree.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelSVM.getSequenceFeatureVector">
+<code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelSVM.scoreWindow">
+<code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM.scoreWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.sklearnModelsOpt">
+<span id="gnocis-sklearnmodelsopt-module"></span><h2>gnocis.sklearnModelsOpt module<a class="headerlink" href="#module-gnocis.sklearnModelsOpt" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadratic</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
+<p>The <cite>sequenceModelSVMOptimizedQuadratic</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
+<li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
+<li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size.</p></li>
+<li><p><strong>kDegree</strong> (<em>float</em>) – Kernel degree.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.getSequenceFeatureVector">
+<code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow">
+<code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticCUDA</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
+<p>The <cite>sequenceModelSVMOptimizedQuadraticCUDA</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication with CUDA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
+<li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
+<li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size.</p></li>
+<li><p><strong>kDegree</strong> (<em>float</em>) – Kernel degree.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector">
+<code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.scoreWindow">
+<code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.scoreWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gnocis.validation">
+<span id="gnocis-validation-module"></span><h2>gnocis.validation module<a class="headerlink" href="#module-gnocis.validation" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="gnocis.validation.getAUC">
+<code class="sig-prename descclassname">gnocis.validation.</code><code class="sig-name descname">getAUC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.validation.getAUC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Area Under the Curve (AUC) for an input curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>curve</strong> (<em>list</em>) – Curve to calculate area under.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Area Under the Curve (AUC).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.validation.getConfusionMatrix">
+<code class="sig-prename descclassname">gnocis.validation.</code><code class="sig-name descname">getConfusionMatrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.validation.getConfusionMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates confusion matrix based on input validation pairs, and an optional threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vPos</strong> (<em>list</em>) – Positive validation pairs.</p></li>
+<li><p><strong>vNeg</strong> (<em>list</em>) – Negative validation pairs.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – Classification threshold.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary with confusion matrix entries.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.validation.getConfusionMatrixStatistics">
+<code class="sig-prename descclassname">gnocis.validation.</code><code class="sig-name descname">getConfusionMatrixStatistics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.validation.getConfusionMatrixStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates confusion matrix statistics in an input confusion matrix dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CM</strong> (<em>dict</em>) – Confusion matrix dictionary.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary with confusion matrix statistics.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.validation.getPRC">
+<code class="sig-prename descclassname">gnocis.validation.</code><code class="sig-name descname">getPRC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.validation.getPRC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a Precision/Recall Curve (PRC).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vPos</strong> (<em>list</em>) – Positive validation pairs.</p></li>
+<li><p><strong>vNeg</strong> (<em>list</em>) – Negative validation pairs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of 2D-points for curve</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.validation.getROC">
+<code class="sig-prename descclassname">gnocis.validation.</code><code class="sig-name descname">getROC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.validation.getROC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a Receiver Operating Characteristic (ROC) curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vPos</strong> (<em>list</em>) – Positive validation pairs.</p></li>
+<li><p><strong>vNeg</strong> (<em>list</em>) – Negative validation pairs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of 2D-points for curve</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.validation.point2D">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.validation.</code><code class="sig-name descname">point2D</code><a class="headerlink" href="#gnocis.validation.point2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Two-dimensional point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – X-coordinate.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – Y-coordinate.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.validation.point2D.x">
+<code class="sig-name descname">x</code><a class="headerlink" href="#gnocis.validation.point2D.x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.validation.point2D.y">
+<code class="sig-name descname">y</code><a class="headerlink" href="#gnocis.validation.point2D.y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.validation.printValidationStatistics">
+<code class="sig-prename descclassname">gnocis.validation.</code><code class="sig-name descname">printValidationStatistics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.validation.printValidationStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints model confusion matrix statistics from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stats</strong> (<em>dict</em>) – Confusion matrix statistics dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.validation.validationPair">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.validation.</code><code class="sig-name descname">validationPair</code><a class="headerlink" href="#gnocis.validation.validationPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pair of score and binary class label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>score</strong> (<em>float</em>) – Score.</p></li>
+<li><p><strong>label</strong> – Binary class label.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.validation.validationPair.label">
+<code class="sig-name descname">label</code><a class="headerlink" href="#gnocis.validation.validationPair.label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.validation.validationPair.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.validation.validationPair.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.validation.validationPair.score">
+<code class="sig-name descname">score</code><a class="headerlink" href="#gnocis.validation.validationPair.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/gnocis_icon.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gnocis</a><ul>
+<li><a class="reference internal" href="#module-gnocis.biomarkers">gnocis.biomarkers module</a></li>
+<li><a class="reference internal" href="#module-gnocis.common">gnocis.common module</a></li>
+<li><a class="reference internal" href="#module-gnocis.features">gnocis.features module</a></li>
+<li><a class="reference internal" href="#module-gnocis.models">gnocis.models module</a></li>
+<li><a class="reference internal" href="#module-gnocis.motifs">gnocis.motifs module</a></li>
+<li><a class="reference internal" href="#module-gnocis.regions">gnocis.regions module</a></li>
+<li><a class="reference internal" href="#module-gnocis.sequences">gnocis.sequences module</a></li>
+<li><a class="reference internal" href="#module-gnocis.sklearnModels">gnocis.sklearnModels module</a></li>
+<li><a class="reference internal" href="#module-gnocis.sklearnModelsOpt">gnocis.sklearnModelsOpt module</a></li>
+<li><a class="reference internal" href="#module-gnocis.validation">gnocis.validation module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">Gnocis tutorial</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gnocis.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Gnocis tutorial"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Bjørn Bredesen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
+    </div>
+  </body>
+</html>

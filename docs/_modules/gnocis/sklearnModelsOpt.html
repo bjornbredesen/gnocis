@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gnocis.sklearnModelsOpt &#8212; Gnocis 0.9.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gnocis 0.9.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gnocis.sklearnModelsOpt</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># -*- coding: latin-1 -*-</span>
+<span class="c1">############################################################################</span>
+<span class="c1"># Gnocis</span>
+<span class="c1"># BjÃ¸rn Bredesen, 2018-2019</span>
+<span class="c1"># bjorn.bredesen@ii.uib.no</span>
+<span class="c1">############################################################################</span>
+<span class="c1"># Interfacing with scikit-learn</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">sequenceModel</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">svm</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c1"># Support Vector Machines</span>
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadratic"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic">[docs]</a><span class="k">class</span> <span class="nc">sequenceModelSVMOptimizedQuadratic</span><span class="p">(</span><span class="n">sequenceModel</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	The `sequenceModelSVMOptimizedQuadratic` class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</span>
+<span class="sd">	</span>
+<span class="sd">	:param features: Feature set.</span>
+<span class="sd">	:param positives: Positive training sequences.</span>
+<span class="sd">	:param negatives: Negative training sequences.</span>
+<span class="sd">	:param windowSize: Window size.</span>
+<span class="sd">	:param windowStep: Window step size.</span>
+<span class="sd">	:param kDegree: Kernel degree.</span>
+<span class="sd">	</span>
+<span class="sd">	:type features: features</span>
+<span class="sd">	:type positives: sequences</span>
+<span class="sd">	:type negatives: sequences</span>
+<span class="sd">	:type windowSize: int</span>
+<span class="sd">	:type windowStep: int</span>
+<span class="sd">	:type kDegree: float</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span><span class="p">,</span> <span class="n">kDegree</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span> <span class="o">=</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">negatives</span> <span class="o">=</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">kDegree</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.0</span>
+		<span class="k">assert</span><span class="p">(</span><span class="n">kDegree</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+		<span class="n">vP</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSequenceFeatureVector</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">positives</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">getWindows</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span><span class="p">)</span> <span class="p">]</span>
+		<span class="n">vN</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSequenceFeatureVector</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">negatives</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">getWindows</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span><span class="p">)</span> <span class="p">]</span>
+		<span class="n">cP</span> <span class="o">=</span> <span class="p">[</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vP</span><span class="p">))</span> <span class="p">]</span>
+		<span class="n">cN</span> <span class="o">=</span> <span class="p">[</span> <span class="o">-</span><span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vN</span><span class="p">))</span> <span class="p">]</span>
+		<span class="bp">cls</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span> <span class="o">=</span> <span class="s1">&#39;poly&#39;</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="n">kDegree</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+		<span class="bp">cls</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vP</span><span class="o">+</span><span class="n">vN</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cP</span><span class="o">+</span><span class="n">cN</span><span class="p">)</span> <span class="p">)</span>
+		<span class="k">assert</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">coef0</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span>
+		<span class="c1"># Extract basic kernel values</span>
+		<span class="n">SV</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">support_vectors_</span>
+		<span class="n">nfeatures</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">support_vectors_</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="n">bias</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">intercept_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+		<span class="n">c0</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">coef0</span>
+		<span class="n">c</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">dual_coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+		<span class="n">gamma</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">nfeatures</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">nSV</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">support_vectors_</span><span class="p">)</span>
+		<span class="c1"># Extract weight matrix</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">=</span> <span class="p">((</span><span class="n">SV</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">@</span> <span class="n">SV</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">gamma</span>
+		<span class="c1"># Extract Bias</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="o">-</span><span class="n">bias</span>
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadratic.getSequenceFeatureVector"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.getSequenceFeatureVector">[docs]</a>	<span class="k">def</span> <span class="nf">getSequenceFeatureVector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">getAll</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span></div>
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadratic.scoreWindow"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow">[docs]</a>	<span class="k">def</span> <span class="nf">scoreWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
+		<span class="n">fv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSequenceFeatureVector</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span></div>
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="s1">&#39;Support Vector Machine&lt;Features: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%d</span><span class="s1">); Positives: </span><span class="si">%s</span><span class="s1">; Negatives: </span><span class="si">%s</span><span class="s1">; Kernel: </span><span class="si">%s</span><span class="s1">; Support vectors: </span><span class="si">%d</span><span class="s1">; Quadratic optimized&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negatives</span><span class="p">),</span> <span class="p">[</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span> <span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nSV</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+
+<span class="c1"># Support Vector Machines</span>
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticCUDA"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA">[docs]</a><span class="k">class</span> <span class="nc">sequenceModelSVMOptimizedQuadraticCUDA</span><span class="p">(</span><span class="n">sequenceModel</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	The `sequenceModelSVMOptimizedQuadraticCUDA` class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication with CUDA.</span>
+<span class="sd">	</span>
+<span class="sd">	:param features: Feature set.</span>
+<span class="sd">	:param positives: Positive training sequences.</span>
+<span class="sd">	:param negatives: Negative training sequences.</span>
+<span class="sd">	:param windowSize: Window size.</span>
+<span class="sd">	:param windowStep: Window step size.</span>
+<span class="sd">	:param kDegree: Kernel degree.</span>
+<span class="sd">	</span>
+<span class="sd">	:type features: features</span>
+<span class="sd">	:type positives: sequences</span>
+<span class="sd">	:type negatives: sequences</span>
+<span class="sd">	:type windowSize: int</span>
+<span class="sd">	:type windowStep: int</span>
+<span class="sd">	:type kDegree: float</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span><span class="p">,</span> <span class="n">kDegree</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span> <span class="o">=</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">negatives</span> <span class="o">=</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">kDegree</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.0</span>
+		<span class="k">assert</span><span class="p">(</span><span class="n">kDegree</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+		<span class="n">vP</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSequenceFeatureVector</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">positives</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">getWindows</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span><span class="p">)</span> <span class="p">]</span>
+		<span class="n">vN</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSequenceFeatureVector</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">negatives</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">getWindows</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span><span class="p">)</span> <span class="p">]</span>
+		<span class="n">cP</span> <span class="o">=</span> <span class="p">[</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vP</span><span class="p">))</span> <span class="p">]</span>
+		<span class="n">cN</span> <span class="o">=</span> <span class="p">[</span> <span class="o">-</span><span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vN</span><span class="p">))</span> <span class="p">]</span>
+		<span class="bp">cls</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span> <span class="o">=</span> <span class="s1">&#39;poly&#39;</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="n">kDegree</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+		<span class="bp">cls</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vP</span><span class="o">+</span><span class="n">vN</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cP</span><span class="o">+</span><span class="n">cN</span><span class="p">)</span> <span class="p">)</span>
+		<span class="k">assert</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">coef0</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span>
+		<span class="c1"># Extract basic kernel values</span>
+		<span class="n">SV</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">support_vectors_</span>
+		<span class="n">nfeatures</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">support_vectors_</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+		<span class="n">bias</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">intercept_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+		<span class="n">c0</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">coef0</span>
+		<span class="n">c</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">dual_coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+		<span class="n">gamma</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">nfeatures</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">nSV</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">support_vectors_</span><span class="p">)</span>
+		<span class="c1"># Extract weight matrix</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">((</span><span class="n">SV</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">@</span> <span class="n">SV</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">gamma</span> <span class="p">)</span>
+		<span class="c1"># Extract Bias</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="o">-</span><span class="n">bias</span>
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector">[docs]</a>	<span class="k">def</span> <span class="nf">getSequenceFeatureVector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">getAll</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span></div>
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticCUDA.scoreWindow"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.scoreWindow">[docs]</a>	<span class="k">def</span> <span class="nf">scoreWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
+		<span class="n">fv</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSequenceFeatureVector</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span></div>
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="s1">&#39;Support Vector Machine&lt;Features: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%d</span><span class="s1">); Positives: </span><span class="si">%s</span><span class="s1">; Negatives: </span><span class="si">%s</span><span class="s1">; Kernel: </span><span class="si">%s</span><span class="s1">; Support vectors: </span><span class="si">%d</span><span class="s1">; Quadratic optimized, CUDA&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negatives</span><span class="p">),</span> <span class="p">[</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span> <span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nSV</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/gnocis_icon.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gnocis 0.9.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Bjørn Bredesen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
+    </div>
+  </body>
+</html>
