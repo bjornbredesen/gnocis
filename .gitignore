@@ -1,0 +1,9 @@
+gnocis/__pycache__/
+__pycache__/
+build/
+gnocis/*.so
+gnocis/*.cpp
+gnocis.egg-info
+MANIFEST
+dist
+doctrees/
