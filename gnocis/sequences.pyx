@@ -1026,7 +1026,7 @@ cdef class generatorMarkovChain(sequenceGenerator):
 		self.prepared = True
 	
 	# Trains model on a sequence set
-	def trainOnSequences(self, trainingSequences):
+	def _trainOnSequences(self, trainingSequences):
 		"""Trains on sequences.
 		
 		:param trainingSequences: Training sequences.
