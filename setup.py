@@ -13,7 +13,7 @@ with open('README.md') as f:
 	readme = '\n'.join(l for l in f)
 
 setup(
-	ext_modules = [ Extension(name = 'gnocis.' + x, sources = ['gnocis/'+ x + '.cpp'], build_dir = 'gnocis') for x in ['biomarkers', 'common', 'features', 'models', 'motifs', 'regions', 'sequences', 'validation'] ],
+	ext_modules = [ Extension(name = 'gnocis.' + x, sources = ['gnocis/'+ x + '.cpp']) for x in ['biomarkers', 'common', 'features', 'models', 'motifs', 'regions', 'sequences', 'validation'] ],
 	name = "gnocis",
 	packages = [ "gnocis" ],
 	author = "Bjørn Bredesen",
