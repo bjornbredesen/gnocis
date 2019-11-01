@@ -270,6 +270,60 @@ Output (will vary depending on random seed):
 0.17236286919831223
 ```
 
+
+## Training a *k*-mer spectrum Support Vector Machine (SVM), without the need for prior motif knowledge
+
+To offer more advanced machine learning capabilities, gnocis integrates with Scikit-learn. The Scikit-learn integration is provided as a separate module.
+
+Run:
+```python
+# Import the sklearn integration
+import gnocis.sklearnModels as skcis
+
+# Construct a scaled 5-mer
+features = cis.featureScaler(cis.features.getKSpectrum(5), tpos, tneg)
+
+# Train SVM
+svm = skcis.sequenceModelSVM(features = features, positives = tpos, negatives = tneg, windowSize = 1000, windowStep = 500, kDegree = 2)
+```
+
+The `cis.featureScaler` takes an input feature space, and scales all features to be in the range -1 to 1.
+
+Run (optional):
+```python
+scaled
+scaled.features
+svm
+```
+
+Output (will vary depending on random seed):
+```python
+>>> features
+Scaled feature set<5-spectrum>
+>>> features.features
+[Feature scaler<Feature<k-mer occurrence frequency: AAAAA>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAT>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAG>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAC>>, Feature scaler<Feature<k-mer occurrence frequency: AAATA>>, Feature scaler<Feature<k-mer occurrence frequency: AAATT>>, Feature scaler<Feature<k-mer occurrence frequency: AAATG>>, Feature scaler<Feature<k-mer occurrence frequency: AAATC>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGA>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGT>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGG>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGC>>, Feature scaler<Feature<k-mer occurrence frequency: AAACA>>, Feature scaler<Feature<k-mer occurrence frequency: AAACT>>, Feature scaler<Feature<k-mer occurrence frequency: AAACG>>, ... (printout cropped)
+>>> svm
+Support Vector Machine<Features: Scaled feature set<5-spectrum> (1024); Positives: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<dmel-all-chromosome-r5.57.fasta> (split A)>; Negatives: Sequence list<Generated set <Sequences: 100; Length each: 3000; Model: Markov Chain<Degree: 4; Pseudocounts: 1; Add reverse complements: Yes; Training set: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<dmel-all-chromosome-r5.57.fasta>>>; Seed: 182579965>>; Kernel: quadratic; Support vectors: 986>
+```
+
+This SVM can be applied the same way as the PREdictor, trained above.
+
+Run:
+```python
+# Calibrate threshold
+svm.calibrateGenomewidePrecision(positives = vpos,
+                                    genome = Dmel,
+                                    factor = 0.5,
+                                    precision = 0.8,
+                                    bgModelOrder = 4)
+
+# Predict candidate PREs genome-wide
+predictionsSVM = svm.predict(Dmel)
+
+# Save predictions to GFF-file
+predictionsSVM.saveGFF('predictionsSVM.GFF')
+```
+
 -------------------------------------------------
 
 ## References

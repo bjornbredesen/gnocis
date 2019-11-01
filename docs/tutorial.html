@@ -272,6 +272,53 @@ We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb
 </pre></div>
 </div>
 </div>
+<div class="section" id="training-a-k-mer-spectrum-support-vector-machine-svm-without-the-need-for-prior-motif-knowledge">
+<h2>Training a <em>k</em>-mer spectrum Support Vector Machine (SVM), without the need for prior motif knowledge<a class="headerlink" href="#training-a-k-mer-spectrum-support-vector-machine-svm-without-the-need-for-prior-motif-knowledge" title="Permalink to this headline">¶</a></h2>
+<p>To offer more advanced machine learning capabilities, gnocis integrates with Scikit-learn. The Scikit-learn integration is provided as a separate module.</p>
+<p>Run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the sklearn integration</span>
+<span class="kn">import</span> <span class="nn">gnocis.sklearnModels</span> <span class="kn">as</span> <span class="nn">skcis</span>
+
+<span class="c1"># Construct a scaled 5-mer</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">featureScaler</span><span class="p">(</span><span class="n">cis</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">getKSpectrum</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">tpos</span><span class="p">,</span> <span class="n">tneg</span><span class="p">)</span>
+
+<span class="c1"># Train SVM</span>
+<span class="n">svm</span> <span class="o">=</span> <span class="n">skcis</span><span class="o">.</span><span class="n">sequenceModelSVM</span><span class="p">(</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span> <span class="o">=</span> <span class="n">tpos</span><span class="p">,</span> <span class="n">negatives</span> <span class="o">=</span> <span class="n">tneg</span><span class="p">,</span> <span class="n">windowSize</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">windowStep</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span> <span class="n">kDegree</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">cis.featureScaler</span></code> takes an input feature space, and scales all features to be in the range -1 to 1.</p>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scaled</span>
+<span class="n">scaled</span><span class="o">.</span><span class="n">features</span>
+<span class="n">svm</span>
+</pre></div>
+</div>
+<p>Output (will vary depending on random seed):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">features</span>
+<span class="go">Scaled feature set&lt;5-spectrum&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">features</span><span class="o">.</span><span class="n">features</span>
+<span class="go">[Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAAAA&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAAAT&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAAAG&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAAAC&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAATA&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAATT&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAATG&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAATC&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAAGA&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAAGT&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAAGG&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAAGC&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAACA&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAACT&gt;&gt;, Feature scaler&lt;Feature&lt;k-mer occurrence frequency: AAACG&gt;&gt;, ... (printout cropped)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">svm</span>
+<span class="go">Support Vector Machine&lt;Features: Scaled feature set&lt;5-spectrum&gt; (1024); Positives: Sequence list&lt;Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream&lt;dmel-all-chromosome-r5.57.fasta&gt; (split A)&gt;; Negatives: Sequence list&lt;Generated set &lt;Sequences: 100; Length each: 3000; Model: Markov Chain&lt;Degree: 4; Pseudocounts: 1; Add reverse complements: Yes; Training set: Sequence list&lt;Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream&lt;dmel-all-chromosome-r5.57.fasta&gt;&gt;&gt;; Seed: 182579965&gt;&gt;; Kernel: quadratic; Support vectors: 986&gt;</span>
+</pre></div>
+</div>
+<p>This SVM can be applied the same way as the PREdictor, trained above.</p>
+<p>Run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calibrate threshold</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">calibrateGenomewidePrecision</span><span class="p">(</span><span class="n">positives</span> <span class="o">=</span> <span class="n">vpos</span><span class="p">,</span>
+                                    <span class="n">genome</span> <span class="o">=</span> <span class="n">Dmel</span><span class="p">,</span>
+                                    <span class="n">factor</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                                    <span class="n">precision</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+                                    <span class="n">bgModelOrder</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Predict candidate PREs genome-wide</span>
+<span class="n">predictionsSVM</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Dmel</span><span class="p">)</span>
+
+<span class="c1"># Save predictions to GFF-file</span>
+<span class="n">predictionsSVM</span><span class="o">.</span><span class="n">saveGFF</span><span class="p">(</span><span class="s1">&#39;predictionsSVM.GFF&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <hr class="docutils" />
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
@@ -302,6 +349,7 @@ We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb
 <li><a class="reference internal" href="#training-a-basic-model-of-cis-regulatory-module-crm-sequences">Training a basic model of <em>cis</em>-regulatory module (CRM) sequences</a></li>
 <li><a class="reference internal" href="#predicting-genome-wide">Predicting genome-wide</a></li>
 <li><a class="reference internal" href="#preparing-a-training-set-based-on-genome-wide-experimental-data">Preparing a training set based on genome-wide experimental data</a></li>
+<li><a class="reference internal" href="#training-a-k-mer-spectrum-support-vector-machine-svm-without-the-need-for-prior-motif-knowledge">Training a <em>k</em>-mer spectrum Support Vector Machine (SVM), without the need for prior motif knowledge</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
