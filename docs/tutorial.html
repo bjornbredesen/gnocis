@@ -50,8 +50,8 @@
 <p>This tutorial assumes that Gnocis has been successfully installed.</p>
 <p>We will use the <em>Drosophila melanogaster</em> genome throughout this tutorial.</p>
 <ul class="simple">
-<li><p><strong>Either</strong>: Download and unpack the genome sequence to the folder with the tutorial data: ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz</p></li>
-<li><p><strong>Or</strong>: In a Linux terminal, navigate to the folder with the tutorial data, and execute the following command: <code class="docutils literal notranslate"><span class="pre">wget</span> <span class="pre">ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz</span> <span class="pre">&amp;&amp;</span> <span class="pre">gunzip</span> <span class="pre">dmel-all-chromosome-r5.57.fasta.gz</span></code></p></li>
+<li><p><strong>Either</strong>: Download the genome sequence to the folder with the tutorial data: ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz</p></li>
+<li><p><strong>Or</strong>: In a Linux terminal, navigate to the folder with the tutorial data, and execute the following command: <code class="docutils literal notranslate"><span class="pre">wget</span> <span class="pre">ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="preparing-training-data-using-gnocis">
@@ -62,7 +62,7 @@
 <span class="kn">import</span> <span class="nn">gnocis</span> <span class="kn">as</span> <span class="nn">cis</span>
 
 <span class="c1"># We will use the Drosophila melanogaster genome for multiple examples. We define a stream of is to a variable. The stream ensures that only segments of the genome are loaded at a time, saving memory.</span>
-<span class="n">Dmel</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">streamFASTA</span><span class="p">(</span><span class="s1">&#39;dmel-all-chromosome-r5.57.fasta&#39;</span><span class="p">)</span>
+<span class="n">Dmel</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">streamFASTAGZ</span><span class="p">(</span><span class="s1">&#39;dmel-all-chromosome-r5.57.fasta.gz&#39;</span><span class="p">)</span>
 
 <span class="c1"># Load the Kahn et al. (2014) Polycomb targets</span>
 <span class="n">Kahn2014Rgn</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">loadGFF</span><span class="p">(</span><span class="s1">&#39;Kahn2014.GFF&#39;</span><span class="p">)</span>

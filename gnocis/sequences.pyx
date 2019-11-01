@@ -833,6 +833,8 @@ cpdef getSequenceStreamFromPath(path, wantBlockSize = 5000, spacePrune = True, d
 	l = path.lower()
 	if l.endswith(".fa") or l.endswith(".fasta"):
 		return streamFASTA(path, wantBlockSize = wantBlockSize, spacePrune = spacePrune, dropChr = dropChr , restrictToSequences = restrictToSequences)
+	elif l.endswith(".fa.gz") or l.endswith(".fasta.gz"):
+		return streamFASTAGZ(path, wantBlockSize = wantBlockSize, spacePrune = spacePrune, dropChr = dropChr , restrictToSequences = restrictToSequences)
 	elif l.endswith(".2bit") or l.endswith(".2b"):
 		return stream2bit(path, wantBlockSize = wantBlockSize, spacePrune = spacePrune, dropChr = dropChr , restrictToSequences = restrictToSequences)
 	else:

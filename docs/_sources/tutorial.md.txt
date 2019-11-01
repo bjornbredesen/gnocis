@@ -12,8 +12,8 @@ Here, we will train a PREdictor (Ringrose *et al.* 2003) model on the Kahn *et a
 This tutorial assumes that Gnocis has been successfully installed.
 
 We will use the *Drosophila melanogaster* genome throughout this tutorial. 
- * **Either**: Download and unpack the genome sequence to the folder with the tutorial data: ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz
- * **Or**: In a Linux terminal, navigate to the folder with the tutorial data, and execute the following command: `wget ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz && gunzip dmel-all-chromosome-r5.57.fasta.gz`
+ * **Either**: Download the genome sequence to the folder with the tutorial data: ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz
+ * **Or**: In a Linux terminal, navigate to the folder with the tutorial data, and execute the following command: `wget ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz`
 
 
 ## Preparing training data using Gnocis
@@ -26,7 +26,7 @@ Run:
 import gnocis as cis
 
 # We will use the Drosophila melanogaster genome for multiple examples. We define a stream of is to a variable. The stream ensures that only segments of the genome are loaded at a time, saving memory.
-Dmel = cis.streamFASTA('dmel-all-chromosome-r5.57.fasta')
+Dmel = cis.streamFASTAGZ('dmel-all-chromosome-r5.57.fasta.gz')
 
 # Load the Kahn et al. (2014) Polycomb targets
 Kahn2014Rgn = cis.loadGFF('Kahn2014.GFF')
