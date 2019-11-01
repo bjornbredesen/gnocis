@@ -191,7 +191,7 @@ cis.trainPREdictorModel(motifs = cis.motifs.getRingrose2003Motifs_GTGT(),
 
 ## Preparing a training set based on genome-wide experimental data
 
-When we trained models in the last sections, we used published sets of Polycomb targets. In this section, we will define Polycomb targets based on data from modENCODE, in order to train our model.
+When we trained models in the last sections, we used published sets of Polycomb targets. In this section, we will define Polycomb targets based on data from modENCODE.
 We have downloaded genome-wide peaks for three *D. melanogaster* Polycomb group proteins and one histone modification:
  * Pc - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Pc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3957%3A816.gff3.gz
  * Psc - Source: source URL: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Psc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3960%3A1817.gff3.gz

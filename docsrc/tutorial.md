@@ -4,16 +4,13 @@ Gnocis tutorial
 Bjørn Bredesen, 2018-2019
 
 
-
 ## Set-up
 
 Here, we will train a PREdictor (Ringrose *et al.* 2003) model on the Kahn *et al.* (2014) Polycomb targets, and predict candidate PREs genome-wide. We will go through all steps that must be executed, from loading a General Feature Format (GFF) file with genomic coordinates for Polycomb targets, extract the underlying sequences, train the model, calibrate the threshold, and predict candidate PREs genome-wide.
 
 This tutorial assumes that Gnocis has been successfully installed.
 
-We will use the *Drosophila melanogaster* genome throughout this tutorial. 
- * **Either**: Download the genome sequence to the folder with the tutorial data: ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz
- * **Or**: In a Linux terminal, navigate to the folder with the tutorial data, and execute the following command: `wget ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz`
+We will use the *Drosophila melanogaster* genome throughout this tutorial. We have downloaded the version R5 of the genome from FlyBase (source URL: ftp://ftp.flybase.net/releases/FB2014_03/dmel_r5.57/fasta/dmel-all-chromosome-r5.57.fasta.gz), and included it with this tutorial for educational purposes. For copyright information regarding the *D. melanogaster* genome, see https://wiki.flybase.org/wiki/FlyBase:About#FlyBase_Copyright.
 
 
 ## Preparing training data using Gnocis
@@ -26,7 +23,7 @@ Run:
 import gnocis as cis
 
 # We will use the Drosophila melanogaster genome for multiple examples. We define a stream of is to a variable. The stream ensures that only segments of the genome are loaded at a time, saving memory.
-Dmel = cis.streamFASTAGZ('dmel-all-chromosome-r5.57.fasta.gz')
+Dmel = cis.streamFASTAGZ('DmelR5.fasta.gz')
 
 # Load the Kahn et al. (2014) Polycomb targets
 Kahn2014Rgn = cis.loadGFF('Kahn2014.GFF')
@@ -49,7 +46,7 @@ tpos.printStatistics()
 ```
 
 Output:
-```
+```python
 >>> Kahn2014Rgn.printStatistics()
 Region set statistics - GFF file: Kahn2014.GFF
  - Regions: 201
@@ -81,7 +78,7 @@ tneg[0].seq
 ```
 
 Output (will vary depending on random seed):
-```
+```python
 >>> tneg.printStatistics()
 Sequence set statistics - Generated set <Sequences: 100; Length each: 3000; Model: Markov Chain<Degree: 4; Pseudocounts: 1; Add reverse complements: Yes; Training set: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<dmel-all-chromosome-r5.57.fasta>>>; Seed: 182579965>
  - Sequences: 100
@@ -124,7 +121,7 @@ mdlC.weights
 ```
 
 Output (will vary depending on random seed):
-```
+```python
 >>> mdl.weights
 {Feature<PREdictor motif pair occurrence frequency: En, En (within 219 nt)>: 1.252762968495368, Feature<PREdictor motif pair occurrence frequency: En, G10 (within 219 nt)>: 4.356708826689593, Feature<PREdictor motif pair occurrence frequency: En, GAF (within 219 nt)>: 1.1400690023464555, Feature<PREdictor motif pair occurrence frequency: En, PF (within 219 nt)>: 1.0033021088637848, Feature<PREdictor motif pair occurrence frequency: En, PM (within 219 nt)>: 0.6539264674066638, Feature<PREdictor motif pair occurrence frequency: En, PS (within 219 nt)>: 0.8724881092157624, Feature<PREdictor motif pair occurrence frequency: En, Z (within 219 nt)>: 0.7018808605286999, Feature<PREdictor motif pair occurrence frequency: En, GTGT (within 219 nt)>: 0.7276791641023213, Feature<PREdictor motif pair occurrence frequency: G10, G10 (within 219 nt)>: 4.915591745409362, Feature<PREdictor motif pair occurrence frequency: G10, GAF (within 219 nt)>: 3.029137518883944, Feature<PREdictor motif pair occurrence frequency: G10, PF (within 219 nt)>: 1.7466390339475861, Feature<PREdictor motif pair occurrence frequency: G10, PM (within 219 nt)>: 1.4628344382422251, Feature<PREdictor motif pair occurrence frequency: G10, PS (within 219 nt)>: 1.4621703960985815, Feature<PREdictor motif pair occurrence frequency: G10, Z (within 219 nt)>: 2.204367464848599, Feature<PREdictor motif pair occurrence frequency: G10, GTGT (within 219 nt)>: 2.0703148064157855, Feature<PREdictor motif pair occurrence frequency: GAF, GAF (within 219 nt)>: 1.348646995241774, Feature<PREdictor motif pair occurrence frequency: GAF, PF (within 219 nt)>: 0.5968599611077945, Feature<PREdictor motif pair occurrence frequency: GAF, PM (within 219 nt)>: 0.33332757994174145, Feature<PREdictor motif pair occurrence frequency: GAF, PS (within 219 nt)>: 0.2607262624632529, Feature<PREdictor motif pair occurrence frequency: GAF, Z (within 219 nt)>: 0.8400330761916575, Feature<PREdictor motif pair occurrence frequency: GAF, GTGT (within 219 nt)>: 0.5943726095348998, Feature<PREdictor motif pair occurrence frequency: PF, PF (within 219 nt)>: 0.2363887780642302, Feature<PREdictor motif pair occurrence frequency: PF, PM (within 219 nt)>: 0.3600027340314069, Feature<PREdictor motif pair occurrence frequency: PF, PS (within 219 nt)>: 0.10870420160088923, Feature<PREdictor motif pair occurrence frequency: PF, Z (within 219 nt)>: 0.24686007793152598, Feature<PREdictor motif pair occurrence frequency: PF, GTGT (within 219 nt)>: 0.17918042789309396, Feature<PREdictor motif pair occurrence frequency: PM, PM (within 219 nt)>: 1.0116009116784799, Feature<PREdictor motif pair occurrence frequency: PM, PS (within 219 nt)>: 0.2856639082955432, Feature<PREdictor motif pair occurrence frequency: PM, Z (within 219 nt)>: 0.31462670769523315, Feature<PREdictor motif pair occurrence frequency: PM, GTGT (within 219 nt)>: 0.2975497193848584, Feature<PREdictor motif pair occurrence frequency: PS, PS (within 219 nt)>: 0.09899512179075032, Feature<PREdictor motif pair occurrence frequency: PS, Z (within 219 nt)>: 0.10957358237712889, Feature<PREdictor motif pair occurrence frequency: PS, GTGT (within 219 nt)>: 0.0707518054712688, Feature<PREdictor motif pair occurrence frequency: Z, Z (within 219 nt)>: 0.6523788787562861, Feature<PREdictor motif pair occurrence frequency: Z, GTGT (within 219 nt)>: 0.3766683836192142, Feature<PREdictor motif pair occurrence frequency: GTGT, GTGT (within 219 nt)>: 0.6200698922307692}
 >>> mdlC.weights
@@ -164,8 +161,16 @@ mdl.threshold
 predictions.printStatistics()
 ```
 
-Output:
-```
+Output (will vary depending on random seed):
+```python
+>>> mdl.threshold
+260.07098795572915
+>>> predictions.printStatistics()
+Region set statistics - Predictions
+ - Regions: 4740
+ - Region sequences: 2L, 2LHet, 2R, 2RHet, 3L, 3LHet, 3R, 3RHet, 4, U, Uextra, X, XHet, YHet
+ - Mean length: 941.23 nt (min.: 500 nt - max.: 19960 nt)
+ - Total length: 4461430 nt
 ```
 
 The entire training, calibration and prediction procedure can be written more compactly, as:
@@ -175,25 +180,25 @@ cis.trainPREdictorModel(motifs = cis.motifs.getRingrose2003Motifs_GTGT(),
                               positives = tpos,
                               negatives = tneg)\
          .calibrateGenomewidePrecision(positives = Kahn2014Seq,
-                              genome = 'dmel-all-chromosome-r5.57.fasta',
+                              genome = Dmel,
                               factor = 0.5,
                               precision = 0.8,
                               bgModelOrder = 4)\
-         .predict('dmel-all-chromosome-r5.57.fasta')\
+         .predict(Dmel)\
          .saveGFF('predictions.GFF')
 ```
 
 
 ## Preparing a training set based on genome-wide experimental data
 
-When we trained models in the last sections, we used published sets of Polycomb targets. In this section, we will define Polycomb targets based on data from modENCODE, in order to train our model.
+When we trained models in the last sections, we used published sets of Polycomb targets. In this section, we will define Polycomb targets based on data from modENCODE.
 We have downloaded genome-wide peaks for three *D. melanogaster* Polycomb group proteins and one histone modification:
  * Pc - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Pc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3957%3A816.gff3.gz
  * Psc - Source: source URL: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Psc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3960%3A1817.gff3.gz
  * dRING - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/dRING%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_5071%3A1819.gff3.gz
  * H3K27me3 - Source URL: tp://data.modencode.org/D.melanogaster/Histone-Modification/ChIP-seq/computed-peaks_gff3/H3K27me3%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3955%3A1820.gff3.gz
 
-These are included with the tutorial, considered as fair use for example material. All credit for these sets belongs to Karpen G. *et al.* and modENCODE.
+These are included with the tutorial, for educational purposes. All credit for these sets belongs to Karpen G. *et al.* and modENCODE.
 
 We will now prepare candidate Polycomb targets based on these sets, using the `biomarkers` class in gnocis.
 
@@ -231,7 +236,39 @@ Region set statistics - Windows (Window size: 1000 bp; step size: 500 bp) (PcG H
  - Total length: 12222000 nt
 ```
 
+We can check the agreement between this set and the Kahn set.
 
+Run (optional):
+```python
+PcGTargets.overlapSensitivity(Kahn2014Rgn)
+PcGTargets.overlapPrecision(Kahn2014Rgn)
+```
+
+Output:
+```python
+>>> PcGTargets.overlapSensitivity(Kahn2014Rgn)
+0.9950248756218906
+>>> PcGTargets.overlapPrecision(Kahn2014Rgn)
+0.08545197740112995
+```
+
+Accordingly, the modENCODE-based set covers most of the Kahn *et al.* (2014) regions, but have low precision to them.
+
+We can also check how sensitive and precise our predictions are to the modENCODE PcG clusters.
+
+Run (optional):
+```python
+predictions.overlapSensitivity(PcGTargets)
+predictions.overlapPrecision(PcGTargets)
+```
+
+Output (will vary depending on random seed):
+```python
+>>> predictions.overlapSensitivity(PcGTargets)
+0.3340395480225989
+>>> predictions.overlapPrecision(PcGTargets)
+0.17236286919831223
+```
 
 -------------------------------------------------
 

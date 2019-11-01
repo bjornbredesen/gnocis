@@ -48,11 +48,7 @@
 <h2>Set-up<a class="headerlink" href="#set-up" title="Permalink to this headline">¶</a></h2>
 <p>Here, we will train a PREdictor (Ringrose <em>et al.</em> 2003) model on the Kahn <em>et al.</em> (2014) Polycomb targets, and predict candidate PREs genome-wide. We will go through all steps that must be executed, from loading a General Feature Format (GFF) file with genomic coordinates for Polycomb targets, extract the underlying sequences, train the model, calibrate the threshold, and predict candidate PREs genome-wide.</p>
 <p>This tutorial assumes that Gnocis has been successfully installed.</p>
-<p>We will use the <em>Drosophila melanogaster</em> genome throughout this tutorial.</p>
-<ul class="simple">
-<li><p><strong>Either</strong>: Download the genome sequence to the folder with the tutorial data: ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz</p></li>
-<li><p><strong>Or</strong>: In a Linux terminal, navigate to the folder with the tutorial data, and execute the following command: <code class="docutils literal notranslate"><span class="pre">wget</span> <span class="pre">ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz</span></code></p></li>
-</ul>
+<p>We will use the <em>Drosophila melanogaster</em> genome throughout this tutorial. We have downloaded the version R5 of the genome from FlyBase (source URL: ftp://ftp.flybase.net/releases/FB2014_03/dmel_r5.57/fasta/dmel-all-chromosome-r5.57.fasta.gz), and included it with this tutorial for educational purposes. For copyright information regarding the <em>D. melanogaster</em> genome, see https://wiki.flybase.org/wiki/FlyBase:About#FlyBase_Copyright.</p>
 </div>
 <div class="section" id="preparing-training-data-using-gnocis">
 <h2>Preparing training data using Gnocis<a class="headerlink" href="#preparing-training-data-using-gnocis" title="Permalink to this headline">¶</a></h2>
@@ -62,7 +58,7 @@
 <span class="kn">import</span> <span class="nn">gnocis</span> <span class="kn">as</span> <span class="nn">cis</span>
 
 <span class="c1"># We will use the Drosophila melanogaster genome for multiple examples. We define a stream of is to a variable. The stream ensures that only segments of the genome are loaded at a time, saving memory.</span>
-<span class="n">Dmel</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">streamFASTAGZ</span><span class="p">(</span><span class="s1">&#39;dmel-all-chromosome-r5.57.fasta.gz&#39;</span><span class="p">)</span>
+<span class="n">Dmel</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">streamFASTAGZ</span><span class="p">(</span><span class="s1">&#39;DmelR5.fasta.gz&#39;</span><span class="p">)</span>
 
 <span class="c1"># Load the Kahn et al. (2014) Polycomb targets</span>
 <span class="n">Kahn2014Rgn</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">loadGFF</span><span class="p">(</span><span class="s1">&#39;Kahn2014.GFF&#39;</span><span class="p">)</span>
@@ -83,7 +79,7 @@
 </pre></div>
 </div>
 <p>Output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Kahn2014Rgn</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Kahn2014Rgn</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
 <span class="go">Region set statistics - GFF file: Kahn2014.GFF</span>
 <span class="go"> - Regions: 201</span>
 <span class="go"> - Region sequences: 2L, 2R, 3L, 3R, 4, X</span>
@@ -110,7 +106,7 @@
 </pre></div>
 </div>
 <p>Output (will vary depending on random seed):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tneg</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tneg</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
 <span class="go">Sequence set statistics - Generated set &lt;Sequences: 100; Length each: 3000; Model: Markov Chain&lt;Degree: 4; Pseudocounts: 1; Add reverse complements: Yes; Training set: Sequence list&lt;Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream&lt;dmel-all-chromosome-r5.57.fasta&gt;&gt;&gt;; Seed: 182579965&gt;</span>
 <span class="go"> - Sequences: 100</span>
 <span class="go"> - Mean length: 3000.00 nt (min.: 3000 nt - max.: 3000 nt)</span>
@@ -147,7 +143,7 @@
 </pre></div>
 </div>
 <p>Output (will vary depending on random seed):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdl</span><span class="o">.</span><span class="n">weights</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdl</span><span class="o">.</span><span class="n">weights</span>
 <span class="go">{Feature&lt;PREdictor motif pair occurrence frequency: En, En (within 219 nt)&gt;: 1.252762968495368, Feature&lt;PREdictor motif pair occurrence frequency: En, G10 (within 219 nt)&gt;: 4.356708826689593, Feature&lt;PREdictor motif pair occurrence frequency: En, GAF (within 219 nt)&gt;: 1.1400690023464555, Feature&lt;PREdictor motif pair occurrence frequency: En, PF (within 219 nt)&gt;: 1.0033021088637848, Feature&lt;PREdictor motif pair occurrence frequency: En, PM (within 219 nt)&gt;: 0.6539264674066638, Feature&lt;PREdictor motif pair occurrence frequency: En, PS (within 219 nt)&gt;: 0.8724881092157624, Feature&lt;PREdictor motif pair occurrence frequency: En, Z (within 219 nt)&gt;: 0.7018808605286999, Feature&lt;PREdictor motif pair occurrence frequency: En, GTGT (within 219 nt)&gt;: 0.7276791641023213, Feature&lt;PREdictor motif pair occurrence frequency: G10, G10 (within 219 nt)&gt;: 4.915591745409362, Feature&lt;PREdictor motif pair occurrence frequency: G10, GAF (within 219 nt)&gt;: 3.029137518883944, Feature&lt;PREdictor motif pair occurrence frequency: G10, PF (within 219 nt)&gt;: 1.7466390339475861, Feature&lt;PREdictor motif pair occurrence frequency: G10, PM (within 219 nt)&gt;: 1.4628344382422251, Feature&lt;PREdictor motif pair occurrence frequency: G10, PS (within 219 nt)&gt;: 1.4621703960985815, Feature&lt;PREdictor motif pair occurrence frequency: G10, Z (within 219 nt)&gt;: 2.204367464848599, Feature&lt;PREdictor motif pair occurrence frequency: G10, GTGT (within 219 nt)&gt;: 2.0703148064157855, Feature&lt;PREdictor motif pair occurrence frequency: GAF, GAF (within 219 nt)&gt;: 1.348646995241774, Feature&lt;PREdictor motif pair occurrence frequency: GAF, PF (within 219 nt)&gt;: 0.5968599611077945, Feature&lt;PREdictor motif pair occurrence frequency: GAF, PM (within 219 nt)&gt;: 0.33332757994174145, Feature&lt;PREdictor motif pair occurrence frequency: GAF, PS (within 219 nt)&gt;: 0.2607262624632529, Feature&lt;PREdictor motif pair occurrence frequency: GAF, Z (within 219 nt)&gt;: 0.8400330761916575, Feature&lt;PREdictor motif pair occurrence frequency: GAF, GTGT (within 219 nt)&gt;: 0.5943726095348998, Feature&lt;PREdictor motif pair occurrence frequency: PF, PF (within 219 nt)&gt;: 0.2363887780642302, Feature&lt;PREdictor motif pair occurrence frequency: PF, PM (within 219 nt)&gt;: 0.3600027340314069, Feature&lt;PREdictor motif pair occurrence frequency: PF, PS (within 219 nt)&gt;: 0.10870420160088923, Feature&lt;PREdictor motif pair occurrence frequency: PF, Z (within 219 nt)&gt;: 0.24686007793152598, Feature&lt;PREdictor motif pair occurrence frequency: PF, GTGT (within 219 nt)&gt;: 0.17918042789309396, Feature&lt;PREdictor motif pair occurrence frequency: PM, PM (within 219 nt)&gt;: 1.0116009116784799, Feature&lt;PREdictor motif pair occurrence frequency: PM, PS (within 219 nt)&gt;: 0.2856639082955432, Feature&lt;PREdictor motif pair occurrence frequency: PM, Z (within 219 nt)&gt;: 0.31462670769523315, Feature&lt;PREdictor motif pair occurrence frequency: PM, GTGT (within 219 nt)&gt;: 0.2975497193848584, Feature&lt;PREdictor motif pair occurrence frequency: PS, PS (within 219 nt)&gt;: 0.09899512179075032, Feature&lt;PREdictor motif pair occurrence frequency: PS, Z (within 219 nt)&gt;: 0.10957358237712889, Feature&lt;PREdictor motif pair occurrence frequency: PS, GTGT (within 219 nt)&gt;: 0.0707518054712688, Feature&lt;PREdictor motif pair occurrence frequency: Z, Z (within 219 nt)&gt;: 0.6523788787562861, Feature&lt;PREdictor motif pair occurrence frequency: Z, GTGT (within 219 nt)&gt;: 0.3766683836192142, Feature&lt;PREdictor motif pair occurrence frequency: GTGT, GTGT (within 219 nt)&gt;: 0.6200698922307692}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mdlC</span><span class="o">.</span><span class="n">weights</span>
 <span class="go">{Feature&lt;PREdictor motif pair occurrence frequency: GAF, GAF (within 219 nt)&gt;: 1.348646995241774, Feature&lt;PREdictor motif pair occurrence frequency: GAF, Z (within 219 nt)&gt;: 0.8400330761916575, Feature&lt;PREdictor motif pair occurrence frequency: GAF, Grh (within 219 nt)&gt;: -0.14660347419187536, Feature&lt;PREdictor motif pair occurrence frequency: GAF, Dsp1 (within 219 nt)&gt;: 0.13968471335245347, Feature&lt;PREdictor motif pair occurrence frequency: Z, Z (within 219 nt)&gt;: 0.6523788787562861, Feature&lt;PREdictor motif pair occurrence frequency: Z, Grh (within 219 nt)&gt;: -0.7401041636477159, Feature&lt;PREdictor motif pair occurrence frequency: Z, Dsp1 (within 219 nt)&gt;: -0.01169009500780227, Feature&lt;PREdictor motif pair occurrence frequency: Grh, Grh (within 219 nt)&gt;: 0.5108256237659905, Feature&lt;PREdictor motif pair occurrence frequency: Grh, Dsp1 (within 219 nt)&gt;: -0.2997062654185827, Feature&lt;PREdictor motif pair occurrence frequency: Dsp1, Dsp1 (within 219 nt)&gt;: 0.2312864087094857}</span>
@@ -181,8 +177,15 @@
 <span class="n">predictions</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+<p>Output (will vary depending on random seed):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mdl</span><span class="o">.</span><span class="n">threshold</span>
+<span class="go">260.07098795572915</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predictions</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
+<span class="go">Region set statistics - Predictions</span>
+<span class="go"> - Regions: 4740</span>
+<span class="go"> - Region sequences: 2L, 2LHet, 2R, 2RHet, 3L, 3LHet, 3R, 3RHet, 4, U, Uextra, X, XHet, YHet</span>
+<span class="go"> - Mean length: 941.23 nt (min.: 500 nt - max.: 19960 nt)</span>
+<span class="go"> - Total length: 4461430 nt</span>
 </pre></div>
 </div>
 <p>The entire training, calibration and prediction procedure can be written more compactly, as:</p>
@@ -190,18 +193,18 @@
                               <span class="n">positives</span> <span class="o">=</span> <span class="n">tpos</span><span class="p">,</span>
                               <span class="n">negatives</span> <span class="o">=</span> <span class="n">tneg</span><span class="p">)</span>\
          <span class="o">.</span><span class="n">calibrateGenomewidePrecision</span><span class="p">(</span><span class="n">positives</span> <span class="o">=</span> <span class="n">Kahn2014Seq</span><span class="p">,</span>
-                              <span class="n">genome</span> <span class="o">=</span> <span class="s1">&#39;dmel-all-chromosome-r5.57.fasta&#39;</span><span class="p">,</span>
+                              <span class="n">genome</span> <span class="o">=</span> <span class="n">Dmel</span><span class="p">,</span>
                               <span class="n">factor</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
                               <span class="n">precision</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
                               <span class="n">bgModelOrder</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>\
-         <span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s1">&#39;dmel-all-chromosome-r5.57.fasta&#39;</span><span class="p">)</span>\
+         <span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Dmel</span><span class="p">)</span>\
          <span class="o">.</span><span class="n">saveGFF</span><span class="p">(</span><span class="s1">&#39;predictions.GFF&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="preparing-a-training-set-based-on-genome-wide-experimental-data">
 <h2>Preparing a training set based on genome-wide experimental data<a class="headerlink" href="#preparing-a-training-set-based-on-genome-wide-experimental-data" title="Permalink to this headline">¶</a></h2>
-<p>When we trained models in the last sections, we used published sets of Polycomb targets. In this section, we will define Polycomb targets based on data from modENCODE, in order to train our model.
+<p>When we trained models in the last sections, we used published sets of Polycomb targets. In this section, we will define Polycomb targets based on data from modENCODE.
 We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb group proteins and one histone modification:</p>
 <ul class="simple">
 <li><p>Pc - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Pc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3957%3A816.gff3.gz</p></li>
@@ -209,7 +212,7 @@ We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb
 <li><p>dRING - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/dRING%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_5071%3A1819.gff3.gz</p></li>
 <li><p>H3K27me3 - Source URL: tp://data.modencode.org/D.melanogaster/Histone-Modification/ChIP-seq/computed-peaks_gff3/H3K27me3%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3955%3A1820.gff3.gz</p></li>
 </ul>
-<p>These are included with the tutorial, considered as fair use for example material. All credit for these sets belongs to Karpen G. <em>et al.</em> and modENCODE.</p>
+<p>These are included with the tutorial, for educational purposes. All credit for these sets belongs to Karpen G. <em>et al.</em> and modENCODE.</p>
 <p>We will now prepare candidate Polycomb targets based on these sets, using the <code class="docutils literal notranslate"><span class="pre">biomarkers</span></code> class in gnocis.</p>
 <p>Run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the biomarker set, loading signals for each biomarker</span>
@@ -239,6 +242,33 @@ We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb
 <span class="go"> - Region sequences: 2L, 2R, 3L, 3LHet, 3R, 4, U, X</span>
 <span class="go"> - Mean length: 7967.41 nt (min.: 1000 nt - max.: 227500 nt)</span>
 <span class="go"> - Total length: 12222000 nt</span>
+</pre></div>
+</div>
+<p>We can check the agreement between this set and the Kahn set.</p>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PcGTargets</span><span class="o">.</span><span class="n">overlapSensitivity</span><span class="p">(</span><span class="n">Kahn2014Rgn</span><span class="p">)</span>
+<span class="n">PcGTargets</span><span class="o">.</span><span class="n">overlapPrecision</span><span class="p">(</span><span class="n">Kahn2014Rgn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">PcGTargets</span><span class="o">.</span><span class="n">overlapSensitivity</span><span class="p">(</span><span class="n">Kahn2014Rgn</span><span class="p">)</span>
+<span class="go">0.9950248756218906</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PcGTargets</span><span class="o">.</span><span class="n">overlapPrecision</span><span class="p">(</span><span class="n">Kahn2014Rgn</span><span class="p">)</span>
+<span class="go">0.08545197740112995</span>
+</pre></div>
+</div>
+<p>Accordingly, the modENCODE-based set covers most of the Kahn <em>et al.</em> (2014) regions, but have low precision to them.</p>
+<p>We can also check how sensitive and precise our predictions are to the modENCODE PcG clusters.</p>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">predictions</span><span class="o">.</span><span class="n">overlapSensitivity</span><span class="p">(</span><span class="n">PcGTargets</span><span class="p">)</span>
+<span class="n">predictions</span><span class="o">.</span><span class="n">overlapPrecision</span><span class="p">(</span><span class="n">PcGTargets</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output (will vary depending on random seed):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">predictions</span><span class="o">.</span><span class="n">overlapSensitivity</span><span class="p">(</span><span class="n">PcGTargets</span><span class="p">)</span>
+<span class="go">0.3340395480225989</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predictions</span><span class="o">.</span><span class="n">overlapPrecision</span><span class="p">(</span><span class="n">PcGTargets</span><span class="p">)</span>
+<span class="go">0.17236286919831223</span>
 </pre></div>
 </div>
 </div>
