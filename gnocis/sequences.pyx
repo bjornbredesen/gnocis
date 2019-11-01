@@ -223,6 +223,27 @@ cdef class sequences:
 		"""
 		return sequences(self.name + ' (windows - size: %d bp; step: %d bp)'%(size, step), list(streamSequenceWindows( self, size, step )))
 	
+	# Gets a region set with windows from the sequences
+	def getWindowRegions(self, size, step):
+		""" Generates and returns a set of sliding window regions.
+		
+		:param size: Window size.
+		:param step: Window step size.
+		:type size: int
+		:type step: int
+		
+		:return: Region set of all sliding window regions across all sequences in the set.
+		:rtype: regions
+		"""
+		seqLengths = self.getSequenceLengths()
+		rset = []
+		for cseq in sorted(seqLengths.keys()):
+			cstart = 0
+			while cstart + size <= seqLengths[cseq]:
+				rset.append( region(cseq, cstart, cstart+size-1) )
+				cstart += step
+		return regions('Windows (Window size: %d bp; step size: %d bp)'%(size, step), rset, initialSort = False)
+	
 	# Gets the regions of origin for the sequences (if set)
 	def getSourceRegions(self):
 		"""
@@ -368,6 +389,27 @@ cdef class sequenceStream:
 		:rtype: sequences
 		"""
 		return sequences(self.name + ' (windows - size: %d bp; step: %d bp)'%(size, step), list(streamSequenceWindows( self, size, step )))
+	
+	# Gets a region set with windows from the sequences
+	def getWindowRegions(self, size, step):
+		""" Generates and returns a set of sliding window regions.
+		
+		:param size: Window size.
+		:param step: Window step size.
+		:type size: int
+		:type step: int
+		
+		:return: Region set of all sliding window regions across all sequences in the stream.
+		:rtype: regions
+		"""
+		seqLengths = self.getSequenceLengths()
+		rset = []
+		for cseq in sorted(seqLengths.keys()):
+			cstart = 0
+			while cstart + size <= seqLengths[cseq]:
+				rset.append( region(cseq, cstart, cstart+size-1) )
+				cstart += step
+		return regions('Windows (Window size: %d bp; step size: %d bp)'%(size, step), rset, initialSort = False)
 
 # Represents a sequence in a FASTA file
 cdef class streamFASTASeq:
@@ -788,7 +830,7 @@ def streamSequenceWindows(src, int windowSize, int windowStep):
 					cstart += windowStep
 
 # Returns sliding window coordinates for a sequence set or sequence stream.
-def getSequenceWindowRegions(object stream, int windowSize, int windowStep):
+def getSequenceWindowRegions(object src, int windowSize, int windowStep):
 	"""
 	Generates sequence window regions for a sequence set or stream.
 	
@@ -796,7 +838,7 @@ def getSequenceWindowRegions(object stream, int windowSize, int windowStep):
 	:param windowSize: Window size.
 	:param windowStep: Window step size.
 	
-	:type stream: sequences/sequenceStream
+	:type src: sequences/sequenceStream
 	:type windowSize: int
 	:type windowStep: int
 	
@@ -807,7 +849,9 @@ def getSequenceWindowRegions(object stream, int windowSize, int windowStep):
 	cdef list rset
 	cdef str cseq
 	cdef int cstart
-	seqLengths = stream.getSequenceLengths()
+	if isinstance(src, str):
+		src = getSequenceStreamFromPath(src)
+	seqLengths = src.getSequenceLengths()
 	rset = []
 	for cseq in sorted(seqLengths.keys()):
 		cstart = 0

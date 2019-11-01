@@ -5,7 +5,7 @@ Bjørn Bredesen, 2018-2019
 
 
 
-#### Set-up
+## Set-up
 
 Here, we will train a PREdictor (Ringrose *et al.* 2003) model on the Kahn *et al.* (2014) Polycomb targets, and predict candidate PREs genome-wide. We will go through all steps that must be executed, from loading a General Feature Format (GFF) file with genomic coordinates for Polycomb targets, extract the underlying sequences, train the model, calibrate the threshold, and predict candidate PREs genome-wide.
 
@@ -16,7 +16,7 @@ We will use the *Drosophila melanogaster* genome throughout this tutorial.
  * **Or**: In a Linux terminal, navigate to the folder with the tutorial data, and execute the following command: `wget ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r5.57_FB2014_03/fasta/dmel-all-chromosome-r5.57.fasta.gz && gunzip dmel-all-chromosome-r5.57.fasta.gz`
 
 
-#### Preparing training data using Gnocis
+## Preparing training data using Gnocis
 
 Download the Gnocis repository, and in a terminal, navigate to the Gnocis `tutorial/` folder. Open the Python3 Read-Eval Print Loop (REPL) by running `python3`.
 
@@ -63,7 +63,7 @@ tneg[0].seq
 ```
 
 
-#### Training a basic model of *cis*-regulatory module (CRM) sequences
+## Training a basic model of *cis*-regulatory module (CRM) sequences
 
 Run:
 ```python
@@ -95,7 +95,7 @@ mdlC.weights
 ```
 
 
-#### Predicting genome-wide
+## Predicting genome-wide
 
 In order to make genome-wide predictions, we need to calibrate the threshold of our model. After calibrating, we can apply our model for genome-wide prediction.
 
@@ -138,12 +138,49 @@ cis.trainPREdictorModel(motifs = cis.motifs.getRingrose2003Motifs_GTGT(),
 ```
 
 
+## Preparing a training set based on genome-wide experimental data
+
+When we trained models in the last sections, we used published sets of Polycomb targets. In this section, we will define Polycomb targets based on data from modENCODE, in order to train our model.
+We have downloaded genome-wide peaks for three *D. melanogaster* Polycomb group proteins and one histone modification:
+ * Pc - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Pc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3957%3A816.gff3.gz
+ * Psc - Source: source URL: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Psc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3960%3A1817.gff3.gz
+ * dRING - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/dRING%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_5071%3A1819.gff3.gz
+ * H3K27me3 - Source URL: tp://data.modencode.org/D.melanogaster/Histone-Modification/ChIP-seq/computed-peaks_gff3/H3K27me3%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3955%3A1820.gff3.gz
+
+These are included with the tutorial, considered as fair use for example material. All credit for these sets belongs to Karpen G. *et al.* and modENCODE.
+
+We will now prepare candidate Polycomb targets based on these sets, using the `biomarkers` class in gnocis.
+
+Run:
+```python
+PcG = cis.biomarkers(name = 'PcG', regionSets = [
+	cis.loadGFFGZ('Pc.gff3.gz').getRenamed('Pc'),
+	cis.loadGFFGZ('Psc.gff3.gz').getRenamed('Psc'),
+	cis.loadGFFGZ('dRING.gff3.gz').getRenamed('dRING'),
+	cis.loadGFFGZ('H3K27me3.gff3.gz').getRenamed('H3K27me3')
+])
+```
+
+Run (optional):
+```python
+PcG
+PcGTargets
+```
+
+Output:
+```
+Biomarker set<PcG (H3K27me3 (1486 regions - 1 sets); Pc (1405 regions - 1 sets); Psc (2628 regions - 1 sets); dRING (3473 regions - 1 sets))>
+```
+
+
+
 -------------------------------------------------
 
-#### References
+## References
 
  * Bredesen *et al.* 2019: https://academic.oup.com/nar/article/47/15/7781/5538007
  * Kahn *et al.* 2014: https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004495
  * FlyBase - : https://academic.oup.com/nar/article/41/D1/D751/1051942
  * Ringrose *et al.* 2003: https://www.sciencedirect.com/science/article/pii/S153458070300337X
+ * ModENCODE: 
 

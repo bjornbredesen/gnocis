@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Gnocis tutorial &#8212; Gnocis 0.9.0 documentation</title>
+    <title>Gnocis tutorial &#8212; Gnocis 0.9.0b documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -32,7 +32,7 @@
         <li class="right" >
           <a href="license.html" title="License"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.0b documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -156,6 +156,37 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="preparing-a-training-set-based-on-genome-wide-experimental-data">
+<h2>Preparing a training set based on genome-wide experimental data<a class="headerlink" href="#preparing-a-training-set-based-on-genome-wide-experimental-data" title="Permalink to this headline">¶</a></h2>
+<p>When we trained models in the last sections, we used published sets of Polycomb targets. In this section, we will define Polycomb targets based on data from modENCODE, in order to train our model.
+We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb group proteins and one histone modification:</p>
+<ul class="simple">
+<li><p>Pc - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Pc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3957%3A816.gff3.gz</p></li>
+<li><p>Psc - Source: source URL: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/Psc%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3960%3A1817.gff3.gz</p></li>
+<li><p>dRING - Source: ftp://data.modencode.org/D.melanogaster/Non-TF-Chromatin-binding-factor/ChIP-seq/computed-peaks_gff3/dRING%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_5071%3A1819.gff3.gz</p></li>
+<li><p>H3K27me3 - Source URL: tp://data.modencode.org/D.melanogaster/Histone-Modification/ChIP-seq/computed-peaks_gff3/H3K27me3%3ADevelopmental-Stage=Embryos-14-16-hr-OR%23Strain=Oregon-R%3AChIP-seq%3ARep-1%3A%3ADmel_r5.32%3AmodENCODE_3955%3A1820.gff3.gz</p></li>
+</ul>
+<p>These are included with the tutorial, considered as fair use for example material. All credit for these sets belongs to Karpen G. <em>et al.</em> and modENCODE.</p>
+<p>We will now prepare candidate Polycomb targets based on these sets, using the <code class="docutils literal notranslate"><span class="pre">biomarkers</span></code> class in gnocis.</p>
+<p>Run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PcG</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">biomarkers</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;PcG&#39;</span><span class="p">,</span> <span class="n">regionSets</span> <span class="o">=</span> <span class="p">[</span>
+	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;Pc.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;Pc&#39;</span><span class="p">),</span>
+	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;Psc.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;Psc&#39;</span><span class="p">),</span>
+	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;dRING.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;dRING&#39;</span><span class="p">),</span>
+	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;H3K27me3.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;H3K27me3&#39;</span><span class="p">)</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PcG</span>
+<span class="n">PcGTargets</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Biomarker</span> <span class="nb">set</span><span class="o">&lt;</span><span class="n">PcG</span> <span class="p">(</span><span class="n">H3K27me3</span> <span class="p">(</span><span class="mi">1486</span> <span class="n">regions</span> <span class="o">-</span> <span class="mi">1</span> <span class="n">sets</span><span class="p">);</span> <span class="n">Pc</span> <span class="p">(</span><span class="mi">1405</span> <span class="n">regions</span> <span class="o">-</span> <span class="mi">1</span> <span class="n">sets</span><span class="p">);</span> <span class="n">Psc</span> <span class="p">(</span><span class="mi">2628</span> <span class="n">regions</span> <span class="o">-</span> <span class="mi">1</span> <span class="n">sets</span><span class="p">);</span> <span class="n">dRING</span> <span class="p">(</span><span class="mi">3473</span> <span class="n">regions</span> <span class="o">-</span> <span class="mi">1</span> <span class="n">sets</span><span class="p">))</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
 <hr class="docutils" />
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
@@ -164,6 +195,7 @@
 <li><p>Kahn <em>et al.</em> 2014: https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004495</p></li>
 <li><p>FlyBase - : https://academic.oup.com/nar/article/41/D1/D751/1051942</p></li>
 <li><p>Ringrose <em>et al.</em> 2003: https://www.sciencedirect.com/science/article/pii/S153458070300337X</p></li>
+<li><p>ModENCODE:</p></li>
 </ul>
 </div>
 </div>
@@ -184,6 +216,7 @@
 <li><a class="reference internal" href="#preparing-training-data-using-gnocis">Preparing training data using Gnocis</a></li>
 <li><a class="reference internal" href="#training-a-basic-model-of-cis-regulatory-module-crm-sequences">Training a basic model of <em>cis</em>-regulatory module (CRM) sequences</a></li>
 <li><a class="reference internal" href="#predicting-genome-wide">Predicting genome-wide</a></li>
+<li><a class="reference internal" href="#preparing-a-training-set-based-on-genome-wide-experimental-data">Preparing a training set based on genome-wide experimental data</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -231,7 +264,7 @@
         <li class="right" >
           <a href="license.html" title="License"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.0b documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
