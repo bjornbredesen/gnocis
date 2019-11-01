@@ -181,7 +181,11 @@
 <span class="n">predictions</span><span class="o">.</span><span class="n">printStatistics</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The entire training, calibration and prediction procedure can be written more compactly, as</p>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>The entire training, calibration and prediction procedure can be written more compactly, as:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cis</span><span class="o">.</span><span class="n">trainPREdictorModel</span><span class="p">(</span><span class="n">motifs</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">motifs</span><span class="o">.</span><span class="n">getRingrose2003Motifs_GTGT</span><span class="p">(),</span>
                               <span class="n">positives</span> <span class="o">=</span> <span class="n">tpos</span><span class="p">,</span>
                               <span class="n">negatives</span> <span class="o">=</span> <span class="n">tneg</span><span class="p">)</span>\
@@ -210,16 +214,17 @@ We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb
 <p>Run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the biomarker set, loading signals for each biomarker</span>
 <span class="n">PcG</span> <span class="o">=</span> <span class="n">cis</span><span class="o">.</span><span class="n">biomarkers</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;PcG&#39;</span><span class="p">,</span> <span class="n">regionSets</span> <span class="o">=</span> <span class="p">[</span>
-	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;Pc.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;Pc&#39;</span><span class="p">),</span>
-	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;Psc.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;Psc&#39;</span><span class="p">),</span>
-	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;dRING.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;dRING&#39;</span><span class="p">),</span>
+	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;Pc.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getDeltaResized</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;Pc&#39;</span><span class="p">),</span>
+	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;Psc.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getDeltaResized</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;Psc&#39;</span><span class="p">),</span>
+	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;dRING.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getDeltaResized</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;dRING&#39;</span><span class="p">),</span>
 	<span class="n">cis</span><span class="o">.</span><span class="n">loadGFFGZ</span><span class="p">(</span><span class="s1">&#39;H3K27me3.gff3.gz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getRenamed</span><span class="p">(</span><span class="s1">&#39;H3K27me3&#39;</span><span class="p">)</span>
 <span class="p">])</span>
 
 <span class="c1"># Define Highly BioMarker-Enriched loci (HBMEs) based on biomarkers</span>
-<span class="n">PcGTargets</span> <span class="o">=</span> <span class="n">PcG</span><span class="o">.</span><span class="n">getHBMEs</span><span class="p">(</span> <span class="n">Dmel</span><span class="o">.</span><span class="n">getWindowRegions</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mi">500</span><span class="p">),</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">)</span>
+<span class="n">PcGTargets</span> <span class="o">=</span> <span class="n">PcG</span><span class="o">.</span><span class="n">getHBMEs</span><span class="p">(</span><span class="n">Dmel</span><span class="o">.</span><span class="n">getWindowRegions</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mi">500</span><span class="p">),</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>We here call <code class="docutils literal notranslate"><span class="pre">.getDeltaResized(1000)</span></code> for each DNA-binding factor region set, to account for potential distancing of recruiting sequences and recruited factors. We rename the factors here mostly for cosmetic reasons. When there are multiple files per biomarker to load, renaming them to the same name will merge the signals. This can be useful if incorporating experimental data from several cell types or labs.</p>
 <p>Run (optional):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PcG</span>
 <span class="n">PcGTargets</span>

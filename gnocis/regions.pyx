@@ -352,6 +352,30 @@ cdef class regions:
 				rBs = rBs[firstRelevantIndexB:]
 		return rs
 	
+	# Calculates the overlap sensitivity to another set
+	def overlapSensitivity(self, other):
+		""" Calculates the overlap sensitivity to another set.
+		
+		:param other: Other region set.
+		:type other: regions
+		
+		:return: Overlap sensitivity.
+		:rtype: float
+		"""
+		return len(other.getOverlap(self)) / len(other)
+	
+	# Calculates the overlap precision to another set
+	def overlapPrecision(self, other):
+		""" Calculates the overlap precision to another set.
+		
+		:param other: Other region set.
+		:type other: regions
+		
+		:return: Overlap precision.
+		:rtype: float
+		"""
+		return len(self.getOverlap(other)) / len(self)
+	
 	# Returns a set of recentered regions, with regions randomly placed within larger regions.
 	def getRandomlyRecentered(self, long long size):
 		""" Gets a set of randomly recentered regions. If the target size is smaller than a given region, a region of the desired size is randomly placed within the region. If the desired size is larger, a region of the desired size is placed with equal center to the center of the region.

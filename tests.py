@@ -49,14 +49,14 @@ class testRegions(unittest.TestCase):
 			'X:500..600 (+)' )
 	
 	def testSaveLoadGFF(self):
-		rsA.saveGFF('data/test.GFF')
+		rsA.saveGFF('tmp/test.GFF')
 		self.assertEqual( getRegionsStr( rsA ),
-			getRegionsStr( cis.loadGFF('data/test.GFF') ) )
+			getRegionsStr( cis.loadGFF('tmp/test.GFF') ) )
 	
 	def testSaveLoadBED(self):
-		rsA.saveBED('data/test.BED')
+		rsA.saveBED('tmp/test.BED')
 		self.assertEqual( getRegionsStr( rsA ),
-			getRegionsStr( cis.loadBED('data/test.BED') ) )
+			getRegionsStr( cis.loadBED('tmp/test.BED') ) )
 
 
 #-----------------------------------
@@ -70,38 +70,38 @@ testSeqs = cis.sequences('Test', [
 class testSequences(unittest.TestCase):
 	
 	def testSaveLoadFASTA(self):
-		testSeqs.saveFASTA('data/test.fasta')
+		testSeqs.saveFASTA('tmp/test.fasta')
 		sA = '\n'.join( '%s: %s'%(s.name, s.seq) for s in testSeqs )
-		sB = '\n'.join( '%s: %s'%(s.name.split(' from FASTA file')[0], s.seq) for s in cis.loadFASTA('data/test.fasta') )
+		sB = '\n'.join( '%s: %s'%(s.name.split(' from FASTA file')[0], s.seq) for s in cis.loadFASTA('tmp/test.fasta') )
 		self.assertEqual(
 			sA, 
 			sB )
 	
 	def testGeneratingSequences(self):
-		MC = cis.generatorMarkovChain(trainingSequences = cis.streamFASTA('./demo_data/dmel.fa'), degree = 4, pseudoCounts = 1, addReverseComplements = True)
+		MC = cis.generatorMarkovChain(trainingSequences = cis.streamFASTAGZ('./tutorial/dmel-all-chromosome-r5.57.fasta.gz'), degree = 4, pseudoCounts = 1, addReverseComplements = True)
 		MC.generateSet(n = 50, length = 3000).saveFASTA('./temp/test.Background.fasta')
 	
 	def testExtractRegionSequences(self):
-		testSeqs.saveFASTA('data/test.fasta')
+		testSeqs.saveFASTA('temp/test.fasta')
 		seqByName = { seq.name: seq.seq for seq in testSeqs }
 		# Ensure that saving and re-loading sequences yields identical sequences
-		seqs = rsA.extractSequences( cis.loadFASTA( 'data/test.fasta' ) )
+		seqs = rsA.extractSequences( cis.loadFASTA( 'temp/test.fasta' ) )
 		self.assertEqual(
 			[ s.seq for s in seqs ], 
 			[ seqByName[r.seq][ r.start : r.end+1 ] for r in rsA ] )
-		seqs = rsA.extractSequences( cis.streamFASTA( 'data/test.fasta' ) )
+		seqs = rsA.extractSequences( cis.streamFASTA( 'temp/test.fasta' ) )
 		self.assertEqual(
 			[ s.seq for s in seqs ], 
 			[ seqByName[r.seq][ r.start : r.end+1 ] for r in rsA ] )
 		# Ensure that streaming of short blocks yields identical final sequences
-		seqs = rsA.extractSequences( cis.streamFASTA( 'data/test.fasta', wantBlockSize = 50 ) )
+		seqs = rsA.extractSequences( cis.streamFASTA( 'temp/test.fasta', wantBlockSize = 50 ) )
 		self.assertEqual(
 			[ s.seq for s in seqs ], 
 			[ seqByName[r.seq][ r.start : r.end+1 ] for r in rsA ] )
 	
 	def testSequenceWindows(self):
-		testSeqs.saveFASTA('data/test.fasta')
-		windows = [ w for w in cis.streamSequenceWindows(cis.streamFASTA('data/test.fasta'), 40, 20) ]
+		testSeqs.saveFASTA('temp/test.fasta')
+		windows = [ w for w in cis.streamSequenceWindows(cis.streamFASTA('temp/test.fasta'), 40, 20) ]
 		# Ensure that window boundaries are correct (the last index is inclusive)
 		self.assertEqual(
 			windows[1].sourceRegion.bstr(),
@@ -152,12 +152,10 @@ class testSequences(unittest.TestCase):
 # Prepare data set
 
 PcG = cis.biomarkers('PcG', [
-	cis.loadGFFGZ('demo_data/Pc.gff3.gz').getRenamed('Pc'),
-	cis.loadGFFGZ('demo_data/Psc.gff3.gz').getRenamed('Psc'),
-	cis.loadGFFGZ('demo_data/Eoz.gff3.gz').getRenamed('E(z)'),
-	cis.loadGFFGZ('demo_data/dRING.gff3.gz').getRenamed('dRING'),
-	cis.loadGFFGZ('demo_data/H3K27me3.gff3.gz')\
-		.getDeltaResized(1000).getRenamed('H3K27me3'),
+	cis.loadGFFGZ('temp/Pc.gff3.gz').getDeltaResized(1000).getRenamed('Pc'),
+	cis.loadGFFGZ('temp/Psc.gff3.gz').getDeltaResized(1000).getRenamed('Psc'),
+	cis.loadGFFGZ('temp/dRING.gff3.gz').getDeltaResized(1000).getRenamed('dRING'),
+	cis.loadGFFGZ('temp/H3K27me3.gff3.gz').getRenamed('H3K27me3'),
 ])
 
 gwWin = cis.getSequenceWindowRegions(

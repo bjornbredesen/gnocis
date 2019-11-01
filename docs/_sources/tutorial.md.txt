@@ -164,7 +164,11 @@ mdl.threshold
 predictions.printStatistics()
 ```
 
-The entire training, calibration and prediction procedure can be written more compactly, as
+Output:
+```
+```
+
+The entire training, calibration and prediction procedure can be written more compactly, as:
 
 ```python
 cis.trainPREdictorModel(motifs = cis.motifs.getRingrose2003Motifs_GTGT(),
@@ -197,15 +201,17 @@ Run:
 ```python
 # Define the biomarker set, loading signals for each biomarker
 PcG = cis.biomarkers(name = 'PcG', regionSets = [
-	cis.loadGFFGZ('Pc.gff3.gz').getRenamed('Pc'),
-	cis.loadGFFGZ('Psc.gff3.gz').getRenamed('Psc'),
-	cis.loadGFFGZ('dRING.gff3.gz').getRenamed('dRING'),
+	cis.loadGFFGZ('Pc.gff3.gz').getDeltaResized(1000).getRenamed('Pc'),
+	cis.loadGFFGZ('Psc.gff3.gz').getDeltaResized(1000).getRenamed('Psc'),
+	cis.loadGFFGZ('dRING.gff3.gz').getDeltaResized(1000).getRenamed('dRING'),
 	cis.loadGFFGZ('H3K27me3.gff3.gz').getRenamed('H3K27me3')
 ])
 
 # Define Highly BioMarker-Enriched loci (HBMEs) based on biomarkers
-PcGTargets = PcG.getHBMEs( Dmel.getWindowRegions(size = 1000, step = 500), threshold = 2 )
+PcGTargets = PcG.getHBMEs(Dmel.getWindowRegions(size = 1000, step = 500), threshold = 2)
 ```
+
+We here call `.getDeltaResized(1000)` for each DNA-binding factor region set, to account for potential distancing of recruiting sequences and recruited factors. We rename the factors here mostly for cosmetic reasons. When there are multiple files per biomarker to load, renaming them to the same name will merge the signals. This can be useful if incorporating experimental data from several cell types or labs.
 
 Run (optional):
 ```python
@@ -224,6 +230,8 @@ Region set statistics - Windows (Window size: 1000 bp; step size: 500 bp) (PcG H
  - Mean length: 7967.41 nt (min.: 1000 nt - max.: 227500 nt)
  - Total length: 12222000 nt
 ```
+
+
 
 -------------------------------------------------
 
