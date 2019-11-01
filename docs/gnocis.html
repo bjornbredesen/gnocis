@@ -1976,7 +1976,24 @@
 <dl class="function">
 <dt id="gnocis.sequences.loadFASTA">
 <code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">loadFASTA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.loadFASTA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads sequences from a FASTA filer.</p>
+<dd><p>Loads sequences from a FASTA file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loaded sequences.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.sequences.loadFASTAGZ">
+<code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">loadFASTAGZ</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.loadFASTAGZ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads sequences from a gzipped FASTA file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p>
@@ -2236,6 +2253,7 @@
 <li><p><strong>spacePrune</strong> (<em>bool</em>) – Whether or not to prune sequence name spaces.</p></li>
 <li><p><strong>dropChr</strong> (<em>bool</em>) – Whether or not to prune sequence name “chr”-prefixes.</p></li>
 <li><p><strong>restrictToSequences</strong> (<em>list</em>) – List of sequence names to restrict to/focus on.</p></li>
+<li><p><strong>isGZ</strong> (<em>bool</em>) – Whether or not the input file is GZipped.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2425,6 +2443,29 @@
 <dt id="gnocis.sequences.streamFASTA">
 <code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">streamFASTA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.streamFASTA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Streams a FASTA file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the input file.</p></li>
+<li><p><strong>wantBlockSize</strong> (<em>int</em><em>, </em><em>optional</em>) – Desired block size.</p></li>
+<li><p><strong>spacePrune</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to prune sequence name spaces.</p></li>
+<li><p><strong>dropChr</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to prune sequence name “chr”-prefixes.</p></li>
+<li><p><strong>restrictToSequences</strong> (<em>list</em><em>, </em><em>optional</em>) – List of sequence names to restrict to/focus on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated sequence stream.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequenceStream" title="gnocis.sequences.sequenceStream">sequenceStream</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.sequences.streamFASTAGZ">
+<code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">streamFASTAGZ</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.streamFASTAGZ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Streams a gzipped FASTA file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

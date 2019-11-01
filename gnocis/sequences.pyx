@@ -10,6 +10,7 @@ from __future__ import division
 import re
 import struct
 import random
+import gzip
 from libcpp cimport bool
 from libc.stdlib cimport malloc, free	
 from libc.string cimport memcpy
@@ -286,7 +287,7 @@ cdef class sequences:
 
 # Loads a FASTA sequence file and returns a list of sequences contained in the file.
 def loadFASTA(path):
-	""" Loads sequences from a FASTA filer.
+	""" Loads sequences from a FASTA file.
 	
 	:param path: Path to the input file.
 	:type path: str
@@ -298,6 +299,29 @@ def loadFASTA(path):
 	pathName = path.split('/')[-1]
 	with open(path, 'r') as f:
 		for line in f:
+			line = line.strip()
+			if line.startswith('>'):
+				lst.append(sequence(line[1:], '', path, annotation = 'From FASTA file ' + pathName))
+			elif len(lst) == 0:
+				raise Exception('FASTA sequence error')
+			else:
+				lst[-1].seq += line
+	return sequences('FASTA file: ' + pathName, lst)
+
+# Loads a FASTA sequence file and returns a list of sequences contained in the file.
+def loadFASTAGZ(path):
+	""" Loads sequences from a gzipped FASTA file.
+	
+	:param path: Path to the input file.
+	:type path: str
+	
+	:return: Loaded sequences.
+	:rtype: sequences
+	"""
+	lst = []
+	pathName = path.split('/')[-1]
+	with gzip.open(path, 'rb') as f:
+		for line in (y.decode('utf-8') for y in f):
 			line = line.strip()
 			if line.startswith('>'):
 				lst.append(sequence(line[1:], '', path, annotation = 'From FASTA file ' + pathName))
@@ -470,33 +494,37 @@ class sequenceStreamFASTA(sequenceStream):
 	:param spacePrune: Whether or not to prune sequence name spaces.
 	:param dropChr: Whether or not to prune sequence name "chr"-prefixes.
 	:param restrictToSequences: List of sequence names to restrict to/focus on.
+	:param isGZ: Whether or not the input file is GZipped.
 	
 	:type path: str
 	:type wantBlockSize: int
 	:type spacePrune: bool
 	:type dropChr: bool
 	:type restrictToSequences: list
+	:type isGZ: bool
 	"""
 	
-	def __init__(self, path, wantBlockSize, spacePrune, dropChr, restrictToSequences):
+	def __init__(self, path, wantBlockSize, spacePrune, dropChr, restrictToSequences, isGZ = False):
 		self.path = path
 		self.name = path.split('/')[-1]
 		self.wantBlockSize = wantBlockSize
 		self.spacePrune = spacePrune
 		self.dropChr = dropChr
 		self.restrictToSequences = restrictToSequences
+		self.isGZ = isGZ
 	
 	def __iter__(self):
 		cdef str line, sname
 		cdef streamFASTASeq seqStream
-		cdef object fIn
-		with open(self.path, 'r') as fIn:
+		cdef object fIn, lineSrc
+		with gzip.open(self.path, 'rb') if self.isGZ else open(self.path, 'r') as fIn:
 			# Parse line by line, with streaming of all included sequences, re-using the last
 			# read line by each sequence stream when a new sequence starts.
+			lineSrc = (y.decode('utf-8') for y in fIn) if self.isGZ else fIn
 			line = None
 			while True:
 				if not line:
-					line = next(fIn)
+					line = next(lineSrc)
 				if line.startswith('>'):
 					sname = line[1:].strip()
 					if self.spacePrune:
@@ -506,11 +534,11 @@ class sequenceStreamFASTA(sequenceStream):
 					if self.restrictToSequences != None and not sname in self.restrictToSequences:
 						line = ''
 						while line != None and not line.startswith('>'):
-							line = next(fIn)
+							line = next(lineSrc)
 							if line == None:
 								return None
 						continue
-					seqStream = streamFASTASeq(sname, fIn, self.wantBlockSize)
+					seqStream = streamFASTASeq(sname, lineSrc, self.wantBlockSize)
 					yield seqStream
 					if seqStream.parsingCompleted:
 						line = seqStream.lastLine
@@ -519,7 +547,7 @@ class sequenceStreamFASTA(sequenceStream):
 					else:
 						line = ''
 						while line != None and not line.startswith('>'):
-							line = next(fIn)
+							line = next(lineSrc)
 							if line == None:
 								return None
 				else:
@@ -553,6 +581,28 @@ cpdef streamFASTA(path, wantBlockSize = 5000, spacePrune = True, dropChr = True,
 	:rtype: sequenceStream
 	"""
 	return sequenceStreamFASTA(path, wantBlockSize, spacePrune, dropChr, restrictToSequences)
+
+# Streams a FASTA file in blocks.
+cpdef streamFASTAGZ(path, wantBlockSize = 5000, spacePrune = True, dropChr = True, restrictToSequences = None):
+	"""
+	Streams a gzipped FASTA file.
+	
+	:param path: Path to the input file.
+	:param wantBlockSize: Desired block size.
+	:param spacePrune: Whether or not to prune sequence name spaces.
+	:param dropChr: Whether or not to prune sequence name "chr"-prefixes.
+	:param restrictToSequences: List of sequence names to restrict to/focus on.
+	
+	:type path: str
+	:type wantBlockSize: int, optional
+	:type spacePrune: bool, optional
+	:type dropChr: bool, optional
+	:type restrictToSequences: list, optional
+	
+	:return: Generated sequence stream.
+	:rtype: sequenceStream
+	"""
+	return sequenceStreamFASTA(path, wantBlockSize, spacePrune, dropChr, restrictToSequences, isGZ = True)
 
 # Represents a 2bit N-block
 cdef class stream2bitNBlock:
