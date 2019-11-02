@@ -318,6 +318,18 @@ We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb
 <span class="n">predictionsSVM</span><span class="o">.</span><span class="n">saveGFF</span><span class="p">(</span><span class="s1">&#39;predictionsSVM.GFF&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Run (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">predictionsSVM</span><span class="o">.</span><span class="n">overlapSensitivity</span><span class="p">(</span><span class="n">PcGTargets</span><span class="p">)</span>
+<span class="n">predictionsSVM</span><span class="o">.</span><span class="n">overlapPrecision</span><span class="p">(</span><span class="n">PcGTargets</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output (will vary depending on random seed):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">predictionsSVM</span><span class="o">.</span><span class="n">overlapSensitivity</span><span class="p">(</span><span class="n">PcGTargets</span><span class="p">)</span>
+<span class="go">0.7040960451977402</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predictions</span><span class="o">.</span><span class="n">overlapPrecision</span><span class="p">(</span><span class="n">PcGTargets</span><span class="p">)</span>
+<span class="go">0.08370984966729647</span>
+</pre></div>
+</div>
 </div>
 <hr class="docutils" />
 <div class="section" id="references">

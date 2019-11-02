@@ -324,6 +324,20 @@ predictionsSVM = svm.predict(Dmel)
 predictionsSVM.saveGFF('predictionsSVM.GFF')
 ```
 
+Run (optional):
+```python
+predictionsSVM.overlapSensitivity(PcGTargets)
+predictionsSVM.overlapPrecision(PcGTargets)
+```
+
+Output (will vary depending on random seed):
+```python
+>>> predictionsSVM.overlapSensitivity(PcGTargets)
+0.7040960451977402
+>>> predictions.overlapPrecision(PcGTargets)
+0.08370984966729647
+```
+
 -------------------------------------------------
 
 ## References
