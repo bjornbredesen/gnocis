@@ -20,13 +20,13 @@ Download the Gnocis repository, and in a terminal, navigate to the Gnocis `tutor
 Run:
 ```python
 # Import the library
-import gnocis as cis
+import gnocis as nc
 
 # We will use the Drosophila melanogaster genome for multiple examples. We define a stream of is to a variable. The stream ensures that only segments of the genome are loaded at a time, saving memory.
-Dmel = cis.streamFASTAGZ('DmelR5.fasta.gz')
+Dmel = nc.streamFASTAGZ('DmelR5.fasta.gz')
 
 # Load the Kahn et al. (2014) Polycomb targets
-Kahn2014Rgn = cis.loadGFF('Kahn2014.GFF')
+Kahn2014Rgn = nc.loadGFF('Kahn2014.GFF')
 
 # Resize and extract from genome
 Kahn2014Seq = Kahn2014Rgn\
@@ -64,7 +64,7 @@ We will now generate negative training sequences. To this end, we train a 4th or
 
 Run:
 ```python
-MCPRE = cis.generatorMarkovChain(trainingSequences = Kahn2014Seq, degree = 4)
+MCPRE = nc.generatorMarkovChain(trainingSequences = Kahn2014Seq, degree = 4)
 tneg = MCPRE.generateSet(n = len(tpos), length = len(tpos[0]))
 vneg = MCPRE.generateSet(n = len(vpos)*100, length = len(vpos[0]))
 ```
@@ -93,7 +93,7 @@ Sequence set statistics - Generated set <Sequences: 100; Length each: 3000; Mode
 
 Run:
 ```python
-mdl = cis.trainPREdictorModel(motifs = cis.motifs.getRingrose2003Motifs_GTGT(),
+mdl = nc.trainPREdictorModel(motifs = nc.motifs.getRingrose2003Motifs_GTGT(),
                               positives = tpos,
                               negatives = tneg)
 ```
@@ -102,11 +102,11 @@ This trains a PREdictor model, using the positives and negatives, and the motifs
 
 Run:
 ```python
-mdlC = cis.trainPREdictorModel(motifs = cis.motifs('Custom motif set', [
-                                  cis.IUPACMotif('GAF', 'GAGAG', 0),
-                                  cis.IUPACMotif('Z', 'YGAGYG', 0),
-                                  cis.IUPACMotif('Grh', 'TGTTTTTT', 0),
-                                  cis.IUPACMotif('Dsp1', 'GAAAA', 0),
+mdlC = nc.trainPREdictorModel(motifs = nc.motifs('Custom motif set', [
+                                  nc.IUPACMotif('GAF', 'GAGAG', 0),
+                                  nc.IUPACMotif('Z', 'YGAGYG', 0),
+                                  nc.IUPACMotif('Grh', 'TGTTTTTT', 0),
+                                  nc.IUPACMotif('Dsp1', 'GAAAA', 0),
                                ]),
                                positives = tpos,
                                negatives = tneg)
@@ -152,7 +152,7 @@ Calibration can take some time. However, on multi-core systems, parallel process
 
 Run (optional):
 ```python
-cis.setNCores(4)
+nc.setNCores(4)
 ```
 
 Run (optional):
@@ -176,7 +176,7 @@ Region set statistics - Predictions
 The entire training, calibration and prediction procedure can be written more compactly, as:
 
 ```python
-cis.trainPREdictorModel(motifs = cis.motifs.getRingrose2003Motifs_GTGT(),
+nc.trainPREdictorModel(motifs = nc.motifs.getRingrose2003Motifs_GTGT(),
                               positives = tpos,
                               negatives = tneg)\
          .calibrateGenomewidePrecision(positives = Kahn2014Seq,
@@ -200,16 +200,16 @@ We have downloaded genome-wide peaks for three *D. melanogaster* Polycomb group 
 
 These are included with the tutorial, for educational purposes. All credit for these sets belongs to Karpen G. *et al.* and modENCODE.
 
-We will now prepare candidate Polycomb targets based on these sets, using the `biomarkers` class in gnocis.
+We will now prepare candidate Polycomb targets based on these sets, using the `biomarkers` class in Gnocis.
 
 Run:
 ```python
 # Define the biomarker set, loading signals for each biomarker
-PcG = cis.biomarkers(name = 'PcG', regionSets = [
-	cis.loadGFFGZ('Pc.gff3.gz').getDeltaResized(1000).getRenamed('Pc'),
-	cis.loadGFFGZ('Psc.gff3.gz').getDeltaResized(1000).getRenamed('Psc'),
-	cis.loadGFFGZ('dRING.gff3.gz').getDeltaResized(1000).getRenamed('dRING'),
-	cis.loadGFFGZ('H3K27me3.gff3.gz').getRenamed('H3K27me3')
+PcG = nc.biomarkers(name = 'PcG', regionSets = [
+	nc.loadGFFGZ('Pc.gff3.gz').getDeltaResized(1000).getRenamed('Pc'),
+	nc.loadGFFGZ('Psc.gff3.gz').getDeltaResized(1000).getRenamed('Psc'),
+	nc.loadGFFGZ('dRING.gff3.gz').getDeltaResized(1000).getRenamed('dRING'),
+	nc.loadGFFGZ('H3K27me3.gff3.gz').getRenamed('H3K27me3')
 ])
 
 # Define Highly BioMarker-Enriched loci (HBMEs) based on biomarkers
@@ -278,16 +278,16 @@ To offer more advanced machine learning capabilities, gnocis integrates with Sci
 Run:
 ```python
 # Import the sklearn integration
-import gnocis.sklearnModels as skcis
+import gnocis.sklearnModels as sknc
 
 # Construct a scaled 5-mer
-features = cis.featureScaler(cis.features.getKSpectrum(5), tpos, tneg)
+features = nc.featureScaler(nc.features.getKSpectrum(5), tpos, tneg)
 
 # Train SVM
-svm = skcis.sequenceModelSVM(features = features, positives = tpos, negatives = tneg, windowSize = 1000, windowStep = 500, kDegree = 2)
+svm = sknc.sequenceModelSVM(features = features, positives = tpos, negatives = tneg, windowSize = 1000, windowStep = 500, kDegree = 2)
 ```
 
-The `cis.featureScaler` takes an input feature space, and scales all features to be in the range -1 to 1.
+The `featureScaler` takes an input feature space, and scales all features to be in the range -1 to 1.
 
 Run (optional):
 ```python
