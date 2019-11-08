@@ -89,7 +89,7 @@ Sequence set statistics - Generated set <Sequences: 100; Length each: 3000; Mode
 ```
 
 
-## Training a basic model of *cis*-regulatory module (CRM) sequences
+## Training a basic model of *cis*-regulatory element (CRE) sequences
 
 Run:
 ```python

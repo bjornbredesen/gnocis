@@ -116,8 +116,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="training-a-basic-model-of-cis-regulatory-module-crm-sequences">
-<h2>Training a basic model of <em>cis</em>-regulatory module (CRM) sequences<a class="headerlink" href="#training-a-basic-model-of-cis-regulatory-module-crm-sequences" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="training-a-basic-model-of-cis-regulatory-element-cre-sequences">
+<h2>Training a basic model of <em>cis</em>-regulatory element (CRE) sequences<a class="headerlink" href="#training-a-basic-model-of-cis-regulatory-element-cre-sequences" title="Permalink to this headline">¶</a></h2>
 <p>Run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mdl</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">trainPREdictorModel</span><span class="p">(</span><span class="n">motifs</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">motifs</span><span class="o">.</span><span class="n">getRingrose2003Motifs_GTGT</span><span class="p">(),</span>
                               <span class="n">positives</span> <span class="o">=</span> <span class="n">tpos</span><span class="p">,</span>
@@ -358,7 +358,7 @@ We have downloaded genome-wide peaks for three <em>D. melanogaster</em> Polycomb
 <li><a class="reference internal" href="#">Gnocis tutorial</a><ul>
 <li><a class="reference internal" href="#set-up">Set-up</a></li>
 <li><a class="reference internal" href="#preparing-training-data-using-gnocis">Preparing training data using Gnocis</a></li>
-<li><a class="reference internal" href="#training-a-basic-model-of-cis-regulatory-module-crm-sequences">Training a basic model of <em>cis</em>-regulatory module (CRM) sequences</a></li>
+<li><a class="reference internal" href="#training-a-basic-model-of-cis-regulatory-element-cre-sequences">Training a basic model of <em>cis</em>-regulatory element (CRE) sequences</a></li>
 <li><a class="reference internal" href="#predicting-genome-wide">Predicting genome-wide</a></li>
 <li><a class="reference internal" href="#preparing-a-training-set-based-on-genome-wide-experimental-data">Preparing a training set based on genome-wide experimental data</a></li>
 <li><a class="reference internal" href="#training-a-k-mer-spectrum-support-vector-machine-svm-without-the-need-for-prior-motif-knowledge">Training a <em>k</em>-mer spectrum Support Vector Machine (SVM), without the need for prior motif knowledge</a></li>
