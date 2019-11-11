@@ -230,11 +230,6 @@ class testModels(unittest.TestCase):
 	def testKSpectrum(self):
 		spec = nc.features.getKSpectrum(5)
 		testSeq = nc.sequence('', 'GAGAGAGAGT')
-		# GAGAGAGAGT
-		# -----
-		#   -----
-		#     -----
-		# ACTCTCTCTC
 		kmerFreq = {
 			k: v
 			for k, v in zip( [ f.kmer for f in spec ],
@@ -253,6 +248,52 @@ class testModels(unittest.TestCase):
 				for kmer in kmerFreq.keys()
 				if kmer not in [ 'AGAGT', 'ACTCT', 'AGAGA', 'TCTCT', 'GAGAG', 'CTCTC' ]),
 			0.)
+	
+	def testKSpectrumMM(self):
+		spec = nc.features.getKSpectrumMM(5)
+		testSeq = nc.sequence('', 'GAGAGAGAGT')
+		motifs = set([ testSeq.seq[i:i+5] for i in range(len(testSeq)-4) ])
+		motifs = motifs | set( nc.getReverseComplementaryDNASequence(m) for m in motifs )
+		def getMM(m):
+			return set(
+				m[:i] + mut + m[i+1:]
+				for i in range(len(m))
+				for mut in [ 'A', 'C', 'G', 'T' ]
+			)
+		motifs = motifs | set( mm for m in motifs for mm in getMM(m) )
+		# Ensure that only the main motif and mismatches are registered
+		specmotifs = set(
+			k
+			for k, f in zip(
+				[ f.kmer for f in spec ],
+				spec.getAll(testSeq)
+			)
+			if f > 0
+		)
+		self.assertEqual(specmotifs, motifs)
+	
+	def testKSpectrumMMD(self):
+		spec = nc.features.getKSpectrumMMD(5)
+		testSeq = nc.sequence('', 'GAGAGAGAGT')
+		motifs = set([ testSeq.seq[i:i+5] for i in range(len(testSeq)-4) ])
+		motifs = motifs | set( nc.getReverseComplementaryDNASequence(m) for m in motifs )
+		def getMM(m):
+			return set(
+				m[:i] + mut + m[i+1:]
+				for i in range(len(m))
+				for mut in [ 'A', 'C', 'G', 'T' ]
+			)
+		motifs = motifs | set( mm for m in motifs for mm in getMM(m) )
+		# Ensure that only the main motif and mismatches are registered
+		specmotifs = set(
+			k
+			for k, f in zip(
+				[ f.kmer for f in spec ],
+				spec.getAll(testSeq)
+			)
+			if f > 0
+		)
+		self.assertEqual(specmotifs, motifs)
 
 
 #-----------------------------------
