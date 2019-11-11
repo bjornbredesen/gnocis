@@ -400,6 +400,23 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="gnocis.features.features.getKSpectrumMMD">
+<em class="property">static </em><code class="sig-name descname">getKSpectrumMMD</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.features.getKSpectrumMMD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the k-mer spectrum mismatch kernel with duplicates, the occurrence frequencies of all motifs of length k, with one allowed mismatch in an arbitrary position, and one duplicate registry of the core motif at every position to give higher preference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – k-mer length.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features">features</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="gnocis.features.features.getKSpectrumPDS">
 <em class="property">static </em><code class="sig-name descname">getKSpectrumPDS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.features.getKSpectrumPDS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs the k-mer spectrum positional double-stranded kernel, the occurrence frequencies of all motifs of length k, with position represented by grading between sequence ends.</p>
@@ -547,6 +564,99 @@
 <dl class="attribute">
 <dt id="gnocis.features.kSpectrumMM.nspectrum">
 <code class="sig-name descname">nspectrum</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.nspectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.kSpectrumMMD">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">kSpectrumMMD</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Feature set that extracts the occurrence frequencies of all motifs of length k, with one mismatch allowed in an arbitrary position. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nspectrum</strong> (<em>int</em>) – Length of motifs, k, to use.</p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMD.bitmask">
+<code class="sig-name descname">bitmask</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.bitmask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMD.cacheName">
+<code class="sig-name descname">cacheName</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.cacheName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMD.features">
+<code class="sig-name descname">features</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.features" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMD.kmerByIndex">
+<code class="sig-name descname">kmerByIndex</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.kmerByIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMD.nFeatures">
+<code class="sig-name descname">nFeatures</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.nFeatures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMD.nspectrum">
+<code class="sig-name descname">nspectrum</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.nspectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.features.kSpectrumMMDFeature">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">kSpectrumMMDFeature</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.features.feature" title="gnocis.features.feature"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.features.feature</span></code></a></p>
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMDFeature.cachedSequence">
+<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.cachedSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMDFeature.cachedValue">
+<code class="sig-name descname">cachedValue</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.cachedValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.features.kSpectrumMMDFeature.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the feature value from a sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
+<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMDFeature.index">
+<code class="sig-name descname">index</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMDFeature.kmer">
+<code class="sig-name descname">kmer</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.kmer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMDFeature.parent">
+<code class="sig-name descname">parent</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.parent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2635,6 +2745,35 @@
 <dl class="method">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow">
 <code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticAutoScale</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
+<p>The <cite>sequenceModelSVMOptimizedQuadratic</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
+<li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
+<li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size.</p></li>
+<li><p><strong>kDegree</strong> (<em>float</em>) – Kernel degree.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.getSequenceFeatureVector">
+<code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow">
+<code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

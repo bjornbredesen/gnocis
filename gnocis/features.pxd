@@ -107,6 +107,32 @@ cdef class kSpectrumMM:
 
 	cdef double extract(self, sequence seq, int index, cache=*)
 
+############################################################################
+# k-mer mismatch spectrum (duplicate)
+# For each mismatch position, duplicate matches are registered, giving a
+# higher weighting for the core motif
+
+# k-mer for k-spectrum feature set
+cdef class kSpectrumMMDFeature(feature):
+	
+	cdef public kSpectrumMMD parent
+	cdef public str kmer
+	cdef public int index
+	cdef public object cachedSequence
+	cdef public double cachedValue
+	
+	cpdef double get(self, sequence seq, bool cache=*)
+
+# Extracts k-mer spectra from sequences
+cdef class kSpectrumMMD:
+	
+	cdef public int nspectrum, nFeatures, bitmask
+	cdef public str cacheName
+	cdef public dict kmerByIndex
+	cdef public list features
+
+	cdef double extract(self, sequence seq, int index, cache=*)
+
 
 ############################################################################
 # Positional, double-stranded k-mer spectrum

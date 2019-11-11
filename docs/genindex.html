@@ -90,6 +90,8 @@
       <ul>
         <li><a href="gnocis.html#gnocis.features.kSpectrumMM.bitmask">(gnocis.features.kSpectrumMM attribute)</a>
 </li>
+        <li><a href="gnocis.html#gnocis.features.kSpectrumMMD.bitmask">(gnocis.features.kSpectrumMMD attribute)</a>
+</li>
         <li><a href="gnocis.html#gnocis.features.kSpectrumPDS.bitmask">(gnocis.features.kSpectrumPDS attribute)</a>
 </li>
       </ul></li>
@@ -111,10 +113,16 @@
 </li>
       <li><a href="gnocis.html#gnocis.sequences.sequence.cache">cache (gnocis.sequences.sequence attribute)</a>
 </li>
+      <li><a href="gnocis.html#gnocis.features.kSpectrumMMDFeature.cachedSequence">cachedSequence (gnocis.features.kSpectrumMMDFeature attribute)</a>
+</li>
+      <li><a href="gnocis.html#gnocis.features.kSpectrumMMDFeature.cachedValue">cachedValue (gnocis.features.kSpectrumMMDFeature attribute)</a>
+</li>
       <li><a href="gnocis.html#gnocis.features.kSpectrum.cacheName">cacheName (gnocis.features.kSpectrum attribute)</a>
 
       <ul>
         <li><a href="gnocis.html#gnocis.features.kSpectrumMM.cacheName">(gnocis.features.kSpectrumMM attribute)</a>
+</li>
+        <li><a href="gnocis.html#gnocis.features.kSpectrumMMD.cacheName">(gnocis.features.kSpectrumMMD attribute)</a>
 </li>
         <li><a href="gnocis.html#gnocis.features.kSpectrumPDS.cacheName">(gnocis.features.kSpectrumPDS attribute)</a>
 </li>
@@ -192,6 +200,8 @@
 </li>
         <li><a href="gnocis.html#gnocis.features.kSpectrumMM.features">(gnocis.features.kSpectrumMM attribute)</a>
 </li>
+        <li><a href="gnocis.html#gnocis.features.kSpectrumMMD.features">(gnocis.features.kSpectrumMMD attribute)</a>
+</li>
         <li><a href="gnocis.html#gnocis.features.kSpectrumPDS.features">(gnocis.features.kSpectrumPDS attribute)</a>
 </li>
       </ul></li>
@@ -235,6 +245,8 @@
         <li><a href="gnocis.html#gnocis.features.featureMotifOccurrenceFrequency.get">(gnocis.features.featureMotifOccurrenceFrequency method)</a>
 </li>
         <li><a href="gnocis.html#gnocis.features.featurePREdictorMotifPairOccurrenceFrequency.get">(gnocis.features.featurePREdictorMotifPairOccurrenceFrequency method)</a>
+</li>
+        <li><a href="gnocis.html#gnocis.features.kSpectrumMMDFeature.get">(gnocis.features.kSpectrumMMDFeature method)</a>
 </li>
         <li><a href="gnocis.html#gnocis.features.scaledFeature.get">(gnocis.features.scaledFeature method)</a>
 </li>
@@ -283,6 +295,8 @@
 </li>
       <li><a href="gnocis.html#gnocis.features.features.getKSpectrumMM">getKSpectrumMM() (gnocis.features.features static method)</a>
 </li>
+      <li><a href="gnocis.html#gnocis.features.features.getKSpectrumMMD">getKSpectrumMMD() (gnocis.features.features static method)</a>
+</li>
       <li><a href="gnocis.html#gnocis.features.features.getKSpectrumPDS">getKSpectrumPDS() (gnocis.features.features static method)</a>
 </li>
       <li><a href="gnocis.html#gnocis.biomarkers.biomarkers.getLBMEs">getLBMEs() (gnocis.biomarkers.biomarkers method)</a>
@@ -301,10 +315,10 @@
 </li>
       <li><a href="gnocis.html#gnocis.validation.getPRC">getPRC() (in module gnocis.validation)</a>
 </li>
-      <li><a href="gnocis.html#gnocis.models.sequenceModel.getPRCAUC">getPRCAUC (gnocis.models.sequenceModel attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gnocis.html#gnocis.models.sequenceModel.getPRCAUC">getPRCAUC (gnocis.models.sequenceModel attribute)</a>
+</li>
       <li><a href="gnocis.html#gnocis.models.sequenceModel.getPrecisionThreshold">getPrecisionThreshold (gnocis.models.sequenceModel attribute)</a>
 </li>
       <li><a href="gnocis.html#gnocis.features.features.getPREdictorMotifPairSpectrum">getPREdictorMotifPairSpectrum() (gnocis.features.features static method)</a>
@@ -343,6 +357,8 @@
         <li><a href="gnocis.html#gnocis.sklearnModels.sequenceModelSVM.getSequenceFeatureVector">(gnocis.sklearnModels.sequenceModelSVM method)</a>
 </li>
         <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.getSequenceFeatureVector">(gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic method)</a>
+</li>
+        <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.getSequenceFeatureVector">(gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale method)</a>
 </li>
         <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector">(gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA method)</a>
 </li>
@@ -405,10 +421,12 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gnocis.html#gnocis.sequences.generatorMarkovChain.initialDistribution">initialDistribution (gnocis.sequences.generatorMarkovChain attribute)</a>
+      <li><a href="gnocis.html#gnocis.features.kSpectrumMMDFeature.index">index (gnocis.features.kSpectrumMMDFeature attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gnocis.html#gnocis.sequences.generatorMarkovChain.initialDistribution">initialDistribution (gnocis.sequences.generatorMarkovChain attribute)</a>
+</li>
       <li><a href="gnocis.html#gnocis.motifs.IUPACMotif">IUPACMotif (class in gnocis.motifs)</a>
 </li>
   </ul></td>
@@ -417,10 +435,14 @@
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gnocis.html#gnocis.features.kSpectrumMMDFeature.kmer">kmer (gnocis.features.kSpectrumMMDFeature attribute)</a>
+</li>
       <li><a href="gnocis.html#gnocis.features.kSpectrum.kmerByIndex">kmerByIndex (gnocis.features.kSpectrum attribute)</a>
 
       <ul>
         <li><a href="gnocis.html#gnocis.features.kSpectrumMM.kmerByIndex">(gnocis.features.kSpectrumMM attribute)</a>
+</li>
+        <li><a href="gnocis.html#gnocis.features.kSpectrumMMD.kmerByIndex">(gnocis.features.kSpectrumMMD attribute)</a>
 </li>
         <li><a href="gnocis.html#gnocis.features.kSpectrumPDS.kmerByIndex">(gnocis.features.kSpectrumPDS attribute)</a>
 </li>
@@ -430,6 +452,10 @@
       <li><a href="gnocis.html#gnocis.features.kSpectrum">kSpectrum (class in gnocis.features)</a>
 </li>
       <li><a href="gnocis.html#gnocis.features.kSpectrumMM">kSpectrumMM (class in gnocis.features)</a>
+</li>
+      <li><a href="gnocis.html#gnocis.features.kSpectrumMMD">kSpectrumMMD (class in gnocis.features)</a>
+</li>
+      <li><a href="gnocis.html#gnocis.features.kSpectrumMMDFeature">kSpectrumMMDFeature (class in gnocis.features)</a>
 </li>
       <li><a href="gnocis.html#gnocis.features.kSpectrumPDS">kSpectrumPDS (class in gnocis.features)</a>
 </li>
@@ -522,6 +548,8 @@
       <ul>
         <li><a href="gnocis.html#gnocis.features.kSpectrumMM.nFeatures">(gnocis.features.kSpectrumMM attribute)</a>
 </li>
+        <li><a href="gnocis.html#gnocis.features.kSpectrumMMD.nFeatures">(gnocis.features.kSpectrumMMD attribute)</a>
+</li>
         <li><a href="gnocis.html#gnocis.features.kSpectrumPDS.nFeatures">(gnocis.features.kSpectrumPDS attribute)</a>
 </li>
       </ul></li>
@@ -541,6 +569,8 @@
 
       <ul>
         <li><a href="gnocis.html#gnocis.features.kSpectrumMM.nspectrum">(gnocis.features.kSpectrumMM attribute)</a>
+</li>
+        <li><a href="gnocis.html#gnocis.features.kSpectrumMMD.nspectrum">(gnocis.features.kSpectrumMMD attribute)</a>
 </li>
         <li><a href="gnocis.html#gnocis.features.kSpectrumPDS.nspectrum">(gnocis.features.kSpectrumPDS attribute)</a>
 </li>
@@ -567,6 +597,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gnocis.html#gnocis.features.kSpectrumMMDFeature.parent">parent (gnocis.features.kSpectrumMMDFeature attribute)</a>
+</li>
       <li><a href="gnocis.html#gnocis.motifs.PWMMotif.path">path (gnocis.motifs.PWMMotif attribute)</a>
 
       <ul>
@@ -587,14 +619,14 @@
         <li><a href="gnocis.html#gnocis.sequences.generatorMarkovChain.prepared">(gnocis.sequences.generatorMarkovChain attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gnocis.html#gnocis.regions.regions.printStatistics">printStatistics() (gnocis.regions.regions method)</a>
 
       <ul>
         <li><a href="gnocis.html#gnocis.sequences.sequences.printStatistics">(gnocis.sequences.sequences method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gnocis.html#gnocis.models.sequenceModel.printTestStatistics">printTestStatistics (gnocis.models.sequenceModel attribute)</a>
 </li>
       <li><a href="gnocis.html#gnocis.validation.printValidationStatistics">printValidationStatistics() (in module gnocis.validation)</a>
@@ -670,6 +702,8 @@
 </li>
         <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow">(gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic method)</a>
 </li>
+        <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow">(gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale method)</a>
+</li>
         <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.scoreWindow">(gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA method)</a>
 </li>
       </ul></li>
@@ -698,6 +732,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic">sequenceModelSVMOptimizedQuadratic (class in gnocis.sklearnModelsOpt)</a>
+</li>
+      <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale">sequenceModelSVMOptimizedQuadraticAutoScale (class in gnocis.sklearnModelsOpt)</a>
 </li>
       <li><a href="gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA">sequenceModelSVMOptimizedQuadraticCUDA (class in gnocis.sklearnModelsOpt)</a>
 </li>

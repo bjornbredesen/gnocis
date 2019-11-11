@@ -158,6 +158,20 @@ cdef class features:
 		return features('%d-spectrumMM'%(k), kSpectrumMM(k).features)
 	
 	@staticmethod
+	def getKSpectrumMMD(k):
+		"""
+		Constructs the k-mer spectrum mismatch kernel with duplicates, the occurrence frequencies of all motifs of length k, with one allowed mismatch in an arbitrary position, and one duplicate registry of the core motif at every position to give higher preference.
+		
+		:param k: k-mer length.
+		
+		:type k: int
+		
+		:return: Feature set
+		:rtype: features
+		"""
+		return features('%d-spectrumMMD'%(k), kSpectrumMMD(k).features)
+	
+	@staticmethod
 	def getKSpectrumPDS(k):
 		"""
 		Constructs the k-mer spectrum positional double-stranded kernel, the occurrence frequencies of all motifs of length k, with position represented by grading between sequence ends.
@@ -463,6 +477,109 @@ cdef class kSpectrumMM:
 		cdef list nOcc, convtable
 		cdef char c
 		cdef kSpectrumMMFeature f
+		cdef int cki, ckiRC, bki, bkiRC, mutNTI, cmut, cmask, cmuts
+		if cache:
+			if self.cacheName in seq.cache.keys():
+				for f, fv in zip(self.features, seq.cache[self.cacheName]):
+					f.cachedSequence = seq
+					f.cachedValue = fv
+				return seq.cache[self.cacheName][index]
+		nspectrum = self.nspectrum
+		bitmask = (1 << (2*nspectrum))-1
+		bseq = seq.getBytesIndexed()
+		slen = len(seq)
+		nRCShift = 2*(nspectrum-1)
+		ki, kiRC = (0, 0)
+		nAdd = 1000.0 / len(seq.seq)
+		nnt = 0
+		nOcc = [ 0.0 for _ in range(self.nFeatures) ]
+		for i in range(slen):
+			bnt = bseq[i]
+			if bnt == 0xFF:
+				ki = 0
+				kiRC = 0
+				nnt = 0
+				continue
+			ki = ( ( ki << 2 ) | bnt ) & bitmask
+			kiRC = ( kiRC >> 2 ) | ( (bnt^1) << nRCShift )
+			nnt += 1
+			if nnt >= nspectrum:
+				nOcc[ki] += nAdd
+				nOcc[kiRC] += nAdd
+				for mutNTI in range(nspectrum):
+					# Mutate nucleotide mutNTI
+					cmask = 0x7FFFFFFF ^ ( (0x3) << (mutNTI*2) )
+					bki = ki & cmask
+					bkiRC = kiRC & cmask
+					for cmut in range(4):
+						# Mutate with the cmut nucleotide
+						cmuts = cmut << (mutNTI*2)
+						cki = bki | cmuts
+						ckiRC = bkiRC | cmuts
+						if cki != ki:
+							nOcc[cki] += nAdd
+						if ckiRC != kiRC:
+							nOcc[ckiRC] += nAdd
+		if cache:
+			seq.cache[self.cacheName] = nOcc
+			for f, fv in zip(self.features, nOcc):
+				f.cachedSequence = seq
+				f.cachedValue = fv
+		return nOcc[index]
+
+
+############################################################################
+# k-mer mismatch spectrum (duplicate)
+# For each mismatch position, duplicate matches are registered, giving a
+# higher weighting for the core motif
+
+# k-mer for k-spectrum feature set
+cdef class kSpectrumMMDFeature(feature):
+	
+	def __init__(self, parent, kmer, index):
+		self.parent, self.kmer, self.index = parent, kmer, index
+		self.cachedSequence = None
+		self.cachedValue = 0.0
+	
+	def __str__(self):
+		return 'Feature<k-mer MM occurrence frequency: %s>'%(self.kmer)
+	
+	def __repr__(self): return self.__str__()
+	
+	cpdef double get(self, sequence seq, bool cache=True):
+		if cache:
+			if self.cachedSequence == seq:
+				return self.cachedValue
+		return self.parent.extract(seq, self.index)
+
+# Extracts k-mer spectra from sequences
+cdef class kSpectrumMMD:
+	"""
+	Feature set that extracts the occurrence frequencies of all motifs of length k, with one mismatch allowed in an arbitrary position. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.
+	
+	:param nspectrum: Length of motifs, k, to use.
+	
+	:type nspectrum: int
+	"""
+	
+	def __init__(self, nspectrum):
+		self.nspectrum = nspectrum
+		self.nFeatures = (1 << (2*nspectrum))
+		self.bitmask = self.nFeatures - 1
+		self.kmerByIndex = {}
+		for ki in range(self.nFeatures):
+			self.kmerByIndex[ki] = ''.join( kSpectrumIndex2NT[(ki >> ((nspectrum - 1 - x)*2)) & 3] for x in range(nspectrum) )
+		self.features = [ kSpectrumMMDFeature(self, self.kmerByIndex[ki], ki) for ki in range(self.nFeatures) ]
+		self.cacheName = '%d-spectrumMMD'%nspectrum
+	
+	cdef double extract(self, sequence seq, int index, cache=True):
+		cdef bytes bseq
+		cdef unsigned char bnt
+		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
+		cdef double nAdd, fv
+		cdef list nOcc, convtable
+		cdef char c
+		cdef kSpectrumMMDFeature f
 		cdef int cki, ckiRC, bki, bkiRC, mutNTI, cmut, cmask, cmuts
 		if cache:
 			if self.cacheName in seq.cache.keys():

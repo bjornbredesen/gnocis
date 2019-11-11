@@ -226,6 +226,33 @@ class testModels(unittest.TestCase):
 		#
 		diff = sum( 1 if a != b else 0 for a, b in zip(scoresC, scoresD) )
 		self.assertEqual(diff, 0)
+	
+	def testKSpectrum(self):
+		spec = nc.features.getKSpectrum(5)
+		testSeq = nc.sequence('', 'GAGAGAGAGT')
+		# GAGAGAGAGT
+		# -----
+		#   -----
+		#     -----
+		# ACTCTCTCTC
+		kmerFreq = {
+			k: v
+			for k, v in zip( [ f.kmer for f in spec ],
+					spec.getAll(testSeq)
+			)
+		}
+		self.assertEqual(kmerFreq['AGAGT'], 100.)
+		self.assertEqual(kmerFreq['ACTCT'], 100.)
+		self.assertEqual(kmerFreq['AGAGA'], 200.)
+		self.assertEqual(kmerFreq['TCTCT'], 200.)
+		self.assertEqual(kmerFreq['GAGAG'], 300.)
+		self.assertEqual(kmerFreq['CTCTC'], 300.)
+		self.assertEqual(
+			sum(
+				kmerFreq[kmer]
+				for kmer in kmerFreq.keys()
+				if kmer not in [ 'AGAGT', 'ACTCT', 'AGAGA', 'TCTCT', 'GAGAG', 'CTCTC' ]),
+			0.)
 
 
 #-----------------------------------
