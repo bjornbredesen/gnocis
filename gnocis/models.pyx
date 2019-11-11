@@ -41,7 +41,7 @@ def multiprocessModelDeployer(args):
 			(
 				model.scoreWindow(win)
 				for win in
-				seq.getWindows(windowSize, windowStep, cache = False)
+				seq.getWindows(windowSize, windowStep)
 				if len(win) == windowSize
 			),
 			default = defaultValue
@@ -163,14 +163,12 @@ class sequenceModel:
 		self.__dict__ = state
 	
 	# Gets a list of scores for a sequence list or stream. A stream is recommended when the sequence list is large, in order to avoid running out of memory.
-	def getSequenceScores(self, seqs, cache = True):
+	def getSequenceScores(self, seqs):
 		""" Scores a set of sequences, returning the maximum window score for each.
 		
 		:param seqs: Sequences to score.
-		:param cache: Whether or not to use caching of results.
 		
 		:type seqs: sequences/sequenceStream
-		:type cache: bool
 		
 		:return: List of the maximum window score per sequence
 		:rtype: list
@@ -208,30 +206,28 @@ class sequenceModel:
 				]
 		if isinstance(seqs, sequenceStream):
 			return [
-				self.scoreSequence(cseq, cache=False)
+				self.scoreSequence(cseq)
 				for blk in seqs.fetch(nTreadFetch, maxThreadFetchNT)
 				for cseq in blk
 			]
 		elif isinstance(seqs, sequences) or isinstance(seqs, list):
-			return [ self.scoreSequence(cseq, cache=cache) for cseq in seqs ]
+			return [ self.scoreSequence(cseq) for cseq in seqs ]
 	
 	# Gets the threshold that gives optimal accuracy on a pair of lists or streams of sequences. Streams are recommended when the sequence lists are large, in order to avoid running out of memory.
-	def getOptimalAccuracyThreshold(self, positives, negatives, cache = False):
+	def getOptimalAccuracyThreshold(self, positives, negatives):
 		""" Gets a threshold value optimized for accuracy to a set of positive and a set of negative sequences.
 		
 		:param positives: Positive sequences.
 		:param negatives: Negative sequences.
-		:param cache: Whether or not to use caching of results.
 		
 		:type positives: sequences/sequenceStream
 		:type negatives: sequences/sequenceStream
-		:type cache: bool
 		
 		:return: List of the maximum window score per sequence
 		:rtype: list
 		"""
-		positiveScores = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives, cache = cache) ]
-		negativeScores = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives, cache = cache) ]
+		positiveScores = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
+		negativeScores = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		vPairs = sorted(positiveScores + negativeScores, key = lambda x: x.score)
 		TP, FP, TN, FN = len(positiveScores), len(negativeScores), 0, 0
 		threshold = float('-INF')
@@ -250,24 +246,22 @@ class sequenceModel:
 		return threshold
 	
 	# Gets the threshold that gives a desired precision for two lists or streams of sequences. Streams are recommended when the sequence lists are large, in order to avoid running out of memory.
-	def getPrecisionThreshold(self, positives, negatives, wantedPrecision, cache = False):
+	def getPrecisionThreshold(self, positives, negatives, wantedPrecision):
 		""" Gets a threshold value for a desired precision to a set of positive and a set of negative sequences. Linear interpolation is used in order to achieve a close approximation.
 		
 		:param positives: Positive sequences.
 		:param negatives: Negative sequences.
 		:param wantedPrecision: The precision to approximate.
-		:param cache: Whether or not to use caching of results.
 		
 		:type positives: sequences/sequenceStream
 		:type negatives: sequences/sequenceStream
 		:type wantedPrecision: float
-		:type cache: bool
 		
 		:return: List of the maximum window score per sequence
 		:rtype: list
 		"""
-		positiveScores = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives, cache = cache) ]
-		negativeScores = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives, cache = cache) ]
+		positiveScores = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
+		negativeScores = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		#
 		classScoresSorted = sorted( positiveScores + negativeScores, key = lambda x: x.score )
 		# Search for optimal threshold
@@ -334,24 +328,17 @@ class sequenceModel:
 		return self
 	
 	# Applies model to a sequence with a sliding window, and returns the maximum score.
-	def scoreSequence(self, seq, cache=True):
+	def scoreSequence(self, seq):
 		""" Scores a single sequence. The score is determined by applying the model with a sliding window, and taking the maximum score.
 		
 		:param seq: The sequence.
-		:param cache: Whether or not to use caching of results.
 		
 		:type seq: sequences/sequenceStream
-		:type cache: bool
 		
 		:return: Maximal window score
 		:rtype: float
 		"""
 		cdef float score
-		if cache:
-			if not 'score' in seq.cache.keys():
-				seq.cache['score'] = {}
-			if self in seq.cache['score'].keys():
-				return seq.cache['score'][self]
 		score = max(
 			(
 				self.scoreWindow(win)
@@ -361,46 +348,40 @@ class sequenceModel:
 			),
 			default = float('-INF')
 		)
-		if cache:
-			seq.cache['score'][self] = score
 		return score
 	
 	# Gets and returns a confusion matrix.
-	def getConfusionMatrix(self, positives, negatives, cache = True):
+	def getConfusionMatrix(self, positives, negatives):
 		""" Calculates and returns a confusion matrix for sets of positive and negative sequences.
 		
 		:param positives: Positives.
 		:param negatives: Negatives.
-		:param cache: Whether or not to use caching of results.
 		
 		:type positives: sequences/sequenceStream
 		:type negatives: sequences/sequenceStream
-		:type cache: bool
 		
 		:return: Confusion matrix
 		:rtype: dict
 		"""
-		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives, cache = cache) ]
-		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives, cache = cache) ]
+		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
+		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		return getConfusionMatrix(vPos, vNeg, threshold = self.threshold)
 	
 	# Generates a Receiver Operating Characteristic curve.
-	def getROC(self, positives, negatives, cache = True):
+	def getROC(self, positives, negatives):
 		""" Calculates and returns a Receiver Operating Characteristic (ROC) curve for sets of positive and negative sequences.
 		
 		:param positives: Positives.
 		:param negatives: Negatives.
-		:param cache: Whether or not to use caching of results.
 		
 		:type positives: sequences/sequenceStream
 		:type negatives: sequences/sequenceStream
-		:type cache: bool
 		
 		:return: Receiver Operating Characteristic (ROC) curve
 		:rtype: list
 		"""
-		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives, cache = cache) ]
-		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives, cache = cache) ]
+		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
+		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		return getROC(vPos, vNeg)
 	
 	# Calculates the area under a Receiver Operating Characteristic curve.
@@ -419,22 +400,20 @@ class sequenceModel:
 		return getAUC(self.getROC(positives, negatives))
 	
 	# Generates a Precision/Recall curve.
-	def getPRC(self, positives, negatives, cache = True):
+	def getPRC(self, positives, negatives):
 		""" Calculates and returns a Precision/Recall curve (PRC) for sets of positive and negative sequences.
 		
 		:param positives: Positives.
 		:param negatives: Negatives.
-		:param cache: Whether or not to use caching of results.
 		
 		:type positives: sequences/sequenceStream
 		:type negatives: sequences/sequenceStream
-		:type cache: bool
 		
 		:return: Precision/Recall curve (PRC)
 		:rtype: list
 		"""
-		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives, cache = cache) ]
-		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives, cache = cache) ]
+		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
+		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		return getPRC(vPos, vNeg)
 	
 	# Calculates the area under a Precision/Recall Curve.
@@ -576,7 +555,6 @@ class sequenceModel:
 		if len(winSeqSet.sequences) > 0:
 			winScoreSet += self.getSequenceScores(winSeqSet)
 		
-		print('Handling scores')
 		for winPos, wScore in zip(winPosSet, winScoreSet):
 			if wScore <= self.threshold: continue
 			if len(pred) == 0 or pred[-1].seq != winPos.seq or pred[-1].end < winPos.start-1:

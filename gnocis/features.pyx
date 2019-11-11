@@ -25,15 +25,13 @@ cdef class feature:
 	def __init__(self):
 		pass
 	
-	cpdef double get(self, sequence seq, bool cache=True):
+	cpdef double get(self, sequence seq):
 		"""
 		Extracts the feature value from a sequence.
 		
 		:param seq: The sequence to extract the feature value from.
-		:param cache: Whether or not to cache the feature value.
 		
 		:type seq: sequence
-		:type cache: bool
 		
 		:return: Feature value
 		:rtype: float
@@ -210,8 +208,8 @@ cdef class scaledFeature(feature):
 	
 	def __repr__(self): return self.__str__()
 	
-	cpdef double get(self, sequence seq, bool cache=True):
-		return self.feature.get(seq, cache) * self.vScale - self.vSub
+	cpdef double get(self, sequence seq):
+		return self.feature.get(seq) * self.vScale - self.vSub
 
 # Scales features to the [-1, 1] interval.
 cdef class featureScaler(features):
@@ -293,7 +291,7 @@ cdef class featureMotifOccurrenceFrequency(feature):
 	
 	def __repr__(self): return self.__str__()
 	
-	cpdef double get(self, sequence seq, bool cache=True):
+	cpdef double get(self, sequence seq):
 		return len(self.m.findOccurrences(seq)) * 1000.0 / len(seq.seq)
 
 # Sequence model feature for PREdictor-style motif pair occurrence frequency.
@@ -318,7 +316,7 @@ cdef class featurePREdictorMotifPairOccurrenceFrequency(feature):
 	
 	def __repr__(self): return self.__str__()
 	
-	cpdef double get(self, sequence seq, bool cache=True):
+	cpdef double get(self, sequence seq):
 		cdef int nPairOcc, firstRelevantiB
 		cdef list alloA, alloB
 		cdef motifOccurrence oA, oB
@@ -357,10 +355,9 @@ cdef class kSpectrumFeature(feature):
 	
 	def __repr__(self): return self.__str__()
 	
-	cpdef double get(self, sequence seq, bool cache=True):
-		if cache:
-			if self.cachedSequence == seq:
-				return self.cachedValue
+	cpdef double get(self, sequence seq):
+		if self.cachedSequence == seq:
+			return self.cachedValue
 		return self.parent.extract(seq, self.index)
 
 # Extracts k-mer spectra from sequences
@@ -381,9 +378,10 @@ cdef class kSpectrum:
 		for ki in range(self.nFeatures):
 			self.kmerByIndex[ki] = ''.join( kSpectrumIndex2NT[(ki >> ((nspectrum - 1 - x)*2)) & 3] for x in range(nspectrum) )
 		self.features = [ kSpectrumFeature(self, self.kmerByIndex[ki], ki) for ki in range(self.nFeatures) ]
-		self.cacheName = '%d-spectrum'%nspectrum
+		self.cachedSequence = None
+		self.cachedSpectrum = None
 	
-	cdef double extract(self, sequence seq, int index, cache=True):
+	cdef double extract(self, sequence seq, int index):
 		cdef bytes bseq
 		cdef unsigned char bnt
 		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
@@ -391,12 +389,8 @@ cdef class kSpectrum:
 		cdef list nOcc, convtable
 		cdef char c
 		cdef kSpectrumFeature f
-		if cache:
-			if self.cacheName in seq.cache.keys():
-				for f, fv in zip(self.features, seq.cache[self.cacheName]):
-					f.cachedSequence = seq
-					f.cachedValue = fv
-				return seq.cache[self.cacheName][index]
+		if self.cachedSequence == seq:
+			return self.cachedSpectrum[index]
 		nspectrum = self.nspectrum
 		bitmask = (1 << (2*nspectrum))-1
 		bseq = seq.getBytesIndexed()
@@ -419,11 +413,8 @@ cdef class kSpectrum:
 			if nnt >= nspectrum:
 				nOcc[ki] += nAdd
 				nOcc[kiRC] += nAdd
-		if cache:
-			seq.cache[self.cacheName] = nOcc
-			for f, fv in zip(self.features, nOcc):
-				f.cachedSequence = seq
-				f.cachedValue = fv
+		self.cachedSequence = seq
+		self.cachedSpectrum = nOcc
 		return nOcc[index]
 
 
@@ -443,10 +434,9 @@ cdef class kSpectrumMMFeature(feature):
 	
 	def __repr__(self): return self.__str__()
 	
-	cpdef double get(self, sequence seq, bool cache=True):
-		if cache:
-			if self.cachedSequence == seq:
-				return self.cachedValue
+	cpdef double get(self, sequence seq):
+		if self.cachedSequence == seq:
+			return self.cachedValue
 		return self.parent.extract(seq, self.index)
 
 # Extracts k-mer spectra from sequences
@@ -467,9 +457,10 @@ cdef class kSpectrumMM:
 		for ki in range(self.nFeatures):
 			self.kmerByIndex[ki] = ''.join( kSpectrumIndex2NT[(ki >> ((nspectrum - 1 - x)*2)) & 3] for x in range(nspectrum) )
 		self.features = [ kSpectrumMMFeature(self, self.kmerByIndex[ki], ki) for ki in range(self.nFeatures) ]
-		self.cacheName = '%d-spectrumMM'%nspectrum
+		self.cachedSequence = None
+		self.cachedSpectrum = None
 	
-	cdef double extract(self, sequence seq, int index, cache=True):
+	cdef double extract(self, sequence seq, int index):
 		cdef bytes bseq
 		cdef unsigned char bnt
 		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
@@ -478,12 +469,8 @@ cdef class kSpectrumMM:
 		cdef char c
 		cdef kSpectrumMMFeature f
 		cdef int cki, ckiRC, bki, bkiRC, mutNTI, cmut, cmask, cmuts
-		if cache:
-			if self.cacheName in seq.cache.keys():
-				for f, fv in zip(self.features, seq.cache[self.cacheName]):
-					f.cachedSequence = seq
-					f.cachedValue = fv
-				return seq.cache[self.cacheName][index]
+		if self.cachedSequence == seq:
+			return self.cachedSpectrum[index]
 		nspectrum = self.nspectrum
 		bitmask = (1 << (2*nspectrum))-1
 		bseq = seq.getBytesIndexed()
@@ -520,11 +507,8 @@ cdef class kSpectrumMM:
 							nOcc[cki] += nAdd
 						if ckiRC != kiRC:
 							nOcc[ckiRC] += nAdd
-		if cache:
-			seq.cache[self.cacheName] = nOcc
-			for f, fv in zip(self.features, nOcc):
-				f.cachedSequence = seq
-				f.cachedValue = fv
+		self.cachedSequence = seq
+		self.cachedSpectrum = nOcc
 		return nOcc[index]
 
 
@@ -546,10 +530,9 @@ cdef class kSpectrumMMDFeature(feature):
 	
 	def __repr__(self): return self.__str__()
 	
-	cpdef double get(self, sequence seq, bool cache=True):
-		if cache:
-			if self.cachedSequence == seq:
-				return self.cachedValue
+	cpdef double get(self, sequence seq):
+		if self.cachedSequence == seq:
+			return self.cachedValue
 		return self.parent.extract(seq, self.index)
 
 # Extracts k-mer spectra from sequences
@@ -570,9 +553,10 @@ cdef class kSpectrumMMD:
 		for ki in range(self.nFeatures):
 			self.kmerByIndex[ki] = ''.join( kSpectrumIndex2NT[(ki >> ((nspectrum - 1 - x)*2)) & 3] for x in range(nspectrum) )
 		self.features = [ kSpectrumMMDFeature(self, self.kmerByIndex[ki], ki) for ki in range(self.nFeatures) ]
-		self.cacheName = '%d-spectrumMMD'%nspectrum
+		self.cachedSequence = None
+		self.cachedSpectrum = None
 	
-	cdef double extract(self, sequence seq, int index, cache=True):
+	cdef double extract(self, sequence seq, int index):
 		cdef bytes bseq
 		cdef unsigned char bnt
 		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
@@ -581,12 +565,8 @@ cdef class kSpectrumMMD:
 		cdef char c
 		cdef kSpectrumMMDFeature f
 		cdef int cki, ckiRC, bki, bkiRC, mutNTI, cmut, cmask, cmuts
-		if cache:
-			if self.cacheName in seq.cache.keys():
-				for f, fv in zip(self.features, seq.cache[self.cacheName]):
-					f.cachedSequence = seq
-					f.cachedValue = fv
-				return seq.cache[self.cacheName][index]
+		if self.cachedSequence == seq:
+			return self.cachedSpectrum[index]
 		nspectrum = self.nspectrum
 		bitmask = (1 << (2*nspectrum))-1
 		bseq = seq.getBytesIndexed()
@@ -619,11 +599,8 @@ cdef class kSpectrumMMD:
 						ckiRC = bkiRC | cmuts
 						nOcc[cki] += nAdd
 						nOcc[ckiRC] += nAdd
-		if cache:
-			seq.cache[self.cacheName] = nOcc
-			for f, fv in zip(self.features, nOcc):
-				f.cachedSequence = seq
-				f.cachedValue = fv
+		self.cachedSequence = seq
+		self.cachedSpectrum = nOcc
 		return nOcc[index]
 
 
@@ -644,10 +621,9 @@ cdef class kSpectrumFeaturePDS(feature):
 	
 	def __repr__(self): return self.__str__()
 	
-	cpdef double get(self, sequence seq, bool cache=True):
-		if cache:
-			if self.cachedSequence == seq:
-				return self.cachedValue
+	cpdef double get(self, sequence seq):
+		if self.cachedSequence == seq:
+			return self.cachedValue
 		return self.parent.extract(seq, self.index)
 
 # Extracts k-mer spectra from sequences
@@ -669,9 +645,10 @@ cdef class kSpectrumPDS:
 		for ki in range(self.nkmers):
 			self.kmerByIndex[ki] = ''.join( kSpectrumIndex2NT[(ki >> ((nspectrum - 1 - x)*2)) & 3] for x in range(nspectrum) )
 		self.features = [ f for ki in range(self.nkmers) for f in [ kSpectrumFeaturePDS(self, self.kmerByIndex[ki], ki, True), kSpectrumFeaturePDS(self, self.kmerByIndex[ki], ki, False) ] ]
-		self.cacheName = '%d-spectrum'%nspectrum
+		self.cachedSequence = None
+		self.cachedSpectrum = None
 	
-	cdef double extract(self, sequence seq, int index, cache=True):
+	cdef double extract(self, sequence seq, int index):
 		cdef bytes bseq
 		cdef unsigned char bnt
 		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
@@ -682,12 +659,8 @@ cdef class kSpectrumPDS:
 		#
 		cdef double degA, degB, degD
 		#
-		if cache:
-			if self.cacheName in seq.cache.keys():
-				for f, fv in zip(self.features, seq.cache[self.cacheName]):
-					f.cachedSequence = seq
-					f.cachedValue = fv
-				return seq.cache[self.cacheName][index]
+		if self.cachedSequence == seq:
+			return self.cachedSpectrum[index]
 		nspectrum = self.nspectrum
 		bitmask = (1 << (2*nspectrum))-1
 		bseq = seq.getBytesIndexed()
@@ -721,11 +694,8 @@ cdef class kSpectrumPDS:
 				nOcc[ ( kiRC << 1 ) + 1 ] += nAdd * degA
 			degA += degD
 			degB -= degD
-		if cache:
-			seq.cache[self.cacheName] = nOcc
-			for f, fv in zip(self.features, nOcc):
-				f.cachedSequence = seq
-				f.cachedValue = fv
+		self.cachedSequence = seq
+		self.cachedSpectrum = nOcc
 		return nOcc[index]
 
 

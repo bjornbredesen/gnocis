@@ -17,7 +17,6 @@ from .regions cimport *
 cdef class sequence:
 	
 	cdef public str name, seq, path, annotation
-	cdef public dict cache
 	cdef public region sourceRegion
 	cdef bytes cbytes, cbytesIndexed
 	cdef public bytes getBytes(self)

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>gnocis &#8212; Gnocis 0.9.2 documentation</title>
+    <title>gnocis &#8212; Gnocis 0.9.3 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -28,7 +28,7 @@
         <li class="right" >
           <a href="tutorial.html" title="Gnocis tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -186,16 +186,23 @@
 <em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">feature</code><a class="headerlink" href="#gnocis.features.feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The <cite>feature</cite> class is a base class for sequence features.</p>
+<dl class="attribute">
+<dt id="gnocis.features.feature.cachedSequence">
+<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.features.feature.cachedSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.feature.cachedValue">
+<code class="sig-name descname">cachedValue</code><a class="headerlink" href="#gnocis.features.feature.cachedValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="gnocis.features.feature.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.feature.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts the feature value from a sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Feature value</p>
@@ -224,10 +231,7 @@
 <dd><p>Extracts the feature value from a sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Feature value</p>
@@ -270,10 +274,7 @@
 <dd><p>Extracts the feature value from a sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Feature value</p>
@@ -500,8 +501,13 @@
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="gnocis.features.kSpectrum.cacheName">
-<code class="sig-name descname">cacheName</code><a class="headerlink" href="#gnocis.features.kSpectrum.cacheName" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.features.kSpectrum.cachedSequence">
+<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.features.kSpectrum.cachedSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrum.cachedSpectrum">
+<code class="sig-name descname">cachedSpectrum</code><a class="headerlink" href="#gnocis.features.kSpectrum.cachedSpectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -542,8 +548,13 @@
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="gnocis.features.kSpectrumMM.cacheName">
-<code class="sig-name descname">cacheName</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.cacheName" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.features.kSpectrumMM.cachedSequence">
+<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.cachedSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMM.cachedSpectrum">
+<code class="sig-name descname">cachedSpectrum</code><a class="headerlink" href="#gnocis.features.kSpectrumMM.cachedSpectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -584,8 +595,13 @@
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="gnocis.features.kSpectrumMMD.cacheName">
-<code class="sig-name descname">cacheName</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.cacheName" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.features.kSpectrumMMD.cachedSequence">
+<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.cachedSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumMMD.cachedSpectrum">
+<code class="sig-name descname">cachedSpectrum</code><a class="headerlink" href="#gnocis.features.kSpectrumMMD.cachedSpectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -614,26 +630,13 @@
 <dt id="gnocis.features.kSpectrumMMDFeature">
 <em class="property">class </em><code class="sig-prename descclassname">gnocis.features.</code><code class="sig-name descname">kSpectrumMMDFeature</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.features.feature" title="gnocis.features.feature"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.features.feature</span></code></a></p>
-<dl class="attribute">
-<dt id="gnocis.features.kSpectrumMMDFeature.cachedSequence">
-<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.cachedSequence" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="gnocis.features.kSpectrumMMDFeature.cachedValue">
-<code class="sig-name descname">cachedValue</code><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.cachedValue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="method">
 <dt id="gnocis.features.kSpectrumMMDFeature.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.features.kSpectrumMMDFeature.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts the feature value from a sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Feature value</p>
@@ -677,8 +680,13 @@
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="gnocis.features.kSpectrumPDS.cacheName">
-<code class="sig-name descname">cacheName</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.cacheName" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.features.kSpectrumPDS.cachedSequence">
+<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.cachedSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.features.kSpectrumPDS.cachedSpectrum">
+<code class="sig-name descname">cachedSpectrum</code><a class="headerlink" href="#gnocis.features.kSpectrumPDS.cachedSpectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -734,10 +742,7 @@
 <dd><p>Extracts the feature value from a sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to cache the feature value.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>seq</strong> (<a class="reference internal" href="#gnocis.sequences.sequence" title="gnocis.sequences.sequence"><em>sequence</em></a>) – The sequence to extract the feature value from.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Feature value</p>
@@ -804,7 +809,6 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
 <li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -835,7 +839,6 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positive sequences.</p></li>
 <li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negative sequences.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -856,7 +859,6 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
 <li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -898,7 +900,6 @@
 <li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positive sequences.</p></li>
 <li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negative sequences.</p></li>
 <li><p><strong>wantedPrecision</strong> (<em>float</em>) – The precision to approximate.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -919,7 +920,6 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
 <li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -957,10 +957,7 @@
 <dd><p>Scores a set of sequences, returning the maximum window score for each.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seqs</strong> (<em>sequences/sequenceStream</em>) – Sequences to score.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>seqs</strong> (<em>sequences/sequenceStream</em>) – Sequences to score.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>List of the maximum window score per sequence</p>
@@ -1036,10 +1033,7 @@
 <dd><p>Scores a single sequence. The score is determined by applying the model with a sliding window, and taking the maximum score.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seq</strong> (<em>sequences/sequenceStream</em>) – The sequence.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em>) – Whether or not to use caching of results.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>seq</strong> (<em>sequences/sequenceStream</em>) – The sequence.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Maximal window score</p>
@@ -1153,6 +1147,16 @@
 <code class="sig-name descname">cRC</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.cRC" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.cachedOcc">
+<code class="sig-name descname">cachedOcc</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.cachedOcc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.IUPACMotif.cachedSequence">
+<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.motifs.IUPACMotif.cachedSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="gnocis.motifs.IUPACMotif.findOccurrences">
 <code class="sig-name descname">findOccurrences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.motifs.IUPACMotif.findOccurrences" title="Permalink to this definition">¶</a></dt>
@@ -1222,6 +1226,16 @@
 <dl class="attribute">
 <dt id="gnocis.motifs.PWMMotif.PWMRC">
 <code class="sig-name descname">PWMRC</code><a class="headerlink" href="#gnocis.motifs.PWMMotif.PWMRC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.PWMMotif.cachedOcc">
+<code class="sig-name descname">cachedOcc</code><a class="headerlink" href="#gnocis.motifs.PWMMotif.cachedOcc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.motifs.PWMMotif.cachedSequence">
+<code class="sig-name descname">cachedSequence</code><a class="headerlink" href="#gnocis.motifs.PWMMotif.cachedSequence" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2173,11 +2187,6 @@
 <code class="sig-name descname">annotation</code><a class="headerlink" href="#gnocis.sequences.sequence.annotation" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="gnocis.sequences.sequence.cache">
-<code class="sig-name descname">cache</code><a class="headerlink" href="#gnocis.sequences.sequence.cache" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="method">
 <dt id="gnocis.sequences.sequence.getWindows">
 <code class="sig-name descname">getWindows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequence.getWindows" title="Permalink to this definition">¶</a></dt>
@@ -2186,7 +2195,6 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>size</strong> (<em>int</em>) – Window size.</p></li>
 <li><p><strong>step</strong> (<em>int</em>) – Window step size.</p></li>
-<li><p><strong>cache</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to use cached data. Default is <cite>True</cite>.</p></li>
 <li><p><strong>includeCroppedEnds</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to include cropped windows on ends of sequence. Default is <cite>False</cite>.</p></li>
 </ul>
 </dd>
@@ -3036,7 +3044,7 @@
         <li class="right" >
           <a href="tutorial.html" title="Gnocis tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Gnocis 0.9.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

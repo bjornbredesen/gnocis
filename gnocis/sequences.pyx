@@ -43,11 +43,10 @@ cdef class sequence:
 	For a `sequence` instance `S`, `len(S)` gives the sequence length. `[ nt for nt in S ]` lists the nucleotides. For two sequences `A` and `B`, `A+B` gives the concatenated sequence.
 	"""
 	
-	#__slots__ = 'name', 'seq', 'path', 'cache'
+	#__slots__ = 'name', 'seq', 'path'
 	
 	def __init__(self, name, seq, path = '', sourceRegion = None, annotation = None):
 		self.name, self.seq, self.path = name, seq, path
-		self.cache = {}
 		self.sourceRegion = sourceRegion
 		self.annotation = annotation
 		if name == None and sourceRegion != None:
@@ -63,15 +62,13 @@ cdef class sequence:
 		return self.__str__()
 	
 	# Extracts sequence windows with a desired size and step size.
-	def getWindows(self, int size, int step, bool cache = True, bool includeCroppedEnds = False):
+	def getWindows(self, int size, int step, bool includeCroppedEnds = False):
 		"""
 		:param size: Window size.
 		:param step: Window step size.
-		:param cache: Whether or not to use cached data. Default is `True`.
 		:param includeCroppedEnds: Whether or not to include cropped windows on ends of sequence. Default is `False`.
 		:type size: int
 		:type step: int
-		:type cache: bool, optional
 		:type includeCroppedEnds: bool, optional
 		
 		:return: Returns a sequence set of sliding window sequences over the sequence.
@@ -80,10 +77,6 @@ cdef class sequence:
 		cdef list windows
 		cdef sequences wsequences
 		cdef long long wA, wB
-		if cache:
-			cacheName = 'windows[%d/%d]'%(size,step)
-			if cacheName in self.cache.keys():
-				return self.cache[cacheName]
 		windows = []
 		wA = 0
 		while True:
@@ -93,15 +86,8 @@ cdef class sequence:
 					windows.append( sequence('%s:%d..%d'%(self.name, wA, len(self.seq)), self.seq[wA:], self.path, sourceRegion = region(self.name, wA, len(self.seq))) )
 				break
 			windows.append( sequence('%s:%d..%d'%(self.name, wA, wB), self.seq[wA:wB], self.path, sourceRegion = region(self.name, wA, wB)) )
-			# If occurrences are cached, we can save time by re-using the cached occurrences
-			if 'motifOccurrences' in self.cache:
-				windows[-1].cache['motifOccurrences'] = {}
-				for m in self.cache['motifOccurrences'].keys():
-					windows[-1].cache['motifOccurrences'][m] = [ motifOccurrence(m, windows[-1], o.start-wA, o.end-wA, o.strand) for o in self.cache['motifOccurrences'][m] if o.start >= wA and o.end <= wB ]
 			wA += step
 		wsequences = sequences('%s windows(%d/%d)'%(self.name, size, step), windows)
-		if cache:
-			self.cache[cacheName] = wsequences
 		return wsequences
 	
 	cdef public bytes getBytes(self):

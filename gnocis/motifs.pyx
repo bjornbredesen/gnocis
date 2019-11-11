@@ -153,6 +153,8 @@ cdef class IUPACMotif:
 		self.regexMotifRC = getReverseComplementaryDNASequence(s)
 		self.c = re.compile(self.regexMotif)
 		self.cRC = re.compile(self.regexMotifRC)
+		self.cachedSequence = None
+		self.cachedOcc = []
 	
 	def __str__(self):
 		return 'IUPACMotif<%s (%s, %d mismatches allowed)>'%(self.name, self.motif, self.nmismatches)
@@ -178,8 +180,8 @@ cdef class IUPACMotif:
 		cdef str seqstr
 		cdef list ret
 		if cache:
-			if 'motifOccurrences' in seq.cache.keys() and self in seq.cache['motifOccurrences'].keys():
-				return seq.cache['motifOccurrences'][self]
+			if self.cachedSequence == seq:
+				return self.cachedOcc
 		ret = []
 		posF, posRC = 0, 0
 		resultF, resultRC = None, None
@@ -213,9 +215,8 @@ cdef class IUPACMotif:
 				ret.append(  motifOccurrence(self, seq, resultRC.start(), resultRC.end(), False) )
 				resultRC = None
 		if cache:
-			if not 'motifOccurrences' in seq.cache.keys():
-				seq.cache['motifOccurrences'] = {}
-			seq.cache['motifOccurrences'][self] = ret
+			self.cachedSequence = seq
+			self.cachedOcc = ret
 		return ret
 
 
@@ -244,6 +245,8 @@ cdef class PWMMotif:
 		self.maxScoreLeftF = NULL
 		self.maxScoreLeftRC = NULL
 		self.setPWM(pwm)
+		self.cachedSequence = None
+		self.cachedOcc = []
 	
 	def __dealloc__(self):
 		if self.bPWMF:
@@ -340,8 +343,8 @@ cdef class PWMMotif:
 		:rtype: list
 		"""
 		if cache:
-			if 'motifOccurrences' in seq.cache.keys() and self in seq.cache['motifOccurrences'].keys():
-				return seq.cache['motifOccurrences'][self]
+			if self.cachedSequence == seq:
+				return self.cachedOcc
 		cdef double scoreF, scoreRC, threshold
 		cdef list ret
 		cdef int nNT, i, mPos, posInd, slen
@@ -373,9 +376,8 @@ cdef class PWMMotif:
 			if scoreRC > threshold:
 				ret.append( motifOccurrence(self, seq, i, i+nNT, False, scoreRC) )
 		if cache:
-			if not 'motifOccurrences' in seq.cache.keys():
-				seq.cache['motifOccurrences'] = {}
-			seq.cache['motifOccurrences'][self] = ret
+			self.cachedSequence = seq
+			self.cachedOcc = ret
 		return ret
 
 def loadMEMEPWMDatabase(path):

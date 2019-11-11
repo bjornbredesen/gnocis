@@ -16,7 +16,9 @@ from .sequences cimport *
 
 cdef class feature:
 	
-	cpdef double get(self, sequence seq, bool cache=*)
+	cdef public sequence cachedSequence
+	cdef public double cachedValue
+	cpdef double get(self, sequence seq)
 
 # Represents feature sets.
 cdef class features:
@@ -33,7 +35,7 @@ cdef class scaledFeature(feature):
 	cdef public float vScale, vSub
 	cdef public feature feature
 	
-	cpdef double get(self, sequence seq, bool cache=*)
+	cpdef double get(self, sequence seq)
 
 cdef class featureScaler(features):
 	
@@ -48,7 +50,7 @@ cdef class featureMotifOccurrenceFrequency(feature):
 	
 	cdef public object m
 	
-	cpdef double get(self, sequence seq, bool cache=*)
+	cpdef double get(self, sequence seq)
 
 # Sequence model feature for PREdictor-style motif pair occurrence frequency.
 cdef class featurePREdictorMotifPairOccurrenceFrequency(feature):
@@ -56,7 +58,7 @@ cdef class featurePREdictorMotifPairOccurrenceFrequency(feature):
 	cdef public object mA, mB
 	cdef public int distCut
 	
-	cpdef double get(self, sequence seq, bool cache=*)
+	cpdef double get(self, sequence seq)
 
 
 ############################################################################
@@ -68,20 +70,19 @@ cdef class kSpectrumFeature(feature):
 	cdef public kSpectrum parent
 	cdef public str kmer
 	cdef public int index
-	cdef public object cachedSequence
-	cdef public double cachedValue
 	
-	cpdef double get(self, sequence seq, bool cache=*)
+	cpdef double get(self, sequence seq)
 
 # Extracts k-mer spectra from sequences
 cdef class kSpectrum:
 	
 	cdef public int nspectrum, nFeatures, bitmask
-	cdef public str cacheName
 	cdef public dict kmerByIndex
 	cdef public list features
+	cdef public sequence cachedSequence
+	cdef public list cachedSpectrum
 	
-	cdef double extract(self, sequence seq, int index, cache=*)
+	cdef double extract(self, sequence seq, int index)
 
 ############################################################################
 # k-mer mismatch spectrum
@@ -92,20 +93,19 @@ cdef class kSpectrumMMFeature(feature):
 	cdef public kSpectrumMM parent
 	cdef public str kmer
 	cdef public int index
-	cdef public object cachedSequence
-	cdef public double cachedValue
 	
-	cpdef double get(self, sequence seq, bool cache=*)
+	cpdef double get(self, sequence seq)
 
 # Extracts k-mer spectra from sequences
 cdef class kSpectrumMM:
 	
 	cdef public int nspectrum, nFeatures, bitmask
-	cdef public str cacheName
 	cdef public dict kmerByIndex
 	cdef public list features
+	cdef public sequence cachedSequence
+	cdef public list cachedSpectrum
 
-	cdef double extract(self, sequence seq, int index, cache=*)
+	cdef double extract(self, sequence seq, int index)
 
 ############################################################################
 # k-mer mismatch spectrum (duplicate)
@@ -118,20 +118,19 @@ cdef class kSpectrumMMDFeature(feature):
 	cdef public kSpectrumMMD parent
 	cdef public str kmer
 	cdef public int index
-	cdef public object cachedSequence
-	cdef public double cachedValue
 	
-	cpdef double get(self, sequence seq, bool cache=*)
+	cpdef double get(self, sequence seq)
 
 # Extracts k-mer spectra from sequences
 cdef class kSpectrumMMD:
 	
 	cdef public int nspectrum, nFeatures, bitmask
-	cdef public str cacheName
 	cdef public dict kmerByIndex
 	cdef public list features
+	cdef public sequence cachedSequence
+	cdef public list cachedSpectrum
 
-	cdef double extract(self, sequence seq, int index, cache=*)
+	cdef double extract(self, sequence seq, int index)
 
 
 ############################################################################
@@ -143,20 +142,19 @@ cdef class kSpectrumFeaturePDS(feature):
 	cdef public kSpectrumPDS parent
 	cdef public str kmer
 	cdef public int index
-	cdef public object cachedSequence
-	cdef public double cachedValue
 	cdef public bool section
 
-	cpdef double get(self, sequence seq, bool cache=*)
+	cpdef double get(self, sequence seq)
 
 # Extracts k-mer spectra from sequences
 cdef class kSpectrumPDS:
 	
 	cdef public int nspectrum, nkmers, nFeatures, bitmask
-	cdef public str cacheName
 	cdef public dict kmerByIndex
 	cdef public list features
+	cdef public sequence cachedSequence
+	cdef public list cachedSpectrum
 	
-	cdef double extract(self, sequence seq, int index, cache=*)
+	cdef double extract(self, sequence seq, int index)
 
 

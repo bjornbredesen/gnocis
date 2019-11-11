@@ -80,12 +80,12 @@ tneg[0].seq
 Output (will vary depending on random seed):
 ```python
 >>> tneg.printStatistics()
-Sequence set statistics - Generated set <Sequences: 100; Length each: 3000; Model: Markov Chain<Degree: 4; Pseudocounts: 1; Add reverse complements: Yes; Training set: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<dmel-all-chromosome-r5.57.fasta>>>; Seed: 182579965>
+Sequence set statistics - Generated set <Sequences: 100; Length each: 3000; Model: Markov Chain<Degree: 4; Pseudocounts: 1; Add reverse complements: Yes; Training set: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<DmelR5.fasta.gz>>>; Seed: 2289357507>
  - Sequences: 100
  - Mean length: 3000.00 nt (min.: 3000 nt - max.: 3000 nt)
  - Total length: 300000 nt
 >>> tneg[0].seq
-'GTCCCTCGCTCTTTTTACTTTTTAATTGATGATCGCTTATTAAAACTACGCGTTGCCGTTACGAATTGATGTAACTCAGAGATCGGCGCACAAATAATGCCCCTTGGTGGCGTCGAGCACCATCAACGCGAGCGACATAACCCTTTAACTGCGAAAAAAAGGCAAAAGGCAGCTTGTGAGAGCCACTTGCATAGTGCGGAGCACTGCATTGTATGCGGGGAACTCAATGCTAAAGAATAATTAAGTTCTACCGCATGAATATGCCGGGAATAGATTGTATATCTGGTCCCAAGTTCATAACTGCACATTTGTTGTCGAAATAATGAAGGGATCACCAAACTTAGCTCGGTTATATTACACTCTCTGTTTGGCGAGCGGCCACCGATGTCCCTCCCCAAGCCAGGTTCCTGCAATTTGCCTTCCGCACAGATAACGTTATATACGGACCAAGCCACGCTTACTTTAGTTGTCTAACAGACATGGAAAACAAACTTTTGTGACACTTCCAATTAATTTTGGAGGGAAATTTTCGAGCTCGCTTTGATCTACTACTCTCATTAATGAAGTGAGGACAACAGGCACCTTGATGATACATGTATGCAGCGAAGTTACTTGCCCGGTAATTTGATTAGATTCAGTGAAGTTTGGTGGCTGGAGCAGTAATTTGTTGTTGGCATGTTTATAGGGGCCTCCCAAAATTACTCATGAATGGGTCAGGGCATTGACTAGTTAAATTCTTAGCGACAAAAATCATTCCACGCGCATGTATTGGTTTCCTTACAACTGTGCACTGCGGGAGGTAGCCGCATTTTCACCATTTTACAACAGTGGTTCAGGTCGACGGTTGCTCTCCTGAGTAGATATTTCGCTCCCTCTGGTCCAACTTATCGAACCGAAAAATCGACATTATTAAAACAAAACAGCATAAGAAACACTTTGAGTGGGTAAAATGGGAAATTTTTCGTAAATCAACAACCGCCCCAAAGTTCGGCCAATTCGAGCGAGTCGTAGGCCACATTTGTTCGAAGCACACGCATCGCAGCGGTGTGGCTGCAAAACCATCTCATTCGAAGAACTAACGCTCTTCCTTAATAAGTGTAATAAAATACGCGCAAAAATGGCTGCACTGATTTACTTTTCGAGATTTCAAATGAGCCGTAAACGAGTGGTGGTGCGCCAATTGATGGAGCGAGTGATTAACTGTTATAGCAATAAAAAGCGGCAACCCCTTGTTGACGGTTTTTGTCGGAATCTCCATAGCAGTGGGTGTGGTGCCTGTCGCTGACTTTTTCTGACAAAGACCACAGCATTCGTCTTATGGTGTGCGCAATCCCGCTTGTTCATTTGAAACCGGCTTCTTTTTAATGCCGAAAGGGTAATCATCCAAGCACAATTATTGTTGCGGGGCTAAGTCTCTCTTCTCGTATAAAACAATACGGTGGGGTCATGAGACATATAGTTGTGAGCCCGTGGCTTGTCAGACCTCCCTCTGTGGCTGCGTATCAAATTTCTGTCGGGGGTCGGACAATTCAGAATATCCCGGGAACAGATACGCTGTGGTGGCACGCCTGCCGGCAACCTTCCGGTTATGTGCAGCCGTTTCAGGAGACTTGTAGAAGTGCGCGTTCTATCAGTTTGGGCAACGAACCCAGTGCGATTGGCGGTAAAGCGTTTTTTTCACATTTGTTAATAATATTGTTTATTATTTCTTGTCCAGCTGGATAACTTAAATACACGTCGCAGTTGGCAGTGTTTCCATTATTAGTTTTGCTTTCTGAGAAAGTTATTTTGTGATGCAGAAAGAGCACTTCGTCTGTGCCTGTTCCAAGCTATCTCCCCGAACTACTTAGTGTGTTGCACCGTAATACCGCCCGAGTTGTCCACCGATTTGCGAGATACATGGGAGGAATTAAAACACTTTAATCACAAAAAGTTCTTCAGATTTAAATTAGACACACCGAAAGAAATTCATAAAATGCCGGCCAAATCACCTTCTGTGCAAAAATAATGGTTATTCGAGCGGACTCTTAATATTTCAAGCGAGAGCCGCCAGCAGATGCTCGTCTAAAGCCCCCCCTTGTTCATTTGCGGTTTTGATGGGATTTATAGTCACACTGAATATAATCCAGCGGCGTTGTCCTCTGCCTTCGTCTTTGGTGCACAAGCTTGAAACAGTCAAGAGATAAACTATAAACCCTCGGGTGGCCGTCGCCTCGGGGGCACTGTGGGTGTGTGTGGACAAATGGCACACGCAAATTTCCGATCAACATCTGTCGGAGCATTTAAACTCTTAGCGCGTCCCTTGCAAGGAGGAACCATTTTTCATGAAACATAGCTACATATTATGAGGCACTGTGAGGGTGGGGGAAAGTATGACAGATTAATCTTTACATCAATTTGCAGTGAAAGCAAATATTAAATGGCTCCGCCGAATAAATTCGACGAAAAGTGGAGTTGTTACATGTATCCAGTATAAATGCCGCCCGAGAGATTACAATCTTAATCTATCGTTTTGTTCAAATACAAAAAGTGATCCGTCAAATAAACGGTCGTGTAAAACACAGATTCTCCAAGCTGTCCAGAACCACCGCCATTTATATGAGCGACGAAGCACGAAAACGCCGAGTCGCTAGTTCCCGTTTATCTCAAAGCCCTCTCCATTAAAATTTATTTAAATGCACTTTGAAAAAATTAACCAGATTTTTTGATTCCCAGGGTCAGCAACTCACCTGGAGGGGAAAGCGAGTTCTCCCTCTCCAGCATAATAGGTAATAAAAGATCCAACTAACTGGCGTCGCTTCTTTTTTTGTTTTAAATCCTATATTTTTAAATGCAGATGCTTCGTCAATGCTCAAAAATGCGCTGAATATATGCCCCATTAAATACTTGACCATCGAAAATTGTGCCGCCAGGCGTGCACAGCTGCATATGAAAACCTCCCTCCACTAGAAATGCGGATGGTGTCAGCTGCTTTCGCCATTGGGCGAGTTGTTTTGCTCG'
+'TGAACCGACACAGTTCGATGTTCCGCCGCCCGCACACATGCTATTTGATCCGGCCATTTTTGCAATAAGAGAGAGAGAGAAAAACTGCGTAGCCTGGAAATCCGCCTTACAACAAAATCTGACTGGATCCATTTCGTTGCTGCGTTTCCACGGTGTACATTGTCTCATATTAACATCGGGCTTTTGCGGCAGCTGCGCTTTCAAAGATAAAAGAACACACGCGCCCAGATTGAAAAATTAATTGTGAGACAGCCATAAACCCATCGATCGGGAGGACCGTGTTAACAAAACGAAATCACGGAAGCAAAATATTGTATGAGAGCTGTGCATTATTTGTTGCCGCCGGGCGAAGAAATATGCAGCGAGTATGGGAGATACACACATAAACCTTGTTTAAATATTCAAAAACGTCCCGCCCGTATGTCATCCCGTAAAATCGCCCCTAAAATCCCAAAGTCTATTCAATTACTATTCGCTACATAGCGGCAGCGAAATTTCTGAAATAAGTGGCGGGCTGCTAGAATTTGCAGCCATTTCAAGTGAAACCTAAGGGAATTGGAAATTTGCTGCGACGCCATATATGTCCAAAGTTTGTAGCACTTGTCTAGGAACATCGAGAGCAGAAGAGCATTCGTAGGTCAGTTTCGATAACACTGCCCATTCCAAGTCCGAATTAGATCAAGCAGCGGCGCCCGGCGAGAGAGAACGAACACAGGCACCCCTCCGTGTTATCTTTAATCTCATCATTAAGTTTAGAATTAATCTTCTTAATAAATAAAAAGGCGGCTCCAGCCCTTCAGCGAAATGAAAGTTAATAGAGCGAATGTCCGCTATTATTAAGCGCAGCGTGTGTGTGTTATGGTCGCTTTAATTGTTACCTTTCTATGCACACATAAAATTAATCTGTTGCTAGCAACCAATTGTATAAAACGGGCTCTTGGCCACTACAATCGTAAGAAAATCCCAATAATACCGACGGATTTAAGAAAGTTTCTACTAAAAAATGCTGCTGGAGCATCCTTAGTGGGCGTTGCTTCGGGGATTTGCACTCACCATTAATTAATGAGTTAGTTCCGGCGTGCAAACTCGCCAAATCTTTACTTACATGTTGCATTGCTTATATCGATCACTACACACAGCAAACTTCGTTTAGCTGCGAAACGGTTCCTTGTTTGAATCAATGTCTTGCCAAAAAAGAGCTCGATGTTTGAGCAGAAAACTTTTTCACTTGAGCCTTTCATCTTTGGAAATTGTTTACGTATCAGTGCCGCCTCACCATTTGACAACGAGTACGTTTTGTGGACAATCTTCATTTATTTCGTATTGGTTTGTGGTATGTTTTGTGGTAATATCAGCGAAAACATTTTATATTATGAAAAACTCTCCTGACTTAAATTTTTGTTTAAGCCAAAGAAACTGATATAAATGCATGACACACACACAATATCGGGAAAAGAGGGCTATCTCGATGACCTGATATGTATAGAAGACAGACCTTGGTCACACACCCCAATCATTTTTACCCATCTATCCGCCTCCTCTCCACTCATAAGCCGATTCCCGTGATGCGTGTGTAATTAATATAAACTTAGTTCTATCCGCAAAAAAAAGTGATGGGATGTGGTGCTGTGATACCGACAAAGCTCCAGTATGTTGGGAACGTAACCTCTTTCCTTCGGCAACAGATCGAGTCGATTGGAGAGTGGCCAGAATGCAGACGCTATATCGTTATTGAAGTCATATCTAAAGAGTGTCCGCAAAGCATCTCTCGTAAGTTCGGTCCACCCAATTGAGAAAAAAGGGGAAAAGAGCGGCTTTTTCGTGGGCAATCGAGTGTTAAAATGCGTAGGCTCTTGATCAAGGTAATCAAAACGTTCGGCTGAAAATGAAAATATAAGGTCCATCCTTTTGTATCTTTCACTGATCGTTCTTAACCGCGAAAAAAAAAGAGCAGCATTACTTATTTTAATTTATGTACAAATATTTAAATACAACTGTAATTTCGTCCTGGGCGGAGGGCTTCAGCTATCATACTGCACTTTCCGGAAAAAAGCAATACTCCGTCATTCGGTGATTGAACAAAGCTGGATTAATTTAGCAGTACAGAAATTTTAAGCGGGGATCCATTGTTTATATGCCAGGTTTTGTTAAATAATTTAATGCCGGCGAACCGGTGAAAGAGCCAAGGAAAGCTAACATATACAACCATACTTTTGTTTTTCCGACATGGCCACTGCCCATTTGTTCACTATAATCGCATAATTGAAGAGAGATCCAAGTTTGATGCCACTTGCTGGTTTTCTAACTGGGTTTCTAACAGTTTTAAAATAATTTTCGCCAACCATTACGTGATGGCGTCGCCCACGTTGGGCCTTACACACTGGCGGTCATTCCCCGTTTCGCACTCGCTACATAGTTGCTCGCCAAGCTGCCAGGTGTTTTTGTAAAATCACCGGGGCCACTACACCTAAAAAAATATCCACTTGACAGCGTATGTAAAGGTGTTTGACTTCTAATTCACCTTCCCTACAAATGCACGCAGATTTGCCAGTCGTTGATTGTGACTCAATCGACAGGCGCGACATTCTGTCAAATAGTCTGAGAGTCCTATGAAGAGAGACTCTCTGAAGGGGGGTCCGACGGATGGGCATTGGTGTTATCTAGACAAGACGTATAACCCTGCGTATTTATAAAACTAACAATTAATGGGTGGTCTAATCTGAGCGGAGTTCTTCTTTTTTCGAGACGCGTCGCCAGTTCCCCACCGCCTTAGGGTGACTTCATAAATAGCAATTTGCGTGTGTGGATTGACGATTTATTTACATTGAAATTAATATTCAGCCATAAAATATATAATGTGAGCTATAAAAAATCAAGGTTACGAATTATGAAGAGTGAGCTGCACATTACGGATCGGAAAATGTTTCTGCTCACACTGGATTTCCCTGAAAACAACTTAGCTCTTCATTCTGCTTGTTGATGAAGATGGTGATTCTCCCT'
 ```
 
 
@@ -95,7 +95,9 @@ Run:
 ```python
 mdl = nc.trainPREdictorModel(motifs = nc.motifs.getRingrose2003Motifs_GTGT(),
                               positives = tpos,
-                              negatives = tneg)
+                              negatives = tneg,
+                              windowSize = 500,
+                              windowStep = 250)
 ```
 
 This trains a PREdictor model, using the positives and negatives, and the motifs used in Bredesen *et al.* (2019). To manually specify motifs, the following syntax is used:
@@ -109,7 +111,9 @@ mdlC = nc.trainPREdictorModel(motifs = nc.motifs('Custom motif set', [
                                   nc.IUPACMotif('Dsp1', 'GAAAA', 0),
                                ]),
                                positives = tpos,
-                               negatives = tneg)
+                               negatives = tneg,
+                               windowSize = 500,
+                               windowStep = 250)
 ```
 
 The model weights can be inspected.
@@ -123,9 +127,9 @@ mdlC.weights
 Output (will vary depending on random seed):
 ```python
 >>> mdl.weights
-{Feature<PREdictor motif pair occurrence frequency: En, En (within 219 nt)>: 1.252762968495368, Feature<PREdictor motif pair occurrence frequency: En, G10 (within 219 nt)>: 4.356708826689593, Feature<PREdictor motif pair occurrence frequency: En, GAF (within 219 nt)>: 1.1400690023464555, Feature<PREdictor motif pair occurrence frequency: En, PF (within 219 nt)>: 1.0033021088637848, Feature<PREdictor motif pair occurrence frequency: En, PM (within 219 nt)>: 0.6539264674066638, Feature<PREdictor motif pair occurrence frequency: En, PS (within 219 nt)>: 0.8724881092157624, Feature<PREdictor motif pair occurrence frequency: En, Z (within 219 nt)>: 0.7018808605286999, Feature<PREdictor motif pair occurrence frequency: En, GTGT (within 219 nt)>: 0.7276791641023213, Feature<PREdictor motif pair occurrence frequency: G10, G10 (within 219 nt)>: 4.915591745409362, Feature<PREdictor motif pair occurrence frequency: G10, GAF (within 219 nt)>: 3.029137518883944, Feature<PREdictor motif pair occurrence frequency: G10, PF (within 219 nt)>: 1.7466390339475861, Feature<PREdictor motif pair occurrence frequency: G10, PM (within 219 nt)>: 1.4628344382422251, Feature<PREdictor motif pair occurrence frequency: G10, PS (within 219 nt)>: 1.4621703960985815, Feature<PREdictor motif pair occurrence frequency: G10, Z (within 219 nt)>: 2.204367464848599, Feature<PREdictor motif pair occurrence frequency: G10, GTGT (within 219 nt)>: 2.0703148064157855, Feature<PREdictor motif pair occurrence frequency: GAF, GAF (within 219 nt)>: 1.348646995241774, Feature<PREdictor motif pair occurrence frequency: GAF, PF (within 219 nt)>: 0.5968599611077945, Feature<PREdictor motif pair occurrence frequency: GAF, PM (within 219 nt)>: 0.33332757994174145, Feature<PREdictor motif pair occurrence frequency: GAF, PS (within 219 nt)>: 0.2607262624632529, Feature<PREdictor motif pair occurrence frequency: GAF, Z (within 219 nt)>: 0.8400330761916575, Feature<PREdictor motif pair occurrence frequency: GAF, GTGT (within 219 nt)>: 0.5943726095348998, Feature<PREdictor motif pair occurrence frequency: PF, PF (within 219 nt)>: 0.2363887780642302, Feature<PREdictor motif pair occurrence frequency: PF, PM (within 219 nt)>: 0.3600027340314069, Feature<PREdictor motif pair occurrence frequency: PF, PS (within 219 nt)>: 0.10870420160088923, Feature<PREdictor motif pair occurrence frequency: PF, Z (within 219 nt)>: 0.24686007793152598, Feature<PREdictor motif pair occurrence frequency: PF, GTGT (within 219 nt)>: 0.17918042789309396, Feature<PREdictor motif pair occurrence frequency: PM, PM (within 219 nt)>: 1.0116009116784799, Feature<PREdictor motif pair occurrence frequency: PM, PS (within 219 nt)>: 0.2856639082955432, Feature<PREdictor motif pair occurrence frequency: PM, Z (within 219 nt)>: 0.31462670769523315, Feature<PREdictor motif pair occurrence frequency: PM, GTGT (within 219 nt)>: 0.2975497193848584, Feature<PREdictor motif pair occurrence frequency: PS, PS (within 219 nt)>: 0.09899512179075032, Feature<PREdictor motif pair occurrence frequency: PS, Z (within 219 nt)>: 0.10957358237712889, Feature<PREdictor motif pair occurrence frequency: PS, GTGT (within 219 nt)>: 0.0707518054712688, Feature<PREdictor motif pair occurrence frequency: Z, Z (within 219 nt)>: 0.6523788787562861, Feature<PREdictor motif pair occurrence frequency: Z, GTGT (within 219 nt)>: 0.3766683836192142, Feature<PREdictor motif pair occurrence frequency: GTGT, GTGT (within 219 nt)>: 0.6200698922307692}
+{Feature<PREdictor motif pair occurrence frequency: En, En (within 219 nt)>: 0.9808292530117262, Feature<PREdictor motif pair occurrence frequency: En, G10 (within 219 nt)>: 4.189654742026426, Feature<PREdictor motif pair occurrence frequency: En, GAF (within 219 nt)>: 1.2762934659055625, Feature<PREdictor motif pair occurrence frequency: En, PF (within 219 nt)>: 0.8938178760220961, Feature<PREdictor motif pair occurrence frequency: En, PM (within 219 nt)>: 2.03688192726104, Feature<PREdictor motif pair occurrence frequency: En, PS (within 219 nt)>: 1.275542996827188, Feature<PREdictor motif pair occurrence frequency: En, Z (within 219 nt)>: 0.9444616088408515, Feature<PREdictor motif pair occurrence frequency: En, GTGT (within 219 nt)>: 0.8919980393051099, Feature<PREdictor motif pair occurrence frequency: G10, G10 (within 219 nt)>: 6.364750756851912, Feature<PREdictor motif pair occurrence frequency: G10, GAF (within 219 nt)>: 2.71146317369845, Feature<PREdictor motif pair occurrence frequency: G10, PF (within 219 nt)>: 1.5070758997725306, Feature<PREdictor motif pair occurrence frequency: G10, PM (within 219 nt)>: 1.7047480922384253, Feature<PREdictor motif pair occurrence frequency: G10, PS (within 219 nt)>: 1.4155239994348294, Feature<PREdictor motif pair occurrence frequency: G10, Z (within 219 nt)>: 2.1795801133565114, Feature<PREdictor motif pair occurrence frequency: G10, GTGT (within 219 nt)>: 1.8458266904983311, Feature<PREdictor motif pair occurrence frequency: GAF, GAF (within 219 nt)>: 0.9571040022560275, Feature<PREdictor motif pair occurrence frequency: GAF, PF (within 219 nt)>: 0.28939293685541045, Feature<PREdictor motif pair occurrence frequency: GAF, PM (within 219 nt)>: 0.045879605750693386, Feature<PREdictor motif pair occurrence frequency: GAF, PS (within 219 nt)>: 0.11336020668638103, Feature<PREdictor motif pair occurrence frequency: GAF, Z (within 219 nt)>: 0.7114794996434171, Feature<PREdictor motif pair occurrence frequency: GAF, GTGT (within 219 nt)>: 0.2692481077475959, Feature<PREdictor motif pair occurrence frequency: PF, PF (within 219 nt)>: 0.4924764850977943, Feature<PREdictor motif pair occurrence frequency: PF, PM (within 219 nt)>: 0.16705408466316563, Feature<PREdictor motif pair occurrence frequency: PF, PS (within 219 nt)>: 0.0822380982369717, Feature<PREdictor motif pair occurrence frequency: PF, Z (within 219 nt)>: 0.3053816495511814, Feature<PREdictor motif pair occurrence frequency: PF, GTGT (within 219 nt)>: 0.06315059586272298, Feature<PREdictor motif pair occurrence frequency: PM, PM (within 219 nt)>: 0.07410797215372167, Feature<PREdictor motif pair occurrence frequency: PM, PS (within 219 nt)>: 0.18975653528147252, Feature<PREdictor motif pair occurrence frequency: PM, Z (within 219 nt)>: 0.18759861389479848, Feature<PREdictor motif pair occurrence frequency: PM, GTGT (within 219 nt)>: 0.005560718684697541, Feature<PREdictor motif pair occurrence frequency: PS, PS (within 219 nt)>: 0.12057088245781689, Feature<PREdictor motif pair occurrence frequency: PS, Z (within 219 nt)>: 0.29539870141292557, Feature<PREdictor motif pair occurrence frequency: PS, GTGT (within 219 nt)>: 0.032678196992657504, Feature<PREdictor motif pair occurrence frequency: Z, Z (within 219 nt)>: 0.8731000035183492, Feature<PREdictor motif pair occurrence frequency: Z, GTGT (within 219 nt)>: 0.37349891604567187, Feature<PREdictor motif pair occurrence frequency: GTGT, GTGT (within 219 nt)>: 0.33049016494366423}
 >>> mdlC.weights
-{Feature<PREdictor motif pair occurrence frequency: GAF, GAF (within 219 nt)>: 1.348646995241774, Feature<PREdictor motif pair occurrence frequency: GAF, Z (within 219 nt)>: 0.8400330761916575, Feature<PREdictor motif pair occurrence frequency: GAF, Grh (within 219 nt)>: -0.14660347419187536, Feature<PREdictor motif pair occurrence frequency: GAF, Dsp1 (within 219 nt)>: 0.13968471335245347, Feature<PREdictor motif pair occurrence frequency: Z, Z (within 219 nt)>: 0.6523788787562861, Feature<PREdictor motif pair occurrence frequency: Z, Grh (within 219 nt)>: -0.7401041636477159, Feature<PREdictor motif pair occurrence frequency: Z, Dsp1 (within 219 nt)>: -0.01169009500780227, Feature<PREdictor motif pair occurrence frequency: Grh, Grh (within 219 nt)>: 0.5108256237659905, Feature<PREdictor motif pair occurrence frequency: Grh, Dsp1 (within 219 nt)>: -0.2997062654185827, Feature<PREdictor motif pair occurrence frequency: Dsp1, Dsp1 (within 219 nt)>: 0.2312864087094857}
+{Feature<PREdictor motif pair occurrence frequency: GAF, GAF (within 219 nt)>: 0.9571040022560275, Feature<PREdictor motif pair occurrence frequency: GAF, Z (within 219 nt)>: 0.7114794996434171, Feature<PREdictor motif pair occurrence frequency: GAF, Grh (within 219 nt)>: -0.03413300636945893, Feature<PREdictor motif pair occurrence frequency: GAF, Dsp1 (within 219 nt)>: 0.0070522154053245245, Feature<PREdictor motif pair occurrence frequency: Z, Z (within 219 nt)>: 0.8731000035183492, Feature<PREdictor motif pair occurrence frequency: Z, Grh (within 219 nt)>: -0.11000089521432788, Feature<PREdictor motif pair occurrence frequency: Z, Dsp1 (within 219 nt)>: 0.11233612939425175, Feature<PREdictor motif pair occurrence frequency: Grh, Grh (within 219 nt)>: -0.2876820724517808, Feature<PREdictor motif pair occurrence frequency: Grh, Dsp1 (within 219 nt)>: 0.16898334571172668, Feature<PREdictor motif pair occurrence frequency: Dsp1, Dsp1 (within 219 nt)>: 0.26819265398256764}
 ```
 
 
@@ -164,13 +168,13 @@ predictions.printStatistics()
 Output (will vary depending on random seed):
 ```python
 >>> mdl.threshold
-260.07098795572915
+192.05276645092255
 >>> predictions.printStatistics()
 Region set statistics - Predictions
- - Regions: 4740
+ - Regions: 4223
  - Region sequences: 2L, 2LHet, 2R, 2RHet, 3L, 3LHet, 3R, 3RHet, 4, U, Uextra, X, XHet, YHet
- - Mean length: 941.23 nt (min.: 500 nt - max.: 19960 nt)
- - Total length: 4461430 nt
+ - Mean length: 731.88 nt (min.: 500 nt - max.: 5250 nt)
+ - Total length: 3090750 nt
 ```
 
 The entire training, calibration and prediction procedure can be written more compactly, as:
@@ -178,7 +182,9 @@ The entire training, calibration and prediction procedure can be written more co
 ```python
 nc.trainPREdictorModel(motifs = nc.motifs.getRingrose2003Motifs_GTGT(),
                               positives = tpos,
-                              negatives = tneg)\
+                              negatives = tneg,
+                              windowSize = 500,
+                              windowStep = 250)\
          .calibrateGenomewidePrecision(positives = Kahn2014Seq,
                               genome = Dmel,
                               factor = 0.5,
@@ -265,9 +271,9 @@ predictions.overlapPrecision(PcGTargets)
 Output (will vary depending on random seed):
 ```python
 >>> predictions.overlapSensitivity(PcGTargets)
-0.3340395480225989
+0.3072033898305085
 >>> predictions.overlapPrecision(PcGTargets)
-0.17236286919831223
+0.17215249822401138
 ```
 
 
@@ -284,15 +290,20 @@ import gnocis.sklearnModels as sknc
 features = nc.featureScaler(nc.features.getKSpectrum(5), tpos, tneg)
 
 # Train SVM
-svm = sknc.sequenceModelSVM(features = features, positives = tpos, negatives = tneg, windowSize = 1000, windowStep = 500, kDegree = 2)
+svm = sknc.sequenceModelSVM(features = features,
+                            positives = tpos,
+                            negatives = tneg,
+                            windowSize = 500,
+                            windowStep = 250,
+                            kDegree = 2)
 ```
 
 The `featureScaler` takes an input feature space, and scales all features to be in the range -1 to 1.
 
 Run (optional):
 ```python
-scaled
-scaled.features
+features
+features.features
 svm
 ```
 
@@ -301,9 +312,9 @@ Output (will vary depending on random seed):
 >>> features
 Scaled feature set<5-spectrum>
 >>> features.features
-[Feature scaler<Feature<k-mer occurrence frequency: AAAAA>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAT>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAG>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAC>>, Feature scaler<Feature<k-mer occurrence frequency: AAATA>>, Feature scaler<Feature<k-mer occurrence frequency: AAATT>>, Feature scaler<Feature<k-mer occurrence frequency: AAATG>>, Feature scaler<Feature<k-mer occurrence frequency: AAATC>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGA>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGT>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGG>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGC>>, Feature scaler<Feature<k-mer occurrence frequency: AAACA>>, Feature scaler<Feature<k-mer occurrence frequency: AAACT>>, Feature scaler<Feature<k-mer occurrence frequency: AAACG>>, ... (printout cropped)
+[Feature scaler<Feature<k-mer occurrence frequency: AAAAA>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAT>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAG>>, Feature scaler<Feature<k-mer occurrence frequency: AAAAC>>, Feature scaler<Feature<k-mer occurrence frequency: AAATA>>, Feature scaler<Feature<k-mer occurrence frequency: AAATT>>, Feature scaler<Feature<k-mer occurrence frequency: AAATG>>, Feature scaler<Feature<k-mer occurrence frequency: AAATC>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGA>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGT>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGG>>, Feature scaler<Feature<k-mer occurrence frequency: AAAGC>>, Feature scaler<Feature<k-mer occurrence frequency: AAACA>>, Feature scaler<Feature<k-mer occurrence frequency: AAACT>>, Feature scaler<Feature<k-mer occurrence frequency: AAACG>>, Feature scaler<Feature<k-mer occurrence frequency: AAACC>>, Feature scaler<Feature<k-mer occurrence frequency: AATAA>>, Feature scaler<Feature<k-mer occurrence frequency: AATAT>>, ... (printout cropped)
 >>> svm
-Support Vector Machine<Features: Scaled feature set<5-spectrum> (1024); Positives: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<dmel-all-chromosome-r5.57.fasta> (split A)>; Negatives: Sequence list<Generated set <Sequences: 100; Length each: 3000; Model: Markov Chain<Degree: 4; Pseudocounts: 1; Add reverse complements: Yes; Training set: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<dmel-all-chromosome-r5.57.fasta>>>; Seed: 182579965>>; Kernel: quadratic; Support vectors: 986>
+Support Vector Machine<Features: Scaled feature set<5-spectrum> (1024); Positives: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<DmelR5.fasta.gz> (split A)>; Negatives: Sequence list<Generated set <Sequences: 100; Length each: 3000; Model: Markov Chain<Degree: 4; Pseudocounts: 1; Add reverse complements: Yes; Training set: Sequence list<Regions set: GFF file: Kahn2014.GFF (randomly recentered - 3000 bp) - from sequence stream: FASTA sequence stream<DmelR5.fasta.gz>>>; Seed: 2289357507>>; Kernel: quadratic; Support vectors: 1905>
 ```
 
 This SVM can be applied the same way as the PREdictor, trained above.
@@ -322,6 +333,9 @@ predictionsSVM = svm.predict(Dmel)
 
 # Save predictions to GFF-file
 predictionsSVM.saveGFF('predictionsSVM.GFF')
+
+# Output some statistics about the predictions
+predictionsSVM.printStatistics()
 ```
 
 Run (optional):
@@ -333,9 +347,64 @@ predictionsSVM.overlapPrecision(PcGTargets)
 Output (will vary depending on random seed):
 ```python
 >>> predictionsSVM.overlapSensitivity(PcGTargets)
-0.7040960451977402
->>> predictions.overlapPrecision(PcGTargets)
-0.08370984966729647
+0.8686440677966102
+>>> predictionsSVM.overlapPrecision(PcGTargets)
+0.08805017982531255
+>>> predictionsSVM.printStatistics()
+Region set statistics - Predictions
+ - Regions: 46712
+ - Region sequences: 2L, 2LHet, 2R, 2RHet, 3L, 3LHet, 3R, 3RHet, 4, U, Uextra, X, XHet, YHet, dmel_mitochondrion_genome
+ - Mean length: 790.61 nt (min.: 500 nt - max.: 34000 nt)
+ - Total length: 36931000 nt
+```
+
+
+## Comparing model generalization
+
+As we have multiple models, it is interesting to compare how they fare in terms of generalization. We will first calculate the area under the Precision/Recall curve for the test portion that we left out, versus 100 times as many generated negatives, for all three models that we trained.
+
+Run (optional):
+```python
+mdl.getPRCAUC(vpos, vneg)
+mdlC.getPRCAUC(vpos, vneg)
+svm.getPRCAUC(vpos, vneg)
+```
+
+Output (will vary depending on random seed):
+```python
+>>> mdl.getPRCAUC(vpos, vneg)
+0.3750264312258084
+>>> mdlC.getPRCAUC(vpos, vneg)
+0.34369641463622
+>>> svm.getPRCAUC(vpos, vneg)
+0.9242764200000669
+```
+
+```python
+predictions.overlapPrecision(vpos.getSourceRegions())
+predictions.printStatistics()
+predictionsSVM.overlapPrecision(vpos.getSourceRegions())
+predictionsSVM.printStatistics()
+```
+
+Output (will vary depending on random seed):
+```python
+>>> predictions.overlapPrecision(vpos.getSourceRegions())
+0.013734312100402558
+>>> predictions.printStatistics()
+Region set statistics - Predictions
+ - Regions: 4223
+ - Region sequences: 2L, 2LHet, 2R, 2RHet, 3L, 3LHet, 3R, 3RHet, 4, U, Uextra, X, XHet, YHet
+ - Mean length: 731.88 nt (min.: 500 nt - max.: 5250 nt)
+ - Total length: 3090750 nt
+>>> predictionsSVM.overlapPrecision(vpos.getSourceRegions())
+0.002504709710566878
+>>> predictionsSVM.printStatistics()
+Region set statistics - Predictions
+ - Regions: 46712
+ - Region sequences: 2L, 2LHet, 2R, 2RHet, 3L, 3LHet, 3R, 3RHet, 4, U, Uextra, X, XHet, YHet, dmel_mitochondrion_genome
+ - Mean length: 790.61 nt (min.: 500 nt - max.: 34000 nt)
+ - Total length: 36931000 nt
 ```
 
 -------------------------------------------------

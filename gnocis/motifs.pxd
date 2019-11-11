@@ -11,6 +11,7 @@ import re
 from libcpp cimport bool
 from libc.stdlib cimport malloc, free	
 from libc.string cimport memcpy
+from .sequences cimport *
 
 
 ############################################################################
@@ -33,6 +34,8 @@ cdef class IUPACMotif:
 	cdef public str name, motif, regexMotif, regexMotifRC
 	cdef public int nmismatches
 	cdef public object c, cRC
+	cdef public sequence cachedSequence
+	cdef public list cachedOcc
 
 
 ############################################################################
@@ -47,4 +50,6 @@ cdef class PWMMotif:
 	cdef double* bPWMRC
 	cdef double* maxScoreLeftF
 	cdef double* maxScoreLeftRC
+	cdef public sequence cachedSequence
+	cdef public list cachedOcc
 
