@@ -248,6 +248,25 @@ class testModels(unittest.TestCase):
 				for kmer in kmerFreq.keys()
 				if kmer not in [ 'AGAGT', 'ACTCT', 'AGAGA', 'TCTCT', 'GAGAG', 'CTCTC' ]),
 			0.)
+		# Ensure that application to the reverse complement yields an identical spectrum
+		specmotifs = set(
+			k
+			for k, f in zip(
+				[ f.kmer for f in spec ],
+				spec.getAll(testSeq)
+			)
+			if f > 0
+		)
+		specmotifsRC = set(
+			k
+			for k, f in zip(
+				[ f.kmer for f in spec ],
+				spec.getAll(nc.sequence('',
+					nc.getReverseComplementaryDNASequence(testSeq.seq)))
+			)
+			if f > 0
+		)
+		self.assertEqual(specmotifs, specmotifsRC)
 	
 	def testKSpectrumMM(self):
 		spec = nc.features.getKSpectrumMM(5)
@@ -271,6 +290,17 @@ class testModels(unittest.TestCase):
 			if f > 0
 		)
 		self.assertEqual(specmotifs, motifs)
+		# Ensure that application to the reverse complement yields an identical spectrum
+		specmotifsRC = set(
+			k
+			for k, f in zip(
+				[ f.kmer for f in spec ],
+				spec.getAll(nc.sequence('',
+					nc.getReverseComplementaryDNASequence(testSeq.seq)))
+			)
+			if f > 0
+		)
+		self.assertEqual(specmotifs, specmotifsRC)
 	
 	def testKSpectrumMMD(self):
 		spec = nc.features.getKSpectrumMMD(5)
