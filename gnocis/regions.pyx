@@ -11,6 +11,7 @@ import random
 import gzip
 from libcpp cimport bool
 from .sequences cimport *
+from .ioputil import _crop_dict_table, _dict_to_html_table, _dict_to_ascii_table
 
 
 ############################################################################
@@ -112,8 +113,28 @@ cdef class regions:
 	def __str__(self):
 		return 'Region set<%s>'%(self.name)
 	
+	def _as_dict(self):
+		return {
+			'Chromosome': [ r.seq for r in self ],
+			'Start': [ r.start for r in self ],
+			'End': [ r.end for r in self ],
+			'Length': [ len(r) for r in self ],
+		}
+	
 	def __repr__(self):
-		return self.__str__()
+		return '\n' + _dict_to_ascii_table(
+			self.__str__(),
+			_crop_dict_table(self._as_dict()),
+			align = { 'Chromosome': 'l' }
+		)
+	
+	def _repr_html(self):
+		return '\n' + _dict_to_html_table(
+			self.__str__(),
+			_crop_dict_table(self._as_dict())
+		)
+		html = 'Test'
+		return html
 	
 	def __add__(self, other):
 		rs = regions('%s + %s'%(self.name, other.name), self.regions + other.regions)
