@@ -115,7 +115,7 @@ cdef class regions:
 	
 	def _as_dict(self):
 		return {
-			'': [ str(i) for i in range(len(self)) ],
+			'': [ str(i+1) for i in range(len(self)) ],
 			'Chromosome': [ r.seq for r in self ],
 			'Start': [ r.start for r in self ],
 			'End': [ r.end for r in self ],
