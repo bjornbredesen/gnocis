@@ -6,6 +6,7 @@ import random
 
 import gnocis as nc
 import gnocis.sklearnModels as sklnc
+import gnocis.sklearnModelsOpt as sklncOpt
 import time
 from os import system
 
@@ -324,6 +325,29 @@ class testModels(unittest.TestCase):
 			if f > 0
 		)
 		self.assertEqual(specmotifs, motifs)
+	
+	def testOptimizations_sequenceModelSVMOptimizedQuadraticCUDA(self):
+		testsetPath = './temp/PcGTrxG1.fasta'
+		tpos = nc.loadFASTA('./temp/PcGTrxG1.fasta')
+		tneg = nc.loadFASTA('./temp/NonPcGTrxG1.fasta')
+		nSpectrum = 5
+		winSize = 500
+		winStep = 250
+		kDegree = 2
+		nc.setNCores(4)
+		testset = nc.streamFASTA(testsetPath)
+		#
+		featureSet = nc.featureScaler( nc.features.getKSpectrumMM(nSpectrum), positives = tpos, negatives = tneg )
+		mdl = sklnc.sequenceModelSVM( features = featureSet, positives = tpos, negatives = tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
+		#
+		scoresA = mdl.getSequenceScores(testset)
+		#
+		featureSet = nc.featureScaler( nc.features.getKSpectrumMM(nSpectrum), positives = tpos, negatives = tneg )
+		mdl2 = sklncOpt.sequenceModelSVMOptimizedQuadraticCUDA( features = featureSet, positives = tpos, negatives = tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
+		#
+		scoresB = mdl2.getSequenceScores(testset)
+		diff = sum( 1 if a != b else 0 for a, b in zip(scoresA, scoresB) )
+		self.assertEqual(diff, 0)
 
 
 #-----------------------------------
