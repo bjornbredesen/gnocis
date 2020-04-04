@@ -298,7 +298,10 @@ class nctable:
 			)
 			for i in range(nrows)
 		)
-		return self.title + '\n' + hdr + '\n' + body
+		return self.title + '\n' +\
+			'Rows: %d\n'%self.nrows +\
+			'Columns: %d\n'%len([ 1 for k in self._dict if k != self.indexName ]) +\
+			hdr + '\n' + body
 	
 	def _repr_html_(self):
 		_dict = self._prepv()
@@ -315,6 +318,9 @@ class nctable:
 			) + '</td>'
 			for i in range(nrows)
 		) + '</tr></tbody>'
-		return '<div><div>' + sec(self.title) + '</div><table>' +\
+		return '<div><div>' + sec(self.title) + '</div>' +\
+			'<div>Rows: %d</div>'%self.nrows +\
+			'<div>Columns: %d</div>'%len([ 1 for k in self._dict if k != self.indexName ]) +\
+			'<table>' +\
 			hdr + body + '</table></div>'
 
