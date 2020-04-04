@@ -84,13 +84,19 @@ class nctable:
 		:return: Sorted table
 		:rtype: nctable
 		"""
-		order = [
-			x[1]
-			for x in sorted(
-				zip(self._dict[key], list(range(self.nrows))),
-				key = lambda x: x[0]
+		order = sorted(
+				[
+					i for i, v in enumerate(self._dict[key])
+					if isinstance(v, float) or isinstance(v, int)
+				],
+				key = lambda x: self._dict[key][x]
+			) + sorted(
+				[
+					i for i, v in enumerate(self._dict[key])
+					if not (isinstance(v, float) or isinstance(v, int))
+				],
+				key = lambda x: self._dict[key][x]
 			)
-		]
 		if not ascending: order = list(reversed(order))
 		_dict = {
 			k: [
