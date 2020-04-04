@@ -124,7 +124,7 @@ cdef class regions:
 	
 	def table(self):
 		return nctable(
-			self.__str__(),
+			'Table: ' + self.__str__(),
 			self._as_dict_(),
 			align = { 'Chromosome': 'l' }
 		)

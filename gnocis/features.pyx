@@ -11,6 +11,7 @@ from libcpp cimport bool
 from .motifs cimport *
 from .sequences cimport *
 from .common import kSpectrumIndex2NT, kSpectrumNT2Index
+from .ioputil import nctable
 
 
 ############################################################################
@@ -75,6 +76,29 @@ cdef class features:
 	
 	def __add__(self, other):
 		return features('%s + %s'%(self.name, other.name), self.features + other.features)
+	
+	def table(self, seqs):
+		fv = [
+			self.getAll(s)
+			for s in seqs
+		]
+		_dict = {
+			**{
+				'Seq.': [ s.name for s in seqs ],
+			},
+			**{
+				str(f): [ fv[x][i] for x in range(len(seqs)) ]
+				for i, f in enumerate(self.features)
+			},
+		}
+		return nctable(
+			'Table: ' + self.__str__() + ' applied to ' + seqs.__str__(),
+			_dict,
+			align = { 'Chromosome': 'l' }
+		)
+	
+	def summary(self, seqs):
+		return self.table(seqs).drop('Seq.').summary()
 	
 	cpdef list getAll(self, sequence seq):
 		"""
