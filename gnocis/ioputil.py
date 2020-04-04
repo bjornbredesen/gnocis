@@ -147,17 +147,19 @@ class nctable:
 	
 	def _repr_html_(self):
 		_dict = self._crop()
+		sec = lambda x: x.replace('<', '&lt;').replace('>', '&gt;')
 		self.nrows = max([len(_dict[k]) for k in _dict])
 		hdr = '<thead><th></th><th>' + '</th><th>'.join(
-			'<b>%s</b>'%str(k)
+			'<b>%s</b>'%str(sec(k))
 			for k in _dict.keys() if k != self.indexName
 		) + '</th></thead>'
 		body = '<tbody><tr>' + '</tr><tr>'.join(
 			'<td><b>%s</b></td>'%_dict[self.indexName][i] + '<td>' + '</td><td>'.join(
-				str(_dict[k][i]) if i < len(_dict[k]) else ''
+				sec(str(_dict[k][i])) if i < len(_dict[k]) else ''
 				for k in _dict.keys() if k != self.indexName
 			) + '</td>'
 			for i in range(self.nrows)
 		) + '</tr></tbody>'
-		return '<div><div>' + self.title + '</div><table>' + hdr + body + '</table></div>'
+		return '<div><div>' + sec(self.title) + '</div><table>' +\
+			hdr + body + '</table></div>'
 
