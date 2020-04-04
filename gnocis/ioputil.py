@@ -24,6 +24,19 @@ class nctable:
 	def full(self):
 		return nctable(self.title, self._dict, align = self.align, ntop = 0, nbottom = 0, spaces = self.spaces)
 	
+	def sort(self, key):
+		order = [
+			x[1]
+			for x in sorted(
+				zip(self._dict[key], list(range(self.nrows))),
+				key = lambda x: x[0]
+			)
+		]
+		_dict = {
+			k: [ self._dict[k][i] for i in order ] for k in self._dict
+		}
+		return nctable(self.title, _dict, align = self.align, ntop = self.ntop, nbottom = self.nbottom, spaces = self.spaces)
+	
 	def __iter__(self):
 		return self._dict.__iter__()
 	
