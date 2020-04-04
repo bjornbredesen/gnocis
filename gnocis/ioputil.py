@@ -24,12 +24,12 @@ class nctable:
 	def full(self):
 		return nctable(self.title, self._dict, align = self.align, ntop = 0, nbottom = 0, spaces = self.spaces)
 	
-	def sort(self, key):
+	def sort(self, key, ascending = True):
 		order = [
 			x[1]
 			for x in sorted(
 				zip(self._dict[key], list(range(self.nrows))),
-				key = lambda x: x[0]
+				key = (lambda x: x[0]) if ascending else (lambda x: -x[0])
 			)
 		]
 		_dict = {
