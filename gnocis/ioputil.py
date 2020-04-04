@@ -29,11 +29,15 @@ class nctable:
 			x[1]
 			for x in sorted(
 				zip(self._dict[key], list(range(self.nrows))),
-				key = (lambda x: x[0]) if ascending else (lambda x: -x[0])
+				key = lambda x: x[0]
 			)
 		]
 		_dict = {
-			k: [ self._dict[k][i] for i in order ] for k in self._dict
+			k: [
+				self._dict[k][i] if ascending else self._dict[k][self.nrows - i - 1]
+				for i in order
+			]
+			for k in self._dict
 		}
 		return nctable(self.title, _dict, align = self.align, ntop = self.ntop, nbottom = self.nbottom, spaces = self.spaces)
 	
