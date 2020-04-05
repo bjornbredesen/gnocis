@@ -827,7 +827,7 @@ class crossvalidation:
 			self.ROC[mdl].append(imdl.getROC(self.cvvpos[rep], self.cvvneg[rep]))
 		self.models.append(mdl)
 	
-	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False):
+	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
@@ -895,9 +895,10 @@ class crossvalidation:
 						[ pt.y for pt in meanCurve ],
 						label = '%s - AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
 				
-				plt.xlabel('Recall', fontsize = 14)
-				plt.ylabel('Precision', fontsize = 14)
-				plt.legend(loc = 'upper right', fancybox = True)
+				plt.xlabel('Recall', fontsize = fontsize)
+				plt.ylabel('Precision', fontsize = fontsize)
+				plt.legend(loc = 'upper right', fontsize = fontsize, fancybox = True)
+				fig.tight_layout()
 				if outpath is None:
 					bio = BytesIO()
 					fig.savefig(bio, format='png')
@@ -913,63 +914,147 @@ class crossvalidation:
 		except ImportError as err:
 			raise err
 	
-	def __repr__(self):
-		hdr = 'Cross-validation\nPositive training set: ' + str(self.tpos) + '\nNegative training set: ' + str(self.tneg) + '\nPositive validation set: ' + str(self.vpos) + '\nNegative validation set: ' + str(self.vneg) + '\nRepeats: ' + str(self.repeats) + '\nNegatives per positive: ' + str(self.ratioNegPos) + '\nTrain/test ratio: ' + str(self.ratioTrainTest)
-		t = nctable(
-			'',
-			{
-				'Model': [ mdl.name for mdl in self.models ],
-				'PRC AUC': [
-					'%.2f +/- %.2f %%'%(
-						mean(getAUC(c) for c in self.PRC[mdl]) * 100.,
-						CI(getAUC(c) for c in self.PRC[mdl]) * 100.
-					)
-					for mdl in self.models
-				],
-				'ROC AUC': [
-					'%.2f +/- %.2f %%'%(
-						mean(getAUC(c) for c in self.ROC[mdl]) * 100.,
-						CI(getAUC(c) for c in self.ROC[mdl]) * 100.
-					)
-					for mdl in self.models
-				],
-			})
-		return hdr + '\n' + t.__repr__()
+	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14):
+		try:
+			import matplotlib.pyplot as plt
+			import base64
+			from io import BytesIO
+			from IPython.core.display import display, HTML
+			with plt.style.context(style):
+				fig = plt.figure(figsize = figsize)
+				# Expected random generalization
+				ry = len(self.cvvpos[0]) / (len(self.cvvpos[0]) + len(self.cvvneg[0]))
+				plt.plot(
+					[ 0., 1. ],
+					[ ry, ry ],
+					linestyle = '--',
+					color = 'grey',
+					label = 'Expected at random')
+				# Curves per model
+				for mdl in self.models:
+					curves = self.ROC[mdl]
+					xs = sorted(list(set(pt.x for c in curves for pt in c)))
+					curvebyx = [
+						{
+							x: [ pt.y for pt in curve if pt.x == x ]
+							for x in xs
+						}
+						for curve in curves
+					]
+					curvebyxmax = {
+						x: [
+							max(curvebyx[i][x])
+							for i, curve in enumerate(curves)
+						]
+						for x in xs
+					}
+					curvebyxmin = {
+						x: [
+							min(curvebyx[i][x])
+							for i, curve in enumerate(curves)
+						]
+						for x in xs
+					}
+					meanCurve = [
+						pt
+						for x in xs
+						for pt in [
+							point2D(x, mean(curvebyxmax[x])),
+							point2D(x, mean(curvebyxmin[x]))
+						]
+					]
+					CICurve = [
+						pt
+						for x in xs
+						for pt in [
+							point2D(x, CI(curvebyxmax[x])),
+							point2D(x, CI(curvebyxmin[x]))
+						]
+					]
+					plt.fill_between(
+						[ pt.x for pt in meanCurve ],
+						[ pt.y - ci.y for pt, ci in zip(meanCurve, CICurve) ],
+						[ pt.y + ci.y for pt, ci in zip(meanCurve, CICurve) ],
+						alpha=.3)
+					AUCs = [ getAUC(curve) * 100. for curve in curves ]
+					plt.plot(
+						[ pt.x for pt in meanCurve ],
+						[ pt.y for pt in meanCurve ],
+						label = '%s - AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
+				
+				plt.xlabel('False Positive Rate', fontsize = fontsize)
+				plt.ylabel('True Positive Rate', fontsize = fontsize)
+				plt.legend(loc = 'upper right', fontsize = fontsize, fancybox = True)
+				fig.tight_layout()
+				if outpath is None:
+					bio = BytesIO()
+					fig.savefig(bio, format='png')
+					plt.close('all')
+					encoded = base64.b64encode(bio.getvalue()).decode('utf-8')
+					html = '<img src=\'data:image/png;base64,%s\'>'%encoded
+					if returnHTML:
+						return html
+					display(HTML(html))
+				else:
+					fig.savefig(outpath)
+					plt.close('all')
+		except ImportError as err:
+			raise err
 	
-	def _repr_html_(self):
-		hdr = '<div><b>Cross-validation</b></div>'
-		config = nctable(
+	def getConfigurationTable(self):
+		return nctable(
 			'Configuration',
 			{
 				'Positive training set:': [ str(self.tpos) ],
 				'Negative validation set:': [ str(self.tneg) ],
 				'Positive training set:': [ str(self.vpos) ],
 				'Negative validation set:': [ str(self.vneg) ],
+				'Positive training sequences per repeat': [ len(self.cvtpos[0]) ],
+				'Negative training sequences per repeat': [ len(self.cvtneg[0]) ],
+				'Positive validation sequences per repeat': [ len(self.cvvpos[0]) ],
+				'Negative validation sequences per repeat': [ len(self.cvvneg[0]) ],
 				'Repeats:': [ str(self.repeats) ],
 				'Negatives per positive:': [ str(self.ratioNegPos) ],
 				'Train/test ratio:': [ str(self.ratioTrainTest) ],
 			}
 		)
-		t = nctable(
+	
+	def getAUCTable(self):
+		return nctable(
 			'Evaluation statistics',
 			{
 				'Model': [ mdl.name for mdl in self.models ],
 				'PRC AUC': [
 					'%.2f +/- %.2f %%'%(
-						mean(getAUC(c) for c in self.PRC[mdl]) * 100.,
-						CI(getAUC(c) for c in self.PRC[mdl]) * 100.
+						mean([getAUC(c) for c in self.PRC[mdl]]) * 100.,
+						CI([getAUC(c) for c in self.PRC[mdl]]) * 100.
 					)
 					for mdl in self.models
 				],
 				'ROC AUC': [
 					'%.2f +/- %.2f %%'%(
-						mean(getAUC(c) for c in self.ROC[mdl]) * 100.,
-						CI(getAUC(c) for c in self.ROC[mdl]) * 100.
+						mean([getAUC(c) for c in self.ROC[mdl]]) * 100.,
+						CI([getAUC(c) for c in self.ROC[mdl]]) * 100.
 					)
 					for mdl in self.models
 				],
 			})
-		return '<div>' + hdr + config._repr_html_() + t._repr_html_() + self.plotPRC(returnHTML = True) + '</div>'
+	
+	def __repr__(self):
+		hdr = 'Cross-validation\n'
+		config = self.getConfigurationTable()
+		t = self.getAUCTable()
+		return hdr + '\n' + config.__repr__() + '\n' + t.__repr__()
+	
+	def _repr_html_(self):
+		hdr = '<div><b>Cross-validation</b></div>'
+		config = self.getConfigurationTable()
+		t = self.getAUCTable()
+		return '<div>' + hdr + config._repr_html_() + t._repr_html_() +\
+			'<div style="float: left;">%s</div><div style="float: right;">%s</div></div>'%(
+				self.plotPRC(returnHTML = True, figsize = (4., 4.), fontsize = 10),
+				self.plotROC(returnHTML = True, figsize = (4., 4.), fontsize = 10)
+			) + '</div>'
 
 def crossvalidate(models, tpos, tneg, vpos = None, vneg = None, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
 	return crossvalidation(models = models, tpos = tpos, tneg = tneg, vpos = vpos, vneg = vneg, repeats = repeats, ratioTrainTest = ratioTrainTest, ratioNegPos = ratioNegPos)
