@@ -19,6 +19,7 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 	"""
 	The `sequenceModelSVMOptimizedQuadratic` class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.
 	
+	:param name: Model name.
 	:param features: Feature set.
 	:param positives: Positive training sequences.
 	:param negatives: Negative training sequences.
@@ -26,6 +27,7 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 	:param windowStep: Window step size.
 	:param kDegree: Kernel degree.
 	
+	:type name: str
 	:type features: features
 	:type positives: sequences
 	:type negatives: sequences
@@ -34,7 +36,8 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, features, positives, negatives, windowSize, windowStep, kDegree):
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree):
+		super().__init__(name)
 		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.positives, self.negatives = positives, negatives
@@ -60,13 +63,20 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 		self.pairWeights = ((SV.T * c) @ SV) * gamma * gamma
 		# Extract Bias
 		self.bias = -bias
+	
+	def getTrainer(self):
+		return lambda pos, neg: sequenceModelSVMOptimizedQuadratic(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel)
+	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
+	
 	def scoreWindow(self, seq):
 		fv = np.array(self.getSequenceFeatureVector(seq))
 		return self.pairWeights @ fv @ fv - self.bias
+	
 	def __str__(self):
 		return 'Support Vector Machine<Features: %s (%d); Positives: %s; Negatives: %s; Kernel: %s; Support vectors: %d; Quadratic optimized>'%(str(self.features), len(self.features), str(self.positives), str(self.negatives), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
+	
 	def __repr__(self): return self.__str__()
 
 
@@ -75,6 +85,7 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 	"""
 	The `sequenceModelSVMOptimizedQuadratic` class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.
 	
+	:param name: Model name.
 	:param features: Feature set.
 	:param positives: Positive training sequences.
 	:param negatives: Negative training sequences.
@@ -82,6 +93,7 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 	:param windowStep: Window step size.
 	:param kDegree: Kernel degree.
 	
+	:type name: str
 	:type features: features
 	:type positives: sequences
 	:type negatives: sequences
@@ -89,7 +101,9 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 	:type windowStep: int
 	:type kDegree: float
 	"""
-	def __init__(self, features, positives, negatives, windowSize, windowStep, kDegree):
+	
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree):
+		super().__init__(name)
 		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.positives, self.negatives = positives, negatives
@@ -140,14 +154,21 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 						)**2.)
 					for _v, _c in zip(SV, c)
 				) + cls.intercept_[0]
+	
+	def getTrainer(self):
+		return lambda pos, neg: sequenceModelSVMOptimizedQuadraticAutoScale(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel)
+	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
+	
 	def scoreWindow(self, seq):
 		fraw = nc.features('', [ f.feature for f in self.features ])
 		fv = np.array(fraw.getAll(seq))
 		return (self.pairWeights @ fv @ fv) + (self.linWeights @ fv) + self.bias
+	
 	def __str__(self):
 		return 'Support Vector Machine<Features: %s (%d); Positives: %s; Negatives: %s; Kernel: %s; Support vectors: %d; Quadratic optimized>'%(str(self.features), len(self.features), str(self.positives), str(self.negatives), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
+	
 	def __repr__(self): return self.__str__()
 
 
@@ -156,6 +177,7 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 	"""
 	The `sequenceModelSVMOptimizedQuadraticCUDA` class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication with CUDA.
 	
+	:param name: Model name.
 	:param features: Feature set.
 	:param positives: Positive training sequences.
 	:param negatives: Negative training sequences.
@@ -163,6 +185,7 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 	:param windowStep: Window step size.
 	:param kDegree: Kernel degree.
 	
+	:type name: str
 	:type features: features
 	:type positives: sequences
 	:type negatives: sequences
@@ -171,7 +194,8 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, features, positives, negatives, windowSize, windowStep, kDegree):
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree):
+		super().__init__(name)
 		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.positives, self.negatives = positives, negatives
@@ -197,12 +221,19 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 		self.pairWeights = cp.array( ((SV.T * c) @ SV) * gamma * gamma )
 		# Extract Bias
 		self.bias = -bias
+	
+	def getTrainer(self):
+		return lambda pos, neg: sequenceModelSVMOptimizedQuadraticCUDA(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel)
+	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
+	
 	def scoreWindow(self, seq):
 		fv = cp.array(self.getSequenceFeatureVector(seq))
 		return self.pairWeights @ fv @ fv - self.bias
+	
 	def __str__(self):
 		return 'Support Vector Machine<Features: %s (%d); Positives: %s; Negatives: %s; Kernel: %s; Support vectors: %d; Quadratic optimized, CUDA>'%(str(self.features), len(self.features), str(self.positives), str(self.negatives), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
+	
 	def __repr__(self): return self.__str__()
 

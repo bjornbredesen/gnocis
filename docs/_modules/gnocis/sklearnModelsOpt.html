@@ -56,6 +56,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	The `sequenceModelSVMOptimizedQuadratic` class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</span>
 <span class="sd">	</span>
+<span class="sd">	:param name: Model name.</span>
 <span class="sd">	:param features: Feature set.</span>
 <span class="sd">	:param positives: Positive training sequences.</span>
 <span class="sd">	:param negatives: Negative training sequences.</span>
@@ -63,6 +64,7 @@
 <span class="sd">	:param windowStep: Window step size.</span>
 <span class="sd">	:param kDegree: Kernel degree.</span>
 <span class="sd">	</span>
+<span class="sd">	:type name: str</span>
 <span class="sd">	:type features: features</span>
 <span class="sd">	:type positives: sequences</span>
 <span class="sd">	:type negatives: sequences</span>
@@ -71,7 +73,8 @@
 <span class="sd">	:type kDegree: float</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span><span class="p">,</span> <span class="n">kDegree</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span><span class="p">,</span> <span class="n">kDegree</span><span class="p">):</span>
+		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span> <span class="o">=</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">negatives</span> <span class="o">=</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span>
@@ -97,13 +100,20 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">=</span> <span class="p">((</span><span class="n">SV</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">@</span> <span class="n">SV</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">gamma</span>
 		<span class="c1"># Extract Bias</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="o">-</span><span class="n">bias</span>
+	
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadratic.getTrainer"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.getTrainer">[docs]</a>	<span class="k">def</span> <span class="nf">getTrainer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="k">lambda</span> <span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">:</span> <span class="n">sequenceModelSVMOptimizedQuadratic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span></div>
+	
 <div class="viewcode-block" id="sequenceModelSVMOptimizedQuadratic.getSequenceFeatureVector"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.getSequenceFeatureVector">[docs]</a>	<span class="k">def</span> <span class="nf">getSequenceFeatureVector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">getAll</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span></div>
+	
 <div class="viewcode-block" id="sequenceModelSVMOptimizedQuadratic.scoreWindow"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow">[docs]</a>	<span class="k">def</span> <span class="nf">scoreWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
 		<span class="n">fv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSequenceFeatureVector</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span></div>
+	
 	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;Support Vector Machine&lt;Features: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%d</span><span class="s1">); Positives: </span><span class="si">%s</span><span class="s1">; Negatives: </span><span class="si">%s</span><span class="s1">; Kernel: </span><span class="si">%s</span><span class="s1">; Support vectors: </span><span class="si">%d</span><span class="s1">; Quadratic optimized&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negatives</span><span class="p">),</span> <span class="p">[</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span> <span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nSV</span><span class="p">)</span>
+	
 	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
 
@@ -112,6 +122,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	The `sequenceModelSVMOptimizedQuadratic` class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</span>
 <span class="sd">	</span>
+<span class="sd">	:param name: Model name.</span>
 <span class="sd">	:param features: Feature set.</span>
 <span class="sd">	:param positives: Positive training sequences.</span>
 <span class="sd">	:param negatives: Negative training sequences.</span>
@@ -119,6 +130,7 @@
 <span class="sd">	:param windowStep: Window step size.</span>
 <span class="sd">	:param kDegree: Kernel degree.</span>
 <span class="sd">	</span>
+<span class="sd">	:type name: str</span>
 <span class="sd">	:type features: features</span>
 <span class="sd">	:type positives: sequences</span>
 <span class="sd">	:type negatives: sequences</span>
@@ -126,7 +138,9 @@
 <span class="sd">	:type windowStep: int</span>
 <span class="sd">	:type kDegree: float</span>
 <span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span><span class="p">,</span> <span class="n">kDegree</span><span class="p">):</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span><span class="p">,</span> <span class="n">kDegree</span><span class="p">):</span>
+		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span> <span class="o">=</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">negatives</span> <span class="o">=</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span>
@@ -177,14 +191,21 @@
 						<span class="p">)</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span>
 					<span class="k">for</span> <span class="n">_v</span><span class="p">,</span> <span class="n">_c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">SV</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
 				<span class="p">)</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="n">intercept_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticAutoScale.getTrainer"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.getTrainer">[docs]</a>	<span class="k">def</span> <span class="nf">getTrainer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="k">lambda</span> <span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">:</span> <span class="n">sequenceModelSVMOptimizedQuadraticAutoScale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span></div>
+	
 <div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticAutoScale.getSequenceFeatureVector"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.getSequenceFeatureVector">[docs]</a>	<span class="k">def</span> <span class="nf">getSequenceFeatureVector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">getAll</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span></div>
+	
 <div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow">[docs]</a>	<span class="k">def</span> <span class="nf">scoreWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
 		<span class="n">fraw</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">features</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="p">[</span> <span class="n">f</span><span class="o">.</span><span class="n">feature</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="p">])</span>
 		<span class="n">fv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fraw</span><span class="o">.</span><span class="n">getAll</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
 		<span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">@</span> <span class="n">fv</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linWeights</span> <span class="o">@</span> <span class="n">fv</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span></div>
+	
 	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;Support Vector Machine&lt;Features: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%d</span><span class="s1">); Positives: </span><span class="si">%s</span><span class="s1">; Negatives: </span><span class="si">%s</span><span class="s1">; Kernel: </span><span class="si">%s</span><span class="s1">; Support vectors: </span><span class="si">%d</span><span class="s1">; Quadratic optimized&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negatives</span><span class="p">),</span> <span class="p">[</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span> <span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nSV</span><span class="p">)</span>
+	
 	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
 
@@ -193,6 +214,7 @@
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	The `sequenceModelSVMOptimizedQuadraticCUDA` class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication with CUDA.</span>
 <span class="sd">	</span>
+<span class="sd">	:param name: Model name.</span>
 <span class="sd">	:param features: Feature set.</span>
 <span class="sd">	:param positives: Positive training sequences.</span>
 <span class="sd">	:param negatives: Negative training sequences.</span>
@@ -200,6 +222,7 @@
 <span class="sd">	:param windowStep: Window step size.</span>
 <span class="sd">	:param kDegree: Kernel degree.</span>
 <span class="sd">	</span>
+<span class="sd">	:type name: str</span>
 <span class="sd">	:type features: features</span>
 <span class="sd">	:type positives: sequences</span>
 <span class="sd">	:type negatives: sequences</span>
@@ -208,7 +231,8 @@
 <span class="sd">	:type kDegree: float</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	
-	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span><span class="p">,</span> <span class="n">kDegree</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span><span class="p">,</span> <span class="n">kDegree</span><span class="p">):</span>
+		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span> <span class="o">=</span> <span class="n">windowSize</span><span class="p">,</span> <span class="n">windowStep</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">negatives</span> <span class="o">=</span> <span class="n">positives</span><span class="p">,</span> <span class="n">negatives</span>
@@ -234,13 +258,20 @@
 		<span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">((</span><span class="n">SV</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">@</span> <span class="n">SV</span><span class="p">)</span> <span class="o">*</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">gamma</span> <span class="p">)</span>
 		<span class="c1"># Extract Bias</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="o">-</span><span class="n">bias</span>
+	
+<div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticCUDA.getTrainer"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getTrainer">[docs]</a>	<span class="k">def</span> <span class="nf">getTrainer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="k">lambda</span> <span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">:</span> <span class="n">sequenceModelSVMOptimizedQuadraticCUDA</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowStep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span></div>
+	
 <div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector">[docs]</a>	<span class="k">def</span> <span class="nf">getSequenceFeatureVector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">getAll</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span></div>
+	
 <div class="viewcode-block" id="sequenceModelSVMOptimizedQuadraticCUDA.scoreWindow"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.scoreWindow">[docs]</a>	<span class="k">def</span> <span class="nf">scoreWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
 		<span class="n">fv</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSequenceFeatureVector</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
 		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairWeights</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">@</span> <span class="n">fv</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span></div>
+	
 	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="s1">&#39;Support Vector Machine&lt;Features: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%d</span><span class="s1">); Positives: </span><span class="si">%s</span><span class="s1">; Negatives: </span><span class="si">%s</span><span class="s1">; Kernel: </span><span class="si">%s</span><span class="s1">; Support vectors: </span><span class="si">%d</span><span class="s1">; Quadratic optimized, CUDA&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positives</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negatives</span><span class="p">),</span> <span class="p">[</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span> <span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nSV</span><span class="p">)</span>
+	
 	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
 </pre></div>

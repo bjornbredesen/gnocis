@@ -37,6 +37,19 @@ def getFloat(float v):
 	cdef float vr = v
 	return vr
 
+def mean(X):
+	return sum(X) / len(X)
+
+def std(X):
+	xM = mean(X)
+	return ( (1/(len(X) - 1)) * sum( ( x - xM )**2. for x in X ) )**0.5
+
+def SE(X):
+	return std(X) / (len(X)**0.5)
+
+def CI(X, cif = 1.96):
+	return SE(X) * cif
+
 
 ############################################################################
 # Nucleic acids

@@ -146,6 +146,16 @@
 <div class="section" id="module-gnocis.common">
 <span id="gnocis-common-module"></span><h2>gnocis.common module<a class="headerlink" href="#module-gnocis.common" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="gnocis.common.CI">
+<code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">CI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.CI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gnocis.common.SE">
+<code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">SE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.SE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="gnocis.common.getFloat">
 <code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">getFloat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.getFloat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to get floating point values of the same precision as used for <cite>float</cite> by Cython.</p>
@@ -168,6 +178,11 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="gnocis.common.mean">
+<code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">mean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.mean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="gnocis.common.setSeed">
 <code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">setSeed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.setSeed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the random seed.</p>
@@ -177,6 +192,11 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="function">
+<dt id="gnocis.common.std">
+<code class="sig-prename descclassname">gnocis.common.</code><code class="sig-name descname">std</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.std" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-gnocis.features">
@@ -783,6 +803,42 @@
 <code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">createDummyPREdictorModel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.models.createDummyPREdictorModel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="function">
+<dt id="gnocis.models.crossvalidate">
+<code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">crossvalidate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.models.crossvalidate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="gnocis.models.crossvalidation">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">crossvalidation</code><a class="headerlink" href="#gnocis.models.crossvalidation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class for cross-validations. Accepts binary training and validation sets and constructs cross-validation sets for a desired number of repeats. If a separate validation set is not given, the training set is used. The cross-validation set for each repeat contains numbers of training and test sequences determined by a training-to-testing sequence ratio, as well as a negative-per-positive test sequence ratio. When constructing the validation set, identities are checked for against the training set, to avoid contamination (will not work if sequences are cloned). Holds models and validation statistics. Integrates with terminal and IPython for visualization of results. Stores training and testing data, so new models can be added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>models</strong> (<em>list</em>) – List of models to cross-validate.</p></li>
+<li><p><strong>tpos</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training set.</p></li>
+<li><p><strong>tneg</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training set.</p></li>
+<li><p><strong>vpos</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a><em>, </em><em>optional</em>) – Positive validation set.</p></li>
+<li><p><strong>vneg</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a><em>, </em><em>optional</em>) – Negative validation set.</p></li>
+<li><p><strong>repeats</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of experimental repeats. Default = 20.</p></li>
+<li><p><strong>ratioTrainTest</strong> (<em>float</em><em>, </em><em>optional</em>) – Ratio of training to testing sequences. Default = 80%.</p></li>
+<li><p><strong>ratioNegPos</strong> (<em>float</em><em>, </em><em>optional</em>) – Ratio of validation negatives to positives. Default = 100.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.models.crossvalidation.addModel">
+<code class="sig-name descname">addModel</code><a class="headerlink" href="#gnocis.models.crossvalidation.addModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.crossvalidation.plotPRC">
+<code class="sig-name descname">plotPRC</code><a class="headerlink" href="#gnocis.models.crossvalidation.plotPRC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="gnocis.models.sequenceModel">
 <em class="property">class </em><code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">sequenceModel</code><a class="headerlink" href="#gnocis.models.sequenceModel" title="Permalink to this definition">¶</a></dt>
@@ -999,6 +1055,23 @@
 </dd></dl>
 
 <dl class="attribute">
+<dt id="gnocis.models.sequenceModel.plotPRC">
+<code class="sig-name descname">plotPRC</code><a class="headerlink" href="#gnocis.models.sequenceModel.plotPRC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a Precision/Recall curve and either displays it in an IPython session or saves it to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
+<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple of figure dimensions.</p></li>
+<li><p><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to save generated plot to. If not set, the plot will be output to IPython.</p></li>
+<li><p><strong>style</strong> (<em>str</em><em>, </em><em>optional</em>) – Matplotlib style to use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="gnocis.models.sequenceModel.predict">
 <code class="sig-name descname">predict</code><a class="headerlink" href="#gnocis.models.sequenceModel.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies the model using a sliding window across an input sequence stream or sequence set. Windows with a score &gt;= self.threshold are predicted, and predicted windows are merged into non-overlapping predictions.</p>
@@ -1064,6 +1137,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
 <li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – The feature set.</p></li>
 <li><p><strong>windowSize</strong> (<em>int</em>) – Window size to use.</p></li>
 <li><p><strong>windowStep</strong> (<em>int</em>) – Window step size to use.</p></li>
@@ -1071,8 +1145,8 @@
 </dd>
 </dl>
 <dl class="attribute">
-<dt id="gnocis.models.sequenceModelDummy.getCrossValidationConstructor">
-<code class="sig-name descname">getCrossValidationConstructor</code><a class="headerlink" href="#gnocis.models.sequenceModelDummy.getCrossValidationConstructor" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.models.sequenceModelDummy.getTrainer">
+<code class="sig-name descname">getTrainer</code><a class="headerlink" href="#gnocis.models.sequenceModelDummy.getTrainer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1090,6 +1164,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
 <li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – The feature set.</p></li>
 <li><p><strong>trainingPositives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
 <li><p><strong>trainingNegatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
@@ -1099,8 +1174,8 @@
 </dd>
 </dl>
 <dl class="attribute">
-<dt id="gnocis.models.sequenceModelLogOdds.getCrossValidationConstructor">
-<code class="sig-name descname">getCrossValidationConstructor</code><a class="headerlink" href="#gnocis.models.sequenceModelLogOdds.getCrossValidationConstructor" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.models.sequenceModelLogOdds.getTrainer">
+<code class="sig-name descname">getTrainer</code><a class="headerlink" href="#gnocis.models.sequenceModelLogOdds.getTrainer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2678,12 +2753,13 @@
 <span id="gnocis-sklearnmodels-module"></span><h2>gnocis.sklearnModels module<a class="headerlink" href="#module-gnocis.sklearnModels" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="gnocis.sklearnModels.sequenceModelRF">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelRF</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">nTrees</em>, <em class="sig-param">maxDepth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelRF</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">nTrees</em>, <em class="sig-param">maxDepth</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelRF</cite> class trains a Random Forest (RF) model using scikit-learn.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
 <li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
 <li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
 <li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
@@ -2695,13 +2771,13 @@
 </dd>
 </dl>
 <dl class="method">
-<dt id="gnocis.sklearnModels.sequenceModelRF.getCrossValidationConstructor">
-<code class="sig-name descname">getCrossValidationConstructor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF.getCrossValidationConstructor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF.getCrossValidationConstructor" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.sklearnModels.sequenceModelRF.getSequenceFeatureVector">
+<code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="gnocis.sklearnModels.sequenceModelRF.getSequenceFeatureVector">
-<code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.sklearnModels.sequenceModelRF.getTrainer">
+<code class="sig-name descname">getTrainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF.getTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF.getTrainer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2713,12 +2789,13 @@
 
 <dl class="class">
 <dt id="gnocis.sklearnModels.sequenceModelSVM">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelSVM</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelSVM</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelSVM</cite> class trains a Support Vector Machine (SVM) using scikit-learn.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
 <li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
 <li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
 <li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
@@ -2734,6 +2811,11 @@
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelSVM.getTrainer">
+<code class="sig-name descname">getTrainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM.getTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM.getTrainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="gnocis.sklearnModels.sequenceModelSVM.scoreWindow">
 <code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM.scoreWindow" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2745,12 +2827,13 @@
 <span id="gnocis-sklearnmodelsopt-module"></span><h2>gnocis.sklearnModelsOpt module<a class="headerlink" href="#module-gnocis.sklearnModelsOpt" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadratic</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadratic</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelSVMOptimizedQuadratic</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
 <li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
 <li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
 <li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
@@ -2766,6 +2849,11 @@
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.getTrainer">
+<code class="sig-name descname">getTrainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic.getTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.getTrainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow">
 <code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic.scoreWindow" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2774,12 +2862,13 @@
 
 <dl class="class">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticAutoScale</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticAutoScale</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelSVMOptimizedQuadratic</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
 <li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
 <li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
 <li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
@@ -2795,6 +2884,11 @@
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.getTrainer">
+<code class="sig-name descname">getTrainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale.getTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.getTrainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow">
 <code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale.scoreWindow" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2803,12 +2897,13 @@
 
 <dl class="class">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticCUDA</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticCUDA</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelSVMOptimizedQuadraticCUDA</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication with CUDA.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
 <li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
 <li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
 <li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
@@ -2821,6 +2916,11 @@
 <dl class="method">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector">
 <code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getTrainer">
+<code class="sig-name descname">getTrainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA.getTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA.getTrainer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2938,9 +3038,15 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>float</em>) – X-coordinate.</p></li>
 <li><p><strong>y</strong> (<em>float</em>) – Y-coordinate.</p></li>
+<li><p><strong>rank</strong> (<em>float</em><em>, </em><em>optional</em>) – Rank.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="attribute">
+<dt id="gnocis.validation.point2D.rank">
+<code class="sig-name descname">rank</code><a class="headerlink" href="#gnocis.validation.point2D.rank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="gnocis.validation.point2D.x">
 <code class="sig-name descname">x</code><a class="headerlink" href="#gnocis.validation.point2D.x" title="Permalink to this definition">¶</a></dt>

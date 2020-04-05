@@ -17,6 +17,8 @@ from .features cimport *
 from .validation cimport *
 from .validation import getConfusionMatrix, getConfusionMatrixStatistics, getROC, getPRC, getAUC, printValidationStatistics
 from .sequences import streamSequenceWindows
+from .ioputil import nctable
+from .common import mean, CI
 
 
 ############################################################################
@@ -154,6 +156,9 @@ class sequenceModel:
 	"""
 	The `sequenceModel` class is an abstract class for sequence models. A number of methods are implemented for machine learning and prediction with DNA sequences.
 	"""
+	
+	def __init__(self, name):
+		self.name = name
 	
 	# For pickling (used with multiprocessing)
 	def __getstate__(self):
@@ -431,6 +436,53 @@ class sequenceModel:
 		"""
 		return getAUC(self.getPRC(positives, negatives))
 	
+	def plotPRC(self, positives, negatives, figsize = (8, 8), outpath = None, style = 'ggplot'):
+		""" Plots a Precision/Recall curve and either displays it in an IPython session or saves it to a file.
+		
+		:param positives: Positives.
+		:param negatives: Negatives.
+		:param figsize: Tuple of figure dimensions.
+		:param outpath: Path to save generated plot to. If not set, the plot will be output to IPython.
+		:param style: Matplotlib style to use.
+		
+		:type positives: sequences/sequenceStream
+		:type negatives: sequences/sequenceStream
+		:type figsize: tuple, optional
+		:type outpath: str, optional
+		:type style: str, optional
+		"""
+		try:
+			import matplotlib.pyplot as plt
+			import base64
+			from io import BytesIO
+			from IPython.core.display import display, HTML
+			with plt.style.context(style):
+				fig = plt.figure(figsize = figsize)
+				curve = self.getPRC(positives, negatives)
+				plt.plot([ 0., 1. ],
+					[ len(positives) / (len(positives) + len(negatives)),
+						len(positives) / (len(positives) + len(negatives))],
+					linestyle = '--',
+					label = 'Expected at random')
+				plt.plot([ v.x for v in curve ],
+					[ v.y for v in curve ],
+					label = '%s - AUC = %.2f %%'%(self.name, getAUC(curve)*100.))
+				plt.xlabel('Recall', fontsize = 14)
+				plt.ylabel('Precision', fontsize = 14)
+				plt.legend(loc = 'upper right', fancybox = True)
+				if outpath is None:
+					bio = BytesIO()
+					fig.savefig(bio, format='png')
+					plt.close('all')
+					encoded = base64.b64encode(bio.getvalue()).decode('utf-8')
+					html = '<img src=\'data:image/png;base64,%s\'>'%encoded
+					display(HTML(html))
+				else:
+					fig.savefig(outpath)
+					plt.close('all')
+		except ImportError as err:
+			raise err
+	
 	# Returns validation statistics dictionary.
 	def getValidationStatistics(self, positives, negatives):
 		""" Returns common model validation statistics (confusion matrix values; ROCAUC; PRCAUC).
@@ -465,7 +517,7 @@ class sequenceModel:
 			random.shuffle(cneg)
 			tpos, tneg = cpos[:int(npos/2)], cneg[:int(nneg/2)]
 			vpos, vneg = cpos[int(npos/2):], cneg[int(nneg/2):]
-			cvmdl = self.getCrossValidationConstructor()(tpos, tneg)
+			cvmdl = self.getTrainer()(tpos, tneg)
 			foldStats.append({
 				'ROC AUC': cvmdl.getROCAUC(vpos, vneg),
 				'PRC AUC': cvmdl.getPRCAUC(vpos, vneg),
@@ -484,7 +536,7 @@ class sequenceModel:
 		vPairs = [  ]
 		TP, FP, TN, FN = 0, 0, 0, 0
 		for i, e in enumerate(positives):
-			cvmdl = self.getCrossValidationConstructor()(positives[:i] + positives[i+1:], negatives)
+			cvmdl = self.getTrainer()(positives[:i] + positives[i+1:], negatives)
 			score = cvmdl.scoreSequence(positives[i])
 			if score > cvmdl.threshold:
 				TP += 1
@@ -492,7 +544,7 @@ class sequenceModel:
 				FN += 1
 			vPairs.append( { 'score': score, 'class': True } )
 		for i, e in enumerate(negatives):
-			cvmdl = self.getCrossValidationConstructor()(positives, negatives[:i] + negatives[i+1:])
+			cvmdl = self.getTrainer()(positives, negatives[:i] + negatives[i+1:])
 			score = cvmdl.scoreSequence(negatives[i])
 			if score > cvmdl.threshold:
 				FP += 1
@@ -588,16 +640,19 @@ class sequenceModelDummy(sequenceModel):
 	"""
 	This model takes a feature set, and scores input sequences by summing feature values, without weighting.
 	
+	:param name: Model name.
 	:param features: The feature set.
 	:param windowSize: Window size to use.
 	:param windowStep: Window step size to use.
 	
+	:type name: str
 	:type features: features
 	:type windowSize: int
 	:type windowStep: int
 	"""
 	
-	def __init__(self, features, windowSize, windowStep):
+	def __init__(self, name, features, windowSize, windowStep):
+		super().__init__(name)
 		self.threshold = 0.0
 		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
@@ -607,8 +662,8 @@ class sequenceModelDummy(sequenceModel):
 	
 	def __repr__(self): return self.__str__()
 	
-	def getCrossValidationConstructor(self):
-		return lambda pos, neg: sequenceModelDummy(self.features, self.windowSize, self.windowStep)
+	def getTrainer(self):
+		return lambda pos, neg: sequenceModelDummy(self.name, self.features, self.windowSize, self.windowStep)
 	
 	def scoreWindow(self, seq):
 		cdef list fv
@@ -624,12 +679,14 @@ class sequenceModelLogOdds(sequenceModel):
 	"""
 	Constructs a log-odds model based on an input feature set and binary training set, and scores input sequences by summing log-odds-weighted feature values.
 	
+	:param name: Model name.
 	:param features: The feature set.
 	:param trainingPositives: Positive training sequences.
 	:param trainingNegatives: Negative training sequences.
 	:param windowSize: Window size to use.
 	:param windowStep: Window step size to use.
 	
+	:type name: str
 	:type features: features
 	:type trainingPositives: sequences
 	:type trainingNegatives: sequences
@@ -637,7 +694,8 @@ class sequenceModelLogOdds(sequenceModel):
 	:type windowStep: int
 	"""
 	
-	def __init__(self, features, trainingPositives, trainingNegatives, windowSize, windowStep):
+	def __init__(self, name, features, trainingPositives, trainingNegatives, windowSize, windowStep):
+		super().__init__(name)
 		self.threshold = 0.0
 		self.features = features
 		self.trainingPositives, self.trainingNegatives = trainingPositives, trainingNegatives
@@ -659,8 +717,8 @@ class sequenceModelLogOdds(sequenceModel):
 	
 	def __repr__(self): return self.__str__()
 	
-	def getCrossValidationConstructor(self):
-		return lambda pos, neg: sequenceModelLogOdds(self.features, pos, neg, self.windowSize, self.windowStep)
+	def getTrainer(self):
+		return lambda pos, neg: sequenceModelLogOdds(self.name, self.features, pos, neg, self.windowSize, self.windowStep)
 	
 	def scoreWindow(self, seq):
 		cdef list fv, w
@@ -673,14 +731,247 @@ class sequenceModelLogOdds(sequenceModel):
 		return ret
 
 # Trains a singular-motif PREdictor model with a given set of motifs and positive and negative training sequences.
-def trainSinglePREdictorModel(motifs, positives, negatives, windowSize=500, windowStep=10):
-	return sequenceModelLogOdds(features.getMotifSpectrum(motifs), positives, negatives, windowSize, windowStep)
+def trainSinglePREdictorModel(name, motifs, positives, negatives, windowSize=500, windowStep=10):
+	return sequenceModelLogOdds(name, features.getMotifSpectrum(motifs), positives, negatives, windowSize, windowStep)
 
 # Trains a PREdictor model with a given set of motifs and positive and negative training sequences.
-def createDummyPREdictorModel(motifs, windowSize=500, windowStep=10):
-	return sequenceModelDummy(features.getPREdictorMotifPairSpectrum(motifs, 219), windowSize, windowStep)
+def createDummyPREdictorModel(name, motifs, windowSize=500, windowStep=10):
+	return sequenceModelDummy(name, features.getPREdictorMotifPairSpectrum(motifs, 219), windowSize, windowStep)
 
 # Trains a PREdictor model with a given set of motifs and positive and negative training sequences.
-def trainPREdictorModel(motifs, positives, negatives, windowSize=500, windowStep=10):
-	return sequenceModelLogOdds(features.getPREdictorMotifPairSpectrum(motifs, 219), positives, negatives, windowSize, windowStep)
+def trainPREdictorModel(name, motifs, positives, negatives, windowSize=500, windowStep=10):
+	return sequenceModelLogOdds(name, features.getPREdictorMotifPairSpectrum(motifs, 219), positives, negatives, windowSize, windowStep)
+
+class crossvalidation:
+	"""
+	Helper class for cross-validations. Accepts binary training and validation sets and constructs cross-validation sets for a desired number of repeats. If a separate validation set is not given, the training set is used. The cross-validation set for each repeat contains numbers of training and test sequences determined by a training-to-testing sequence ratio, as well as a negative-per-positive test sequence ratio. When constructing the validation set, identities are checked for against the training set, to avoid contamination (will not work if sequences are cloned). Holds models and validation statistics. Integrates with terminal and IPython for visualization of results. Stores training and testing data, so new models can be added.
+	
+	:param models: List of models to cross-validate.
+	:param tpos: Positive training set.
+	:param tneg: Negative training set.
+	:param vpos: Positive validation set.
+	:param vneg: Negative validation set.
+	:param repeats: Number of experimental repeats. Default = 20.
+	:param ratioTrainTest: Ratio of training to testing sequences. Default = 80%.
+	:param ratioNegPos: Ratio of validation negatives to positives. Default = 100.
+	
+	:type models: list
+	:type tpos: sequences
+	:type tneg: sequences
+	:type vpos: sequences, optional
+	:type vneg: sequences, optional
+	:type repeats: int, optional
+	:type ratioTrainTest: float, optional
+	:type ratioNegPos: float, optional
+	"""
+	
+	def __init__(self, models, tpos, tneg, vpos = None, vneg = None, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
+		if vpos == None:
+			vpos = tpos
+		if vneg == None:
+			vneg = tneg
+		self.ratioNegPos = ratioNegPos
+		self.ratioTrainTest = ratioTrainTest
+		self.tpos = tpos
+		self.tneg = tneg
+		self.vpos = vpos
+		self.vneg = vneg
+		self.cvtpos = []
+		self.cvtneg = []
+		self.cvvpos = []
+		self.cvvneg = []
+		self.models = []
+		self.PRC = {}
+		self.ROC = {}
+		self.repeats = repeats
+		print('Generating training/test sets')
+		for rep in range(repeats):
+			print(' - Repeat %d/%d'%(rep+1, self.repeats))
+			# Construct training set as balanced subset of shuffled sequences
+			stpos = tpos.sequences[:]
+			stneg = tneg.sequences[:]
+			random.shuffle(stpos)
+			random.shuffle(stneg)
+			ntrain = int( min(len(tpos), len(tneg)) * ratioTrainTest )
+			self.cvtpos.append( sequences(tpos.name, stpos[:ntrain]) )
+			self.cvtneg.append( sequences(tneg.name, stneg[:ntrain]) )
+			# Construct validation set from independent sequences
+			rvpos = [ s for s in vpos if s not in self.cvtpos[-1] ]
+			rvneg = [ s for s in vneg if s not in self.cvtneg[-1] ]
+			random.shuffle(rvpos)
+			random.shuffle(rvneg)
+			nvpos = int( min(len(rvpos), len(rvneg)/ratioNegPos) )
+			nvneg = int(nvpos * ratioNegPos)
+			cvpos = sequences(vpos.name, rvpos[:nvpos])
+			cvneg = sequences(vneg.name, rvneg[:nvneg])
+			self.cvvpos.append( cvpos )
+			self.cvvneg.append( cvneg )
+		for mdl in models:
+			self.addModel(mdl)
+	
+	"""
+	Adds a model to the cross-validation.
+	
+	:param mdl: Model to add.
+	
+	:type mdl: model
+	"""
+	def addModel(self, mdl):
+		self.PRC[mdl] = []
+		self.ROC[mdl] = []
+		print('Cross-validating - ' + mdl.name)
+		for rep in range(self.repeats):
+			print(' - Repeat %d/%d'%(rep+1, self.repeats))
+			imdl = mdl.getTrainer()(self.cvtpos[rep], self.cvtneg[rep])
+			self.PRC[mdl].append(imdl.getPRC(self.cvvpos[rep], self.cvvneg[rep]))
+			self.ROC[mdl].append(imdl.getROC(self.cvvpos[rep], self.cvvneg[rep]))
+		self.models.append(mdl)
+	
+	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False):
+		try:
+			import matplotlib.pyplot as plt
+			import base64
+			from io import BytesIO
+			from IPython.core.display import display, HTML
+			with plt.style.context(style):
+				fig = plt.figure(figsize = figsize)
+				# Expected random generalization
+				ry = len(self.cvvpos[0]) / (len(self.cvvpos[0]) + len(self.cvvneg[0]))
+				plt.plot(
+					[ 0., 1. ],
+					[ ry, ry ],
+					linestyle = '--',
+					color = 'grey',
+					label = 'Expected at random')
+				# Curves per model
+				for mdl in self.models:
+					curves = self.PRC[mdl]
+					xs = sorted(list(set(pt.x for c in curves for pt in c)))
+					curvebyx = [
+						{
+							x: [ pt.y for pt in curve if pt.x == x ]
+							for x in xs
+						}
+						for curve in curves
+					]
+					curvebyxmax = {
+						x: [
+							max(curvebyx[i][x])
+							for i, curve in enumerate(curves)
+						]
+						for x in xs
+					}
+					curvebyxmin = {
+						x: [
+							min(curvebyx[i][x])
+							for i, curve in enumerate(curves)
+						]
+						for x in xs
+					}
+					meanCurve = [
+						pt
+						for x in xs
+						for pt in [
+							point2D(x, mean(curvebyxmax[x])),
+							point2D(x, mean(curvebyxmin[x]))
+						]
+					]
+					CICurve = [
+						pt
+						for x in xs
+						for pt in [
+							point2D(x, CI(curvebyxmax[x])),
+							point2D(x, CI(curvebyxmin[x]))
+						]
+					]
+					plt.fill_between(
+						[ pt.x for pt in meanCurve ],
+						[ pt.y - ci.y for pt, ci in zip(meanCurve, CICurve) ],
+						[ pt.y + ci.y for pt, ci in zip(meanCurve, CICurve) ],
+						alpha=.3)
+					AUCs = [ getAUC(curve) * 100. for curve in curves ]
+					plt.plot(
+						[ pt.x for pt in meanCurve ],
+						[ pt.y for pt in meanCurve ],
+						label = '%s - AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
+				
+				plt.xlabel('Recall', fontsize = 14)
+				plt.ylabel('Precision', fontsize = 14)
+				plt.legend(loc = 'upper right', fancybox = True)
+				if outpath is None:
+					bio = BytesIO()
+					fig.savefig(bio, format='png')
+					plt.close('all')
+					encoded = base64.b64encode(bio.getvalue()).decode('utf-8')
+					html = '<img src=\'data:image/png;base64,%s\'>'%encoded
+					if returnHTML:
+						return html
+					display(HTML(html))
+				else:
+					fig.savefig(outpath)
+					plt.close('all')
+		except ImportError as err:
+			raise err
+	
+	def __repr__(self):
+		hdr = 'Cross-validation\nPositive training set: ' + str(self.tpos) + '\nNegative training set: ' + str(self.tneg) + '\nPositive validation set: ' + str(self.vpos) + '\nNegative validation set: ' + str(self.vneg) + '\nRepeats: ' + str(self.repeats) + '\nNegatives per positive: ' + str(self.ratioNegPos) + '\nTrain/test ratio: ' + str(self.ratioTrainTest)
+		t = nctable(
+			'',
+			{
+				'Model': [ mdl.name for mdl in self.models ],
+				'PRC AUC': [
+					'%.2f +/- %.2f %%'%(
+						mean(getAUC(c) for c in self.PRC[mdl]) * 100.,
+						CI(getAUC(c) for c in self.PRC[mdl]) * 100.
+					)
+					for mdl in self.models
+				],
+				'ROC AUC': [
+					'%.2f +/- %.2f %%'%(
+						mean(getAUC(c) for c in self.ROC[mdl]) * 100.,
+						CI(getAUC(c) for c in self.ROC[mdl]) * 100.
+					)
+					for mdl in self.models
+				],
+			})
+		return hdr + '\n' + t.__repr__()
+	
+	def _repr_html_(self):
+		hdr = '<div><b>Cross-validation</b></div>'
+		config = nctable(
+			'Configuration',
+			{
+				'Positive training set:': [ str(self.tpos) ],
+				'Negative validation set:': [ str(self.tneg) ],
+				'Positive training set:': [ str(self.vpos) ],
+				'Negative validation set:': [ str(self.vneg) ],
+				'Repeats:': [ str(self.repeats) ],
+				'Negatives per positive:': [ str(self.ratioNegPos) ],
+				'Train/test ratio:': [ str(self.ratioTrainTest) ],
+			}
+		)
+		t = nctable(
+			'Evaluation statistics',
+			{
+				'Model': [ mdl.name for mdl in self.models ],
+				'PRC AUC': [
+					'%.2f +/- %.2f %%'%(
+						mean(getAUC(c) for c in self.PRC[mdl]) * 100.,
+						CI(getAUC(c) for c in self.PRC[mdl]) * 100.
+					)
+					for mdl in self.models
+				],
+				'ROC AUC': [
+					'%.2f +/- %.2f %%'%(
+						mean(getAUC(c) for c in self.ROC[mdl]) * 100.,
+						CI(getAUC(c) for c in self.ROC[mdl]) * 100.
+					)
+					for mdl in self.models
+				],
+			})
+		return '<div>' + hdr + config._repr_html_() + t._repr_html_() + self.plotPRC(returnHTML = True) + '</div>'
+
+def crossvalidate(models, tpos, tneg, vpos = None, vneg = None, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
+	return crossvalidation(models = models, tpos = tpos, tneg = tneg, vpos = vpos, vneg = vneg, repeats = repeats, ratioTrainTest = ratioTrainTest, ratioNegPos = ratioNegPos)
+
 

@@ -16,7 +16,7 @@ from libcpp cimport bool
 # Represents a two-dimensional point.
 cdef class point2D:
 	
-	cdef public float x, y
+	cdef public float x, y, rank
 
 # Represents a pair of a validation score and label (with the option of a name).
 cdef class validationPair:

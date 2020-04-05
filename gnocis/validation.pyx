@@ -23,13 +23,15 @@ cdef class point2D:
 	
 	:param x: X-coordinate.
 	:param y: Y-coordinate.
+	:param rank: Rank.
 	
 	:type x: float
 	:type y: float
+	:type rank: float, optional
 	"""
 	
-	def __init__(self, x, y):
-		self.x, self.y = x, y
+	def __init__(self, x, y, rank = 0.):
+		self.x, self.y, self.rank = x, y, rank
 
 # Represents a pair of a validation score and label (with the option of a name).
 cdef class validationPair:
@@ -71,18 +73,20 @@ def getROC(vPos, vNeg):
 		return [ point2D(0.0, 0.0), point2D(1.0, 1.0) ]
 	vPairs = sorted(vPos + vNeg, key = lambda x: -x.score)
 	TP, FP = 0, 0
+	rank = 0
 	curve = [ point2D(0.0, 0.0) ]
 	for vp in vPairs:
 		if vp.label:
 			TP += 1
 		else:
 			FP += 1
-		curve .append(point2D( x = FP / len(vNeg), y = TP / len(vPos) ))
+		rank += 1
+		curve .append(point2D( x = FP / len(vNeg), y = TP / len(vPos), rank = rank ))
 	curve.append(point2D(1.0, 1.0))
 	return curve
 
 # Gets the Precision/Recall Curve for sets of positive and negative validation pairs
-def getPRC(vPos, vNeg):
+def getPRC(vPos, vNeg, subdivisions = 4):
 	"""
 	Generates a Precision/Recall Curve (PRC).
 	
@@ -97,14 +101,17 @@ def getPRC(vPos, vNeg):
 	if len(vPos) == 0 or len(vNeg) == 0:
 		return [ point2D(0.0, 0.0), point2D(1.0, 0.0) ]
 	vPairs = sorted(vPos + vNeg, key = lambda x: -x.score)
-	TP, FP = 0, 0
+	TP, FP = 0., 0.
+	rank = 0.
 	curve = [ point2D(0.0, 0.0) ]
 	for vp in vPairs:
-		if vp.label:
-			TP += 1
-		else:
-			FP += 1
-		curve.append(point2D( x = TP / len(vPos), y = TP / (TP + FP) ))
+		for sdv in range(subdivisions):
+			if vp.label:
+				TP += 1. / subdivisions
+			else:
+				FP += 1. / subdivisions
+			rank += 1. / subdivisions
+			curve.append(point2D( x = TP / len(vPos), y = TP / (TP + FP), rank = rank ))
 	curve.append(point2D( x = 1.0, y = len(vPos)/(len(vPos)+len(vNeg)) ))
 	return curve
 
