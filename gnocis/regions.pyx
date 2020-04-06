@@ -126,7 +126,7 @@ cdef class regions:
 		return nctable(
 			'Table: ' + self.__str__(),
 			self._as_dict_(),
-			align = { 'Chromosome': 'l' }
+			align = { 'Seq.': 'l' }
 		)
 		
 	def _repr_html_(self):

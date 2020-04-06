@@ -827,7 +827,7 @@ class crossvalidation:
 			self.ROC[mdl].append(imdl.getROC(self.cvvpos[rep], self.cvvneg[rep]))
 		self.models.append(mdl)
 	
-	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14):
+	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, legendLoc = 'lower left'):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
@@ -897,7 +897,7 @@ class crossvalidation:
 				
 				plt.xlabel('Recall', fontsize = fontsize)
 				plt.ylabel('Precision', fontsize = fontsize)
-				plt.legend(loc = 'upper right', fontsize = fontsize, fancybox = True)
+				plt.legend(loc = legendLoc, fontsize = fontsize, fancybox = True)
 				fig.tight_layout()
 				if outpath is None:
 					bio = BytesIO()
@@ -914,7 +914,7 @@ class crossvalidation:
 		except ImportError as err:
 			raise err
 	
-	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14):
+	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, legendLoc = 'lower right'):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
@@ -923,10 +923,9 @@ class crossvalidation:
 			with plt.style.context(style):
 				fig = plt.figure(figsize = figsize)
 				# Expected random generalization
-				ry = len(self.cvvpos[0]) / (len(self.cvvpos[0]) + len(self.cvvneg[0]))
 				plt.plot(
 					[ 0., 1. ],
-					[ ry, ry ],
+					[ 0., 1. ],
 					linestyle = '--',
 					color = 'grey',
 					label = 'Expected at random')
@@ -984,7 +983,7 @@ class crossvalidation:
 				
 				plt.xlabel('False Positive Rate', fontsize = fontsize)
 				plt.ylabel('True Positive Rate', fontsize = fontsize)
-				plt.legend(loc = 'upper right', fontsize = fontsize, fancybox = True)
+				plt.legend(loc = legendLoc, fontsize = fontsize, fancybox = True)
 				fig.tight_layout()
 				if outpath is None:
 					bio = BytesIO()
@@ -1052,8 +1051,8 @@ class crossvalidation:
 		t = self.getAUCTable()
 		return '<div>' + hdr + config._repr_html_() + t._repr_html_() +\
 			'<div style="float: left;">%s</div><div style="float: right;">%s</div></div>'%(
-				self.plotPRC(returnHTML = True, figsize = (4., 4.), fontsize = 10),
-				self.plotROC(returnHTML = True, figsize = (4., 4.), fontsize = 10)
+				self.plotPRC(returnHTML = True, figsize = (5.5, 5.5), fontsize = 8),
+				self.plotROC(returnHTML = True, figsize = (5.5, 5.5), fontsize = 8)
 			) + '</div>'
 
 def crossvalidate(models, tpos, tneg, vpos = None, vneg = None, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
