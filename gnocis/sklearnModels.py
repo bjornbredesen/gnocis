@@ -37,22 +37,27 @@ class sequenceModelSVM(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree):
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree, scale = True):
 		super().__init__(name)
-		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
+		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		if scale:
+			features = featureScaler( features, positives = wPos, negatives = wNeg )
+		self.scale = scale
+		self.features = features
 		self.positives, self.negatives = positives, negatives
 		self.kernel = kDegree
 		self.threshold = 0.0
-		vP = [ self.getSequenceFeatureVector(w) for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ]
-		vN = [ self.getSequenceFeatureVector(w) for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ]
+		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]
+		vN = [ self.getSequenceFeatureVector(w) for w in wNeg ]
 		cP = [ 1.0 for _ in range(len(vP)) ]
 		cN = [ -1.0 for _ in range(len(vN)) ]
 		self.cls = svm.SVC(kernel = 'poly', degree = kDegree, gamma = 'auto')
 		self.cls.fit( np.array(vP+vN), np.array(cP+cN) )
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelSVM(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel)
+		return lambda pos, neg: sequenceModelSVM(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel, self.scale)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -91,12 +96,13 @@ class sequenceModelRF(sequenceModel):
 	
 	def __init__(self, name, features, positives, negatives, windowSize, windowStep, nTrees, maxDepth, scale = True):
 		super().__init__(name)
+		self.windowSize, self.windowStep = windowSize, windowStep
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		wNeg = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		if scale:
 			features = featureScaler( features, positives = wPos, negatives = wNeg )
+		self.scale = scale
 		self.features = features
-		self.windowSize, self.windowStep = windowSize, windowStep
 		self.positives, self.negatives = positives, negatives
 		self.nTrees, self.maxDepth = nTrees, maxDepth
 		self.threshold = 0.0
@@ -108,7 +114,7 @@ class sequenceModelRF(sequenceModel):
 		self.cls.fit( np.array(vP+vN), np.array(cP+cN) )
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelRF(self.name, self.features, self.positives, self.negatives, self.windowSize, self.windowStep, self.nTrees, self.maxDepth)
+		return lambda pos, neg: sequenceModelRF(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.nTrees, self.maxDepth, self.scale)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)

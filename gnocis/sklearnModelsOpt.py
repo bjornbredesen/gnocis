@@ -7,7 +7,9 @@
 ############################################################################
 # Interfacing with scikit-learn
 
+from .features import featureScaler
 from .models import sequenceModel
+from .sequences import sequences
 import numpy as np
 import cupy as cp
 from sklearn import svm
@@ -36,16 +38,22 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree):
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree, scale = True):
 		super().__init__(name)
+		self.windowSize, self.windowStep = windowSize, windowStep
+		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		if scale:
+			features = featureScaler( features, positives = wPos, negatives = wNeg )
+		self.scale = scale
 		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.positives, self.negatives = positives, negatives
 		self.kernel = kDegree
 		self.threshold = 0.0
 		assert(kDegree == 2)
-		vP = [ self.getSequenceFeatureVector(w) for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ]
-		vN = [ self.getSequenceFeatureVector(w) for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ]
+		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]
+		vN = [ self.getSequenceFeatureVector(w) for w in wNeg ]
 		cP = [ 1.0 for _ in range(len(vP)) ]
 		cN = [ -1.0 for _ in range(len(vN)) ]
 		cls = svm.SVC(kernel = 'poly', degree = kDegree, gamma = 'auto')
@@ -65,7 +73,7 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 		self.bias = -bias
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelSVMOptimizedQuadratic(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel)
+		return lambda pos, neg: sequenceModelSVMOptimizedQuadratic(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel, self.scale)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -102,16 +110,21 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree):
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree, scale = True):
 		super().__init__(name)
-		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
+		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		if scale:
+			features = featureScaler( features, positives = wPos, negatives = wNeg )
+		self.scale = scale
+		self.features = features
 		self.positives, self.negatives = positives, negatives
 		self.kernel = kDegree
 		self.threshold = 0.0
 		assert(kDegree == 2)
-		vP = [ self.getSequenceFeatureVector(w) for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ]
-		vN = [ self.getSequenceFeatureVector(w) for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ]
+		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]
+		vN = [ self.getSequenceFeatureVector(w) for w in wNeg ]
 		cP = [ 1.0 for _ in range(len(vP)) ]
 		cN = [ -1.0 for _ in range(len(vN)) ]
 		cls = svm.SVC(kernel = 'poly', degree = kDegree, gamma = 'auto')
@@ -156,7 +169,7 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 				) + cls.intercept_[0]
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelSVMOptimizedQuadraticAutoScale(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel)
+		return lambda pos, neg: sequenceModelSVMOptimizedQuadraticAutoScale(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel, self.scale)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -194,16 +207,21 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree):
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree, scale = True):
 		super().__init__(name)
-		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
+		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		if scale:
+			features = featureScaler( features, positives = wPos, negatives = wNeg )
+		self.scale = scale
+		self.features = features
 		self.positives, self.negatives = positives, negatives
 		self.kernel = kDegree
 		self.threshold = 0.0
 		assert(kDegree == 2)
-		vP = [ self.getSequenceFeatureVector(w) for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ]
-		vN = [ self.getSequenceFeatureVector(w) for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ]
+		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]
+		vN = [ self.getSequenceFeatureVector(w) for w in wNeg ]
 		cP = [ 1.0 for _ in range(len(vP)) ]
 		cN = [ -1.0 for _ in range(len(vN)) ]
 		cls = svm.SVC(kernel = 'poly', degree = kDegree, gamma = 'auto')
@@ -223,7 +241,7 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 		self.bias = -bias
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelSVMOptimizedQuadraticCUDA(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel)
+		return lambda pos, neg: sequenceModelSVMOptimizedQuadraticCUDA(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel, self.scale)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
