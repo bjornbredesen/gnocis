@@ -15,4 +15,5 @@ from .features import feature, features, scaledFeature, featureScaler, featureMo
 from .models import setNCores, sequenceModel, sequenceModelDummy, sequenceModelLogOdds, trainSinglePREdictorModel, createDummyPREdictorModel, trainPREdictorModel, crossvalidate
 from .biomarkers import biomarkers
 from .validation import point2D, validationPair, getROC, getPRC, getAUC, getConfusionMatrix, getConfusionMatrixStatistics, printValidationStatistics
+from .genome import gene, genome, plotGenomeTracks
 
