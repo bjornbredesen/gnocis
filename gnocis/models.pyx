@@ -1016,7 +1016,7 @@ class crossvalidation:
 				'Negatives per positive:': [ str(self.ratioNegPos) ],
 				'Train/test ratio:': [ str(self.ratioTrainTest) ],
 			}
-		)
+		).noCropNames()
 	
 	def getAUCTable(self):
 		return nctable(

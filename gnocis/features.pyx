@@ -107,6 +107,8 @@ cdef class features:
 		# http://www.allisons.org/ll/MML/KL/Normal/
 		def KLdiv(muA, varA, muB, varB):
 			sigmaA, sigmaB = varA**0.5, varB**0.5
+			if varB == 0. or sigmaA == 0.:
+				return 0.
 			return ( (muA-muB)**2. + varA - varB ) / (2.*varB) + log(sigmaB/sigmaA)
 		return nctable(
 			'Table: ' + self.__str__() + ' applied to ' + seqA.__str__() + ' and ' + seqB.__str__(),
@@ -116,10 +118,15 @@ cdef class features:
 				'Mean B': sumB['Mean'],
 				'Var A': sumA['Var.'],
 				'Var B': sumB['Var.'],
-				'Gauss. K.L. div.': [
-					KLdiv(muB, varB, muA, varA)
-					if muA < muB else
+				'KLD(A||B)': [
 					KLdiv(muA, varA, muB, varB)
+					for (muA, varA), (muB, varB) in zip(
+						zip(sumA['Mean'], sumA['Var.']),
+						zip(sumB['Mean'], sumB['Var.'])
+					)
+				],
+				'KLD(B||A)': [
+					KLdiv(muB, varB, muA, varA)
 					for (muA, varA), (muB, varB) in zip(
 						zip(sumA['Mean'], sumA['Var.']),
 						zip(sumB['Mean'], sumB['Var.'])

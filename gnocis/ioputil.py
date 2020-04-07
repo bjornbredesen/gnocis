@@ -11,7 +11,7 @@ def _tblFieldConv(v, fpdec = 5, strcroplen = 16):
 	if isinstance(v, float):
 		return ('%%.%df'%fpdec)%v
 	v = str(v)
-	if len(v) > strcroplen:
+	if strcroplen > 0 and len(v) > strcroplen:
 		return v[:int(strcroplen/2)-2] + '...' + v[-int(strcroplen/2)+1:]
 	return v
 
@@ -42,7 +42,7 @@ class nctable:
 	:type indexName: str, optional
 	"""
 	
-	def __init__(self, title, _dict, align = None, ntop = 10, nbottom = 10, maxhorz = 9, spaces = 3, fpdec = 4, strcroplen = 16, indexName = '__index'):
+	def __init__(self, title, _dict, align = None, ntop = 10, nbottom = 10, maxhorz = 9, spaces = 3, fpdec = 4, strcroplen = 24, indexName = '__index'):
 		self.title = title
 		self.ntop, self.nbottom = ntop, nbottom
 		self.maxhorz = maxhorz
@@ -69,7 +69,16 @@ class nctable:
 		:return: Table without cropping
 		:rtype: nctable
 		"""
-		return nctable(self.title, self._dict, align = self.align, ntop = 0, nbottom = 0, maxhorz = 0, spaces = self.spaces)
+		return nctable(self.title, self._dict, align = self.align, ntop = 0, nbottom = 0, maxhorz = 0, spaces = self.spaces, strcroplen = 0, indexName = self.indexName)
+	
+	def noCropNames(self):
+		"""
+		Returns a clone of the table, with cropping of text disabled.
+		
+		:return: Table without cropping of text
+		:rtype: nctable
+		"""
+		return nctable(self.title, self._dict, align = self.align, ntop = self.ntop, nbottom = self.nbottom, maxhorz = self.maxhorz, spaces = self.spaces, strcroplen = 0, indexName = self.indexName)
 	
 	def sort(self, key, ascending = True):
 		"""
@@ -105,7 +114,7 @@ class nctable:
 			]
 			for k in self._dict
 		}
-		return nctable(self.title, _dict, align = self.align, ntop = self.ntop, nbottom = self.nbottom, spaces = self.spaces)
+		return nctable(self.title, _dict, align = self.align, ntop = self.ntop, nbottom = self.nbottom, spaces = self.spaces, strcroplen = self.strcroplen, indexName = self.indexName)
 	
 	def drop(self, fields):
 		"""
@@ -125,7 +134,7 @@ class nctable:
 			for k in self._dict
 			if k not in fields
 		}
-		return nctable(self.title, _dict, align = self.align, ntop = self.ntop, nbottom = self.nbottom, spaces = self.spaces)
+		return nctable(self.title, _dict, align = self.align, ntop = self.ntop, nbottom = self.nbottom, spaces = self.spaces, strcroplen = self.strcroplen, indexName = self.indexName)
 	
 	def summary(self):
 		"""
