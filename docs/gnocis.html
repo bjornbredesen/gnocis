@@ -2777,8 +2777,43 @@
 <div class="section" id="module-gnocis.sklearnModels">
 <span id="gnocis-sklearnmodels-module"></span><h2>gnocis.sklearnModels module<a class="headerlink" href="#module-gnocis.sklearnModels" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
+<dt id="gnocis.sklearnModels.sequenceModelLasso">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelLasso</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">alpha=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelLasso" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
+<p>The <cite>sequenceModelLasso</cite> class trains a Lasso model using scikit-learn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
+<li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – Feature set.</p></li>
+<li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
+<li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>windowSize</strong> (<em>int</em>) – Window size.</p></li>
+<li><p><strong>windowStep</strong> (<em>int</em>) – Window step size.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – Alpha parameter for Lasso.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelLasso.getSequenceFeatureVector">
+<code class="sig-name descname">getSequenceFeatureVector</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelLasso.getSequenceFeatureVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelLasso.getSequenceFeatureVector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelLasso.getTrainer">
+<code class="sig-name descname">getTrainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelLasso.getTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelLasso.getTrainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.sequenceModelLasso.scoreWindow">
+<code class="sig-name descname">scoreWindow</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelLasso.scoreWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelLasso.scoreWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="gnocis.sklearnModels.sequenceModelRF">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelRF</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">nTrees</em>, <em class="sig-param">maxDepth</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelRF</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">nTrees=100</em>, <em class="sig-param">maxDepth=None</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelRF</cite> class trains a Random Forest (RF) model using scikit-learn.</p>
 <dl class="field-list simple">

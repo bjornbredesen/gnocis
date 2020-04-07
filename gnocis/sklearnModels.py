@@ -139,6 +139,7 @@ class sequenceModelLasso(sequenceModel):
 	:param negatives: Negative training sequences.
 	:param windowSize: Window size.
 	:param windowStep: Window step size.
+	:param alpha: Alpha parameter for Lasso.
 	
 	:type name: str
 	:type features: features
@@ -146,16 +147,14 @@ class sequenceModelLasso(sequenceModel):
 	:type negatives: sequences
 	:type windowSize: int
 	:type windowStep: int
+	:type alpha: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, alpha = 1., scale = True):
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, alpha = 1.):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
-		#if scale:
-		#	features = featureScaler( features, positives = wPos, negatives = wNeg )
-		self.scale = scale
 		self.features = features
 		self.positives, self.negatives = positives, negatives
 		self.threshold = 0.0
@@ -168,7 +167,7 @@ class sequenceModelLasso(sequenceModel):
 		self.cls.fit( np.array(vP+vN), np.array(cP+cN) )
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelLasso(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.alpha, self.scale)
+		return lambda pos, neg: sequenceModelLasso(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.alpha)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -177,7 +176,7 @@ class sequenceModelLasso(sequenceModel):
 		return self.cls.predict(np.array([self.getSequenceFeatureVector(seq)]))[0]
 	
 	def __str__(self):
-		return 'Lasso<Features: %s; Positives: %s; Negatives: %s>'%(str(self.features), str(self.positives), str(self.negatives))
+		return 'Lasso<Features: %s; Positives: %s; Negatives: %s; Alpha: %f>'%(str(self.features), str(self.positives), str(self.negatives), self.alpha)
 	
 	def __repr__(self): return self.__str__()
 
