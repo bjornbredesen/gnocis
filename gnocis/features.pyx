@@ -12,6 +12,7 @@ from .motifs cimport *
 from .sequences cimport *
 from .common import kSpectrumIndex2NT, kSpectrumNT2Index
 from .ioputil import nctable
+from math import log
 
 
 ############################################################################
@@ -99,6 +100,33 @@ cdef class features:
 	
 	def summary(self, seqs):
 		return self.table(seqs).drop('Seq.').summary()
+	
+	def diffsummary(self, seqA, seqB):
+		sumA = self.table(seqA).drop('Seq.').summary()
+		sumB = self.table(seqB).drop('Seq.').summary()
+		# http://www.allisons.org/ll/MML/KL/Normal/
+		def KLdiv(muA, varA, muB, varB):
+			sigmaA, sigmaB = varA**0.5, varB**0.5
+			return ( (muA-muB)**2. + varA - varB ) / (2.*varB) + log(sigmaB/sigmaA)
+		return nctable(
+			'Table: ' + self.__str__() + ' applied to ' + seqA.__str__() + ' and ' + seqB.__str__(),
+			{
+				'Feature': sumA['Field'],
+				'Mean A': sumA['Mean'],
+				'Mean B': sumB['Mean'],
+				'Var A': sumA['Var.'],
+				'Var B': sumB['Var.'],
+				'Gauss. K.L. div.': [
+					KLdiv(muB, varB, muA, varA)
+					if muA < muB else
+					KLdiv(muA, varA, muB, varB)
+					for (muA, varA), (muB, varB) in zip(
+						zip(sumA['Mean'], sumA['Var.']),
+						zip(sumB['Mean'], sumB['Var.'])
+					)
+				],
+			}
+		)
 	
 	cpdef list getAll(self, sequence seq):
 		"""
