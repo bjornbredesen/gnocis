@@ -14,6 +14,7 @@ import numpy as np
 from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
 import random
+from sklearn.linear_model import Lasso
 
 # Support Vector Machines
 class sequenceModelSVM(sequenceModel):
@@ -94,7 +95,7 @@ class sequenceModelRF(sequenceModel):
 	:type maxDepth: int
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, nTrees, maxDepth, scale = True):
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, nTrees = 100, maxDepth = None, scale = True):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
@@ -110,7 +111,7 @@ class sequenceModelRF(sequenceModel):
 		vN = [ self.getSequenceFeatureVector(w) for w in wNeg ]
 		cP = [ 1.0 for _ in range(len(vP)) ]
 		cN = [ -1.0 for _ in range(len(vN)) ]
-		self.cls = RandomForestClassifier(max_depth = maxDepth, random_state = 0)
+		self.cls = RandomForestClassifier(n_estimators = nTrees, max_depth = maxDepth, random_state = 0)
 		self.cls.fit( np.array(vP+vN), np.array(cP+cN) )
 	
 	def getTrainer(self):
@@ -123,7 +124,60 @@ class sequenceModelRF(sequenceModel):
 		return float(self.cls.predict_proba(np.array([self.getSequenceFeatureVector(seq)]))[0][1])
 	
 	def __str__(self):
-		return 'Random Forest<Features: %s; Positives: %s; Negatives: %s; Trees: %d; Max. depth: %d>'%(str(self.features), str(self.positives), str(self.negatives), self.nTrees, self.maxDepth)
+		return 'Random Forest<Features: %s; Positives: %s; Negatives: %s; Trees: %d; Max. depth: %s>'%(str(self.features), str(self.positives), str(self.negatives), self.nTrees, str(self.maxDepth))
+	
+	def __repr__(self): return self.__str__()
+
+# Lasso
+class sequenceModelLasso(sequenceModel):
+	"""
+	The `sequenceModelLasso` class trains a Lasso model using scikit-learn.
+	
+	:param name: Model name.
+	:param features: Feature set.
+	:param positives: Positive training sequences.
+	:param negatives: Negative training sequences.
+	:param windowSize: Window size.
+	:param windowStep: Window step size.
+	
+	:type name: str
+	:type features: features
+	:type positives: sequences
+	:type negatives: sequences
+	:type windowSize: int
+	:type windowStep: int
+	"""
+	
+	def __init__(self, name, features, positives, negatives, windowSize, windowStep, alpha = 1., scale = True):
+		super().__init__(name)
+		self.windowSize, self.windowStep = windowSize, windowStep
+		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		#if scale:
+		#	features = featureScaler( features, positives = wPos, negatives = wNeg )
+		self.scale = scale
+		self.features = features
+		self.positives, self.negatives = positives, negatives
+		self.threshold = 0.0
+		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]
+		vN = [ self.getSequenceFeatureVector(w) for w in wNeg ]
+		cP = [ 1.0 for _ in range(len(vP)) ]
+		cN = [ -1.0 for _ in range(len(vN)) ]
+		self.alpha = alpha
+		self.cls = Lasso(alpha = alpha)
+		self.cls.fit( np.array(vP+vN), np.array(cP+cN) )
+	
+	def getTrainer(self):
+		return lambda pos, neg: sequenceModelLasso(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.alpha, self.scale)
+	
+	def getSequenceFeatureVector(self, seq):
+		return self.features.getAll(seq)
+	
+	def scoreWindow(self, seq):
+		return self.cls.predict(np.array([self.getSequenceFeatureVector(seq)]))[0]
+	
+	def __str__(self):
+		return 'Lasso<Features: %s; Positives: %s; Negatives: %s>'%(str(self.features), str(self.positives), str(self.negatives))
 	
 	def __repr__(self): return self.__str__()
 
