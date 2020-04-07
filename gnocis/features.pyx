@@ -10,9 +10,8 @@ from __future__ import division
 from libcpp cimport bool
 from .motifs cimport *
 from .sequences cimport *
-from .common import kSpectrumIndex2NT, kSpectrumNT2Index
+from .common import kSpectrumIndex2NT, kSpectrumNT2Index, KLdiv
 from .ioputil import nctable
-from math import log
 
 
 ############################################################################
@@ -105,11 +104,6 @@ cdef class features:
 		sumA = self.table(seqA).drop('Seq.').summary()
 		sumB = self.table(seqB).drop('Seq.').summary()
 		# http://www.allisons.org/ll/MML/KL/Normal/
-		def KLdiv(muA, varA, muB, varB):
-			sigmaA, sigmaB = varA**0.5, varB**0.5
-			if varB == 0. or sigmaA == 0.:
-				return 0.
-			return ( (muA-muB)**2. + varA - varB ) / (2.*varB) + log(sigmaB/sigmaA)
 		return nctable(
 			'Table: ' + self.__str__() + ' applied to ' + seqA.__str__() + ' and ' + seqB.__str__(),
 			{

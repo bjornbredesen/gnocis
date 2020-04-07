@@ -11,6 +11,7 @@ import random
 from libcpp cimport bool
 from libc.stdlib cimport malloc, free	
 from libc.string cimport memcpy
+from math import log
 
 
 ############################################################################
@@ -49,6 +50,12 @@ def SE(X):
 
 def CI(X, cif = 1.96):
 	return SE(X) * cif
+
+def KLdiv(muA, varA, muB, varB):
+	sigmaA, sigmaB = varA**0.5, varB**0.5
+	if varB == 0. or sigmaA == 0.:
+		return 0.
+	return ( (muA-muB)**2. + varA - varB ) / (2.*varB) + log(sigmaB/sigmaA)
 
 
 ############################################################################
