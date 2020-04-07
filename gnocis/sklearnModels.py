@@ -41,7 +41,7 @@ class sequenceModelSVM(sequenceModel):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
-		wNeg = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		if scale:
 			features = featureScaler( features, positives = wPos, negatives = wNeg )
 		self.scale = scale
@@ -98,7 +98,7 @@ class sequenceModelRF(sequenceModel):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
-		wNeg = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		if scale:
 			features = featureScaler( features, positives = wPos, negatives = wNeg )
 		self.scale = scale
