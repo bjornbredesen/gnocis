@@ -110,7 +110,7 @@ class sequenceModelCNN(sequenceModel):
 		return p[0, 1] - p[0, 0]
 	
 	def getTrainer(self):
-		return lambda ts: sequenceModelCNN(self.name, ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, labelPositive = labelPositive, labelNegative = labelNegative)
+		return lambda ts: sequenceModelCNN(self.name, ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 
 	def __str__(self):
 		return 'Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
