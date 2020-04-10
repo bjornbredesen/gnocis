@@ -11,7 +11,7 @@ from .common import setSeed, nucleotides, complementaryNucleotides, getReverseCo
 from .regions import region, regions, loadBED, loadBEDGZ, loadGFF, loadGFFGZ, loadCoordinateList
 from .sequences import sequence, sequences, sequenceStream, loadFASTA, loadFASTAGZ, streamFASTA, streamFASTAGZ, stream2bit, streamSequenceWindows, getSequenceWindowRegions, generatorMarkovChain, generatorIID, positive, negative
 from .motifs import motifOccurrence, motifs, IUPACMotif, PWMMotif, loadMEMEPWMDatabase
-from .features import feature, features, scaledFeature, featureScaler, featureMotifOccurrenceFrequency, featurePREdictorMotifPairOccurrenceFrequency, kSpectrum, kSpectrumMM, kSpectrumPDS
+from .features import feature, features, scaledFeature, featureScaler, featureMotifOccurrenceFrequency, featurePREdictorMotifPairOccurrenceFrequency, kSpectrum, kSpectrumMM, kSpectrumGPS
 from .models import setNCores, sequenceModel, sequenceModelDummy, sequenceModelLogOdds, trainSinglePREdictorModel, createDummyPREdictorModel, trainPREdictorModel, crossvalidate
 from .biomarkers import biomarkers
 from .validation import point2D, validationPair, getROC, getPRC, getAUC, getConfusionMatrix, getConfusionMatrixStatistics, printValidationStatistics

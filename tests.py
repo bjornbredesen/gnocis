@@ -40,23 +40,23 @@ def getRegionsStr(rs):
 class testRegions(unittest.TestCase):
 	
 	def testMerge(self):
-		self.assertEqual( getRegionsStr( rsA.getMerged(rsB) ),
+		self.assertEqual( getRegionsStr( rsA.merge(rsB) ),
 			'X:20..50 (+); X:80..120 (+); X:140..400 (+); X:500..600 (+); Y:40..100 (+); Y:120..300 (+); Y:600..700 (+)' )
 	
 	def testIntersection(self):
-		self.assertEqual( getRegionsStr( rsA.getIntersection(rsB) ),
+		self.assertEqual( getRegionsStr( rsA.intersection(rsB) ),
 			'X:30..40 (+); X:90..100 (+); X:150..150 (+); X:300..300 (+); X:305..310 (+); Y:40..100 (+); Y:130..200 (+)' )
 	
 	def testExcluded(self):
-		self.assertEqual( getRegionsStr( rsA.getExcluded(rsB) ),
+		self.assertEqual( getRegionsStr( rsA.exclusion(rsB) ),
 			'X:20..29 (+); X:41..50 (+); X:80..89 (+); X:151..299 (+); X:311..400 (+); X:500..600 (+); Y:120..129 (+)' )
 	
 	def testOverlap(self):
-		self.assertEqual( getRegionsStr( rsA.getOverlap(rsB) ),
+		self.assertEqual( getRegionsStr( rsA.overlap(rsB) ),
 			'X:20..50 (+); X:80..100 (+); X:150..300 (+); X:305..400 (+); Y:40..100 (+); Y:120..200 (+)' )
 	
 	def testNonOverlap(self):
-		self.assertEqual( getRegionsStr( rsA.getNonOverlap(rsB) ),
+		self.assertEqual( getRegionsStr( rsA.nonOverlap(rsB) ),
 			'X:500..600 (+)' )
 	
 	def testSaveLoadGFF(self):
@@ -163,19 +163,19 @@ class testSequences(unittest.TestCase):
 # Prepare data set
 
 PcG = nc.biomarkers('PcG', [
-	nc.loadGFFGZ('tutorial/Pc.gff3.gz').getDeltaResized(1000).getRenamed('Pc'),
-	nc.loadGFFGZ('tutorial/Psc.gff3.gz').getDeltaResized(1000).getRenamed('Psc'),
-	nc.loadGFFGZ('tutorial/dRING.gff3.gz').getDeltaResized(1000).getRenamed('dRING'),
-	nc.loadGFFGZ('tutorial/H3K27me3.gff3.gz').getRenamed('H3K27me3'),
+	nc.loadGFFGZ('tutorial/Pc.gff3.gz').deltaResize(1000).rename('Pc'),
+	nc.loadGFFGZ('tutorial/Psc.gff3.gz').deltaResize(1000).rename('Psc'),
+	nc.loadGFFGZ('tutorial/dRING.gff3.gz').deltaResize(1000).rename('dRING'),
+	nc.loadGFFGZ('tutorial/H3K27me3.gff3.gz').rename('H3K27me3'),
 ])
 
 gwWin = nc.getSequenceWindowRegions(
 	genome,
 	windowSize = 1000, windowStep = 100)
 
-PcGTargets = PcG.getHBMEs(gwWin, threshold = 4)
+PcGTargets = PcG.HBMEs(gwWin, threshold = 4)
 
-PRESeq = PcGTargets.getRandomlyRecentered(3000).extract(genome)
+PRESeq = PcGTargets.randomlyRecenter(3000).extract(genome)
 import random
 random.shuffle(PRESeq.sequences)
 nc.sequences('PcG/TrxG 1', PRESeq[:int(len(PRESeq)/2)]).saveFASTA('./temp/PcGTrxG1.fasta')
@@ -198,7 +198,7 @@ class testModels(unittest.TestCase):
 		winSize = 500
 		winStep = 250
 		kDegree = 2
-		featureSet = nc.features.getKSpectrumMM(nSpectrum)
+		featureSet = nc.features.kSpectrumMM(nSpectrum)
 		mdl = sklnc.sequenceModelSVM( name = 'SVM', features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
 		# Single-core
 		nc.setNCores(1)
@@ -215,7 +215,7 @@ class testModels(unittest.TestCase):
 		# in one process
 		tpos = nc.loadFASTA('./temp/PcGTrxG2.fasta').label(nc.positive)
 		tneg = nc.loadFASTA('./temp/NonPcGTrxG2.fasta').label(nc.negative)
-		featureSet = nc.features.getKSpectrumMM(nSpectrum)
+		featureSet = nc.features.kSpectrumMM(nSpectrum)
 		mdl2 = sklnc.sequenceModelSVM( name = 'SVM', features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
 		#
 		testset = nc.streamFASTA(testsetPath)
@@ -229,7 +229,7 @@ class testModels(unittest.TestCase):
 		self.assertEqual(diff, 0)
 	
 	def testKSpectrum(self):
-		spec = nc.features.getKSpectrum(5)
+		spec = nc.features.kSpectrum(5)
 		testSeq = nc.sequence('', 'GAGAGAGAGT')
 		kmerFreq = {
 			k: v
@@ -270,7 +270,7 @@ class testModels(unittest.TestCase):
 		self.assertEqual(specmotifs, specmotifsRC)
 	
 	def testKSpectrumMM(self):
-		spec = nc.features.getKSpectrumMM(5)
+		spec = nc.features.kSpectrumMM(5)
 		testSeq = nc.sequence('', 'GAGAGAGAGT')
 		motifs = set([ testSeq.seq[i:i+5] for i in range(len(testSeq)-4) ])
 		motifs = motifs | set( nc.getReverseComplementaryDNASequence(m) for m in motifs )
@@ -304,7 +304,7 @@ class testModels(unittest.TestCase):
 		self.assertEqual(specmotifs, specmotifsRC)
 	
 	def testKSpectrumMMD(self):
-		spec = nc.features.getKSpectrumMMD(5)
+		spec = nc.features.kSpectrumMMD(5)
 		testSeq = nc.sequence('', 'GAGAGAGAGT')
 		motifs = set([ testSeq.seq[i:i+5] for i in range(len(testSeq)-4) ])
 		motifs = motifs | set( nc.getReverseComplementaryDNASequence(m) for m in motifs )
@@ -337,12 +337,12 @@ class testModels(unittest.TestCase):
 		nc.setNCores(4)
 		testset = nc.streamFASTA(testsetPath)
 		#
-		featureSet = nc.features.getKSpectrumMM(nSpectrum)
+		featureSet = nc.features.kSpectrumMM(nSpectrum)
 		mdl = sklnc.sequenceModelSVM( name = 'SVM', features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
 		#
 		scoresA = mdl.getSequenceScores(testset)
 		#
-		featureSet = nc.features.getKSpectrumMM(nSpectrum)
+		featureSet = nc.features.kSpectrumMM(nSpectrum)
 		mdl2 = sklncOpt.sequenceModelSVMOptimizedQuadraticCUDA( name = 'SVM',features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
 		#
 		scoresB = mdl2.getSequenceScores(testset)

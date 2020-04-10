@@ -83,11 +83,11 @@ class sequenceModelCNN(sequenceModel):
 		train_seq = np.array([
 			getSequenceMatrix(w.seq).reshape(len(w), 4, 1)
 			for s in positives
-			for w in s.getWindows(self.windowSize, self.windowStep)
+			for w in s.windows(self.windowSize, self.windowStep)
 		] + [
 			getSequenceMatrix(w.seq).reshape(len(w), 4, 1)
 			for s in negatives
-			for w in s.getWindows(self.windowSize, self.windowStep)
+			for w in s.windows(self.windowSize, self.windowStep)
 		])
 
 		train_labels = np.array([

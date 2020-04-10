@@ -141,13 +141,13 @@ cdef class regions:
 		return rs
 	
 	def __or__(self, other):
-		return self.getMerged(other)
+		return self.merge(other)
 	
 	def __and__(self, other):
-		return self.getIntersection(other)
+		return self.intersection(other)
 	
 	def __xor__(self, other):
-		return self.getExcluded(other)
+		return self.exclusion(other)
 	
 	def bstr(self):
 		"""
@@ -157,7 +157,7 @@ cdef class regions:
 		return ', '.join( r.bstr() for r in self.regions )
 	
 	# Returns a random division of the sequences
-	def getRandomSplit(self, ratio = 0.5):
+	def randomSplit(self, ratio = 0.5):
 		"""
 		:param ratio: Ratio for the split, between 0 and 1. For the return touple, `(A, B)`, a ratio of 0 means all the regions are in `B`, and opposite for a ratio of 1.
 		:type ratio: float
@@ -172,7 +172,7 @@ cdef class regions:
 		       regions(self.name + ' (split B)', rgns[isplit:])
 	
 	# Returns a filtered subset of regions.
-	def getFiltered(self, fltName, flt):
+	def filter(self, fltName, flt):
 		""" Returns a region set filtered with the input lambda function.
 		
 		:param fltName: Name of the filter. Appended to the region set name.
@@ -186,7 +186,16 @@ cdef class regions:
 		return regions(self.name + ' (' + fltName + ')', [ r for r in self.regions if flt(r) ])
 	
 	# Returns the merged region set for this and another set.
-	def getMerged(self, regions other):
+	def flatten(self):
+		""" Returns a flattened set of regions, with internally overlapping regions merged.
+		
+		:return: Flattened region set.
+		:rtype: regions
+		"""
+		return self.merge(regions('', []))
+	
+	# Returns the merged region set for this and another set.
+	def merge(self, regions other):
 		""" Gets the merged set of regions in this set and another.
 		
 		:param other: Other region set.
@@ -224,7 +233,7 @@ cdef class regions:
 		return regions('%s | %s'%(self.name, other.name), newlist, initialSort = False)
 	
 	# Returns the intersection of this set and another set.
-	def getIntersection(self, regions other):
+	def intersection(self, regions other):
 		""" Gets the intersection of regions in this set and another.
 		
 		:param other: Other region set.
@@ -253,7 +262,7 @@ cdef class regions:
 		return regions('%s & %s'%(self.name, other.name), intersection)
 	
 	# Returns the excluded region set for this and another set.
-	def getExcluded(self, regions other):
+	def exclusion(self, regions other):
 		""" Gets the regions of this set with regions of another set excluded.
 		
 		:param other: Other region set.
@@ -292,7 +301,7 @@ cdef class regions:
 		return rs
 	
 	# Returns the subset of regions from this set that overlap with another set. Note that this assumes that the regions are sorted in both lists, with the class sort() method.
-	def getOverlap(self, regions other):
+	def overlap(self, regions other):
 		""" Gets the regions in this set that overlap with another.
 		
 		:param other: Other region set.
@@ -335,7 +344,7 @@ cdef class regions:
 		return regions('%s overlapping with %s'%(self.name, other.name), rlist, initialSort = False)
 	
 	# Returns the subset of regions from this set that do not overlap with another set. Note that this assumes that the regions are sorted in both lists, with the class sort() method.
-	def getNonOverlap(self, regions other):
+	def nonOverlap(self, regions other):
 		""" Gets the regions in this set that do not overlap with another.
 		
 		:param other: Other region set.
@@ -382,7 +391,7 @@ cdef class regions:
 		:return: Overlap sensitivity.
 		:rtype: float
 		"""
-		return len(other.getOverlap(self)) / len(other)
+		return len(other.overlap(self)) / len(other)
 	
 	# Calculates the overlap precision to another set
 	def overlapPrecision(self, other):
@@ -394,10 +403,10 @@ cdef class regions:
 		:return: Overlap precision.
 		:rtype: float
 		"""
-		return len(self.getOverlap(other)) / len(self)
+		return len(self.overlap(other)) / len(self)
 	
 	# Returns a set of recentered regions, with regions randomly placed within larger regions.
-	def getRandomlyRecentered(self, long long size):
+	def randomlyRecenter(self, long long size):
 		""" Gets a set of randomly recentered regions. If the target size is smaller than a given region, a region of the desired size is randomly placed within the region. If the desired size is larger, a region of the desired size is placed with equal center to the center of the region.
 		
 		:param size: Desired region size.
@@ -423,7 +432,7 @@ cdef class regions:
 		return regions('%s (randomly recentered - %d bp)'%(self.name, size), rlist)
 	
 	# Returns a set of delta-resized regions.
-	def getDeltaResized(self, sizeDelta):
+	def deltaResize(self, sizeDelta):
 		""" Gets a set of resized regions. The delta size is subtracted from the start and added to the end.
 		
 		:param sizeDelta: Desired region size change.
@@ -439,7 +448,7 @@ cdef class regions:
 		])
 	
 	# Returns a renamed region set.
-	def getRenamed(self, newname):
+	def rename(self, newname):
 		""":param newname: New name.
 		:type newname: str
 		

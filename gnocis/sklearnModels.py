@@ -44,8 +44,8 @@ class sequenceModelSVM(sequenceModel):
 		self.labelPositive, self.labelNegative = labelPositive, labelNegative
 		self.trainingSet = trainingSet
 		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
-		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
-		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wPos = sequences(positives.name, [ w for s in positives for w in s.windows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.windows(self.windowSize, self.windowStep) ])
 		if scale:
 			features = featureScaler( features, trainingSet = wPos + wNeg )
 		self.scale = scale
@@ -103,8 +103,8 @@ class sequenceModelRF(sequenceModel):
 		self.labelPositive, self.labelNegative = labelPositive, labelNegative
 		self.trainingSet = trainingSet
 		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
-		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
-		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wPos = sequences(positives.name, [ w for s in positives for w in s.windows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.windows(self.windowSize, self.windowStep) ])
 		if scale:
 			features = featureScaler( features, trainingSet = wPos + wNeg )
 		self.scale = scale
@@ -160,8 +160,8 @@ class sequenceModelLasso(sequenceModel):
 		self.labelPositive, self.labelNegative = labelPositive, labelNegative
 		self.trainingSet = trainingSet
 		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
-		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
-		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
+		wPos = sequences(positives.name, [ w for s in positives for w in s.windows(self.windowSize, self.windowStep) ])
+		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.windows(self.windowSize, self.windowStep) ])
 		self.features = features
 		self.threshold = 0.0
 		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]

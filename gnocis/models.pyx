@@ -43,7 +43,7 @@ def multiprocessModelDeployer(args):
 			(
 				model.scoreWindow(win)
 				for win in
-				seq.getWindows(windowSize, windowStep)
+				seq.windows(windowSize, windowStep)
 				if len(win) == windowSize
 			),
 			default = defaultValue
@@ -323,7 +323,7 @@ class sequenceModel:
 		# Find genome size.
 		if isinstance(genome, str):
 			genome = getSequenceStreamFromPath(genome)
-		seqLens = genome.getSequenceLengths()
+		seqLens = genome.sequenceLengths()
 		genomeLen = sum(seqLens[chrom] for chrom in seqLens.keys())
 		# Train background model
 		if bgModel == None:
@@ -353,7 +353,7 @@ class sequenceModel:
 			(
 				self.scoreWindow(win)
 				for win in
-				seq.getWindows(self.windowSize, self.windowStep)
+				seq.windows(self.windowSize, self.windowStep)
 				if len(win) == self.windowSize
 			),
 			default = float('-INF')
@@ -695,15 +695,15 @@ class sequenceModelLogOdds(sequenceModel):
 
 # Trains a singular-motif PREdictor model with a given set of motifs and positive and negative training sequences.
 def trainSinglePREdictorModel(name, motifs, trainingSet, windowSize=500, windowStep=10, labelPositive = positive, labelNegative = negative):
-	return sequenceModelLogOdds(name, features.getMotifSpectrum(motifs), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
+	return sequenceModelLogOdds(name, motifs.occFreq(), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
 
 # Trains a PREdictor model with a given set of motifs and positive and negative training sequences.
 def createDummyPREdictorModel(name, motifs, windowSize=500, windowStep=10):
-	return sequenceModelDummy(name, features.getPREdictorMotifPairSpectrum(motifs, 219), windowSize, windowStep)
+	return sequenceModelDummy(name, motifs.pairFreq(219), windowSize, windowStep)
 
 # Trains a PREdictor model with a given set of motifs and positive and negative training sequences.
 def trainPREdictorModel(name, motifs, trainingSet, windowSize=500, windowStep=10, labelPositive = positive, labelNegative = negative):
-	return sequenceModelLogOdds(name, features.getPREdictorMotifPairSpectrum(motifs, 219), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
+	return sequenceModelLogOdds(name, motifs.pairFreq(219), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
 
 class crossvalidation:
 	"""
@@ -728,7 +728,6 @@ class crossvalidation:
 	:type ratioNegPos: float, optional
 	"""
 	
-	#def __init__(self, models, tpos, tneg, vpos = None, vneg = None, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
 	def __init__(self, models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
 		self.models = []
 		self.PRC = {}

@@ -137,9 +137,9 @@ cdef class kSpectrumMMD:
 # Positional, double-stranded k-mer spectrum
 
 # k-mer for k-spectrum feature set
-cdef class kSpectrumFeaturePDS(feature):
+cdef class kSpectrumFeatureGPS(feature):
 	
-	cdef public kSpectrumPDS parent
+	cdef public kSpectrumGPS parent
 	cdef public str kmer
 	cdef public int index
 	cdef public bool section
@@ -147,7 +147,7 @@ cdef class kSpectrumFeaturePDS(feature):
 	cpdef double get(self, sequence seq)
 
 # Extracts k-mer spectra from sequences
-cdef class kSpectrumPDS:
+cdef class kSpectrumGPS:
 	
 	cdef public int nspectrum, nkmers, nFeatures, bitmask
 	cdef public dict kmerByIndex

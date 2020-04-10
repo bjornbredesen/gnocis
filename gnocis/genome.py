@@ -45,9 +45,9 @@ class genome:
 		self.annotation = dat
 		self.annotationPath = path
 		self.chromosomes = set(r.seq for r in dat)
-		genes = dat.getFiltered('Genes', lambda r: r.feature == 'gene')
-		exons = dat.getFiltered('Exons', lambda r: r.feature == 'exon')
-		CDS = dat.getFiltered('CDS', lambda r: r.feature == 'CDS')
+		genes = dat.filter('Genes', lambda r: r.feature == 'gene')
+		exons = dat.filter('Exons', lambda r: r.feature == 'exon')
+		CDS = dat.filter('CDS', lambda r: r.feature == 'CDS')
 		getAnnoDict = lambda r: {
 			div[0].strip(): div[1].strip()[1:-1]
 			for div in (
@@ -205,7 +205,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 					ax.add_collection(pc)
 					continue
 				# Simpler handling of region sets
-				frs = rs.getFiltered('', lambda r: r.seq == chromosome\
+				frs = rs.filter('', lambda r: r.seq == chromosome\
 					and r.end >= coordStart\
 					and r.start <= coordEnd)
 				rects = [

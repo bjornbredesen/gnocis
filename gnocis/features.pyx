@@ -148,8 +148,11 @@ cdef class features:
 		return ret
 		#return [ f.get(seq) for f in self.features ]
 	
+	def scale(self, trainingSet):
+		return featureScaler(self, trainingSet)
+	
 	@staticmethod
-	def getMotifSpectrum(motifs):
+	def motifSpectrum(motifs):
 		"""
 		Constructs a feature set for the motif occurrence spectrum, given a set of motifs.
 		
@@ -163,7 +166,7 @@ cdef class features:
 		return features('Motif spectrum: %s'%str(motifs), [ featureMotifOccurrenceFrequency(m) for m in motifs ])
 	
 	@staticmethod
-	def getPREdictorMotifPairSpectrum(motifs, distCut):
+	def motifPairSpectrum(motifs, distCut):
 		"""
 		Constructs a feature set for the PREdictor motif pair occurrence spectrum, given a set of motifs.
 		
@@ -181,7 +184,7 @@ cdef class features:
 		return features('PREdictor motif pair spectrum: %s within %d bp'%(str(motifs), distCut), pairs)
 	
 	@staticmethod
-	def getKSpectrum(k):
+	def kSpectrum(k):
 		"""
 		Constructs the k-mer spectrum kernel, the occurrence frequencies of all motifs of length k, with no ambiguous positions.
 		
@@ -195,7 +198,7 @@ cdef class features:
 		return features('%d-spectrum'%(k), kSpectrum(k).features)
 	
 	@staticmethod
-	def getKSpectrumMM(k):
+	def kSpectrumMM(k):
 		"""
 		Constructs the k-mer spectrum mismatch kernel, the occurrence frequencies of all motifs of length k, with one allowed mismatch in an arbitrary position.
 		
@@ -209,9 +212,9 @@ cdef class features:
 		return features('%d-spectrumMM'%(k), kSpectrumMM(k).features)
 	
 	@staticmethod
-	def getKSpectrumMMD(k):
+	def kSpectrumMMD(k):
 		"""
-		Constructs the k-mer spectrum mismatch kernel with duplicates, the occurrence frequencies of all motifs of length k, with one allowed mismatch in an arbitrary position, and one duplicate registry of the core motif at every position to give higher preference.
+		Constructs the k-mer spectrum mismatch kernel, the occurrence frequencies of all motifs of length k, with one allowed mismatch in an arbitrary position. This formulation counts the base k-mer k times, and mutated k-mers one time.
 		
 		:param k: k-mer length.
 		
@@ -223,9 +226,9 @@ cdef class features:
 		return features('%d-spectrumMMD'%(k), kSpectrumMMD(k).features)
 	
 	@staticmethod
-	def getKSpectrumPDS(k):
+	def kSpectrumGPS(k):
 		"""
-		Constructs the k-mer spectrum positional double-stranded kernel, the occurrence frequencies of all motifs of length k, with position represented by grading between sequence ends.
+		Constructs the k-mer spectrum graded position stranded kernel, the occurrence frequencies of all motifs of length k, with one allowed mismatch in an arbitrary position.
 		
 		:param k: k-mer length.
 		
@@ -234,7 +237,7 @@ cdef class features:
 		:return: Feature set
 		:rtype: features
 		"""
-		return features('%d-spectrum (PDS)'%(k), kSpectrumPDS(k).features)
+		return features('%d-spectrumGPS'%(k), kSpectrumGPS(k).features)
 
 cdef class scaledFeature(feature):
 	"""
@@ -343,7 +346,7 @@ cdef class featureMotifOccurrenceFrequency(feature):
 	def __repr__(self): return self.__str__()
 	
 	cpdef double get(self, sequence seq):
-		return len(self.m.findOccurrences(seq)) * 1000.0 / len(seq.seq)
+		return len(self.m.find(seq)) * 1000.0 / len(seq.seq)
 
 # Sequence model feature for PREdictor-style motif pair occurrence frequency.
 cdef class featurePREdictorMotifPairOccurrenceFrequency(feature):
@@ -373,8 +376,8 @@ cdef class featurePREdictorMotifPairOccurrenceFrequency(feature):
 		cdef motifOccurrence oA, oB
 		cdef int d
 		nPairOcc = 0
-		alloA = self.mA.findOccurrences(seq)
-		alloB = self.mB.findOccurrences(seq)
+		alloA = self.mA.find(seq)
+		alloB = self.mB.find(seq)
 		firstRelevantiB = 0
 		for oA in alloA:
 			for oB in alloB[firstRelevantiB:]:
@@ -659,7 +662,7 @@ cdef class kSpectrumMMD:
 # Positional, double-stranded k-mer spectrum
 
 # k-mer for k-spectrum feature set
-cdef class kSpectrumFeaturePDS(feature):
+cdef class kSpectrumFeatureGPS(feature):
 	
 	def __init__(self, parent, kmer, index, section):
 		self.parent, self.kmer, self.index = parent, kmer, index
@@ -678,7 +681,7 @@ cdef class kSpectrumFeaturePDS(feature):
 		return self.parent.extract(seq, self.index)
 
 # Extracts k-mer spectra from sequences
-cdef class kSpectrumPDS:
+cdef class kSpectrumGPS:
 	"""
 	Feature set that extracts the occurrence frequencies of all motifs of length k, position and strand represented. To represent position and strandedness, four features are generated per k-mer: one for each combination of strandedness and sequence end for proximity. Graded distance to each end of the sequence is used in order to represent position. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.
 	
@@ -695,7 +698,7 @@ cdef class kSpectrumPDS:
 		self.kmerByIndex = {}
 		for ki in range(self.nkmers):
 			self.kmerByIndex[ki] = ''.join( kSpectrumIndex2NT[(ki >> ((nspectrum - 1 - x)*2)) & 3] for x in range(nspectrum) )
-		self.features = [ f for ki in range(self.nkmers) for f in [ kSpectrumFeaturePDS(self, self.kmerByIndex[ki], ki, True), kSpectrumFeaturePDS(self, self.kmerByIndex[ki], ki, False) ] ]
+		self.features = [ f for ki in range(self.nkmers) for f in [ kSpectrumFeatureGPS(self, self.kmerByIndex[ki], ki, True), kSpectrumFeatureGPS(self, self.kmerByIndex[ki], ki, False) ] ]
 		self.cachedSequence = None
 		self.cachedSpectrum = None
 	
@@ -706,7 +709,7 @@ cdef class kSpectrumPDS:
 		cdef double nAdd, fv
 		cdef list nOcc, convtable
 		cdef char c
-		cdef kSpectrumFeaturePDS f
+		cdef kSpectrumFeatureGPS f
 		#
 		cdef double degA, degB, degD
 		#

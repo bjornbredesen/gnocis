@@ -42,7 +42,7 @@ cdef class biomarkers:
 		self.biomarkers = {}
 		if len(regionSets) > 0:
 			for rs in regionSets:
-				self.addBiomarker(rs)
+				self.add(rs)
 	
 	def __len__(self):
 		return len(self.biomarkers)
@@ -61,7 +61,7 @@ cdef class biomarkers:
 	
 	# Adds a biomarker to the set, by name and region set.
 	# The name of the region set is taken as the name of the biomarker.
-	def addBiomarker(self, regions rs):
+	def add(self, regions rs):
 		""" Adds a biomarker to the set, by name and region set. The name of the region set is taken as the name of the biomarker.
 		
 		:param rs: Region set to add as biomarker.
@@ -71,10 +71,10 @@ cdef class biomarkers:
 			self.biomarkers[rs.name] = { 'name': rs.name, 'regionSets': 1, 'regions': rs }
 		else:
 			self.biomarkers[rs.name]['regionSets'] += 1
-			self.biomarkers[rs.name]['regions'] = self.biomarkers[rs.name]['regions'].getMerged(rs).getRenamed(rs.name)
+			self.biomarkers[rs.name]['regions'] = self.biomarkers[rs.name]['regions'].merge(rs).rename(rs.name)
 	
 	# Returns the biomarker spectrum (subsets enriched in N biomarkers, for every valid N) as a dictionary.
-	def getRegionSetBiomarkerSpectrum(self, regions rs):
+	def enrichmentSpectrum(self, regions rs):
 		""" Returns the biomarker spectrum. This is a dictionary with numerical keys, containing subsets enriched in N biomarkers, for every valid N as key.
 		
 		:param rs: Region set to add as biomarker.
@@ -90,7 +90,7 @@ cdef class biomarkers:
 		for r in rs:
 			r.markers = set()
 		for m in self.biomarkers.keys():
-			enriched = rs.getOverlap(self.biomarkers[m]['regions'])
+			enriched = rs.overlap(self.biomarkers[m]['regions'])
 			for r in enriched:
 				r.markers.add(m)
 		return {
@@ -99,7 +99,7 @@ cdef class biomarkers:
 		}
 	
 	# Gets highly biomarker-enriched regions of a set.
-	def getHBMEs(self, regions rs, int threshold = -1):
+	def HBMEs(self, regions rs, int threshold = -1):
 		""" Gets highly biomarker-enriched regions of a set. This is determined either by an optional `threshold` argument, or, if unspecified, by the `positiveThreshold` member. The resulting set is the merged biomarker spectrum for enrichment levels >= to the threshold.
 		
 		:param rs: Region set to extract enriched subset of.
@@ -114,14 +114,14 @@ cdef class biomarkers:
 		cdef regions cBME
 		cdef list rlist = []
 		if threshold == -1: threshold = self.positiveThreshold
-		BME = self.getRegionSetBiomarkerSpectrum(rs)
+		BME = self.enrichmentSpectrum(rs)
 		for nBME in range(threshold, len(self.biomarkers)+1):
 			cBME = BME[nBME]
 			rlist += cBME.regions
-		return regions('', rlist).getMerged(regions('', [])).getRenamed('%s (%s HBME)'%(rs.name, self.name))
+		return regions('', rlist).flatten().rename('%s (%s HBME)'%(rs.name, self.name))
 	
 	# Gets lowly biomarker-enriched regions of a set.
-	def getLBMEs(self, regions rs, int threshold = -1):
+	def LBMEs(self, regions rs, int threshold = -1):
 		""" Gets lowly biomarker-enriched regions of a set. This is determined either by an optional `threshold` argument, or, if unspecified, by the `negativeThreshold` member. The resulting set is the merged biomarker spectrum for enrichment levels <= to the threshold.
 		
 		:param rs: Region set to extract enriched subset of.
@@ -136,10 +136,10 @@ cdef class biomarkers:
 		cdef regions cBME
 		cdef list rlist = []
 		if threshold == -1: threshold = self.negativeThreshold
-		BME = self.getRegionSetBiomarkerSpectrum(rs)
+		BME = self.enrichmentSpectrum(rs)
 		for nBME in range(0, threshold+1):
 			cBME = BME[nBME]
 			rlist += cBME.regions
-		return regions('', rlist).getMerged(regions('', [])).getRenamed('%s (%s LBME)'%(rs.name, self.name))
+		return regions('', rlist).flatten().rename('%s (%s LBME)'%(rs.name, self.name))
 
 

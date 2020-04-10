@@ -13,6 +13,7 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport memcpy
 from .sequences cimport *
 from .common import nucleotides, complementaryNucleotides, getReverseComplementaryDNASequence, IUPACNucleotideCodes, IUPACNucleotideCodeSemantics
+from .features import features
 
 
 ############################################################################
@@ -85,8 +86,35 @@ class motifs:
 	def __add__(self, other):
 		return motifs('%s + %s'%(self.name, other.name), self.motifs + other.motifs)
 	
+	def occFreq(self):
+		"""
+		Generates an occurrence frequency feature set
+		"""
+		return features.motifSpectrum(self)
+	
+	def pairFreq(self, distCut):
+		"""
+		Generates a pair occurrence frequency feature set
+		"""
+		return features.motifPairSpectrum(self, distCut)
+	
 	@staticmethod
-	def getRingrose2003Motifs_GTGT():
+	def Ringrose2003():
+		"""
+		Preset for generating the Ringrose et al. (2003) motif set.
+		"""
+		return motifs('Ringrose et al. 2003 + GTGT', [
+				IUPACMotif('En', 'GSNMACGCCCC', 1),
+				IUPACMotif('G10', 'GAGAGAGAGA', 1),
+				IUPACMotif('GAF', 'GAGAG', 0),
+				IUPACMotif('PF', 'GCCATHWY', 0),
+				IUPACMotif('PM', 'CNGCCATNDNND', 0),
+				IUPACMotif('PS', 'GCCAT', 0),
+				IUPACMotif('Z', 'YGAGYG', 0)
+			])
+	
+	@staticmethod
+	def Ringrose2003GTGT():
 		"""
 		Preset for generating the Ringrose et al. (2003) motif set, with GTGT added (as in Bredesen et al. 2019).
 		"""
@@ -99,21 +127,6 @@ class motifs:
 				IUPACMotif('PS', 'GCCAT', 0),
 				IUPACMotif('Z', 'YGAGYG', 0),
 				IUPACMotif('GTGT', 'GTGT', 0)
-			])
-	
-	@staticmethod
-	def getRingrose2003Motifs():
-		"""
-		Preset for generating the Ringrose et al. (2003) motif set.
-		"""
-		return motifs('Ringrose et al. 2003 + GTGT', [
-				IUPACMotif('En', 'GSNMACGCCCC', 1),
-				IUPACMotif('G10', 'GAGAGAGAGA', 1),
-				IUPACMotif('GAF', 'GAGAG', 0),
-				IUPACMotif('PF', 'GCCATHWY', 0),
-				IUPACMotif('PM', 'CNGCCATNDNND', 0),
-				IUPACMotif('PS', 'GCCAT', 0),
-				IUPACMotif('Z', 'YGAGYG', 0)
 			])
 
 
@@ -162,7 +175,7 @@ cdef class IUPACMotif:
 	def __repr__(self): return self.__str__()
 	
 	# Finds occurrences of the motif in a given sequence.
-	def findOccurrences(self, object seq, bool cache=True):
+	def find(self, object seq, bool cache=True):
 		"""
 		Finds the occurrences of the motif in a sequence.
 		
@@ -289,7 +302,7 @@ cdef class PWMMotif:
 		thresholds = []
 		for _ in range(iterations):
 			seq = bgModel.generate( int(EvalueUnit / Evalue) )
-			occ = self.findOccurrences(seq, cache=False)
+			occ = self.find(seq, cache=False)
 			maxScore = max( o.score for o in occ )
 			thresholds.append( maxScore - 0.0000000000000000000000000000000001 )
 		return sum(thresholds) / len(thresholds)
@@ -330,7 +343,7 @@ cdef class PWMMotif:
 		self.bPWMF = bPWMF
 		self.bPWMRC = bPWMRC
 	
-	def findOccurrences(self, sequence seq, bool cache=True):
+	def find(self, sequence seq, bool cache=True):
 		"""
 		Finds the occurrences of the motif in a sequence.
 		
