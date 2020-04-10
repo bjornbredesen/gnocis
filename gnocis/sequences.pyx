@@ -20,6 +20,40 @@ from .regions cimport *
 from .motifs cimport *
 
 
+############################################################################
+# Sequence labels
+
+# Represents a sequence label
+cdef class sequenceLabel:
+	"""
+	The `sequenceLabel` class represents a label that can be assigned to sequences to be used for model training or testing, such as "positive" or "negative".
+	
+	:param name: Name of the sequence label.
+	:param value: Value to represent the label.
+	
+	:type name: str
+	:type value: float
+	"""
+	
+	def __init__(self, name, value):
+		self.name, self.value = name, value
+	
+	def __str__(self):
+		return 'Sequence label<%s; value = %s>'%(self.name, str(self.value))
+	
+	def __eq__(self, o):
+		return self.value == o.value
+	
+	def __hash__(self):
+		return hash(self.value)
+	
+	def __repr__(self):
+		return self.__str__()
+
+positive = sequenceLabel('Positive', 1.0)
+negative = sequenceLabel('Negative', -1.0)
+
+
 ###########################################################################
 # Sequences
 
@@ -45,10 +79,11 @@ cdef class sequence:
 	
 	#__slots__ = 'name', 'seq', 'path'
 	
-	def __init__(self, name, seq, path = '', sourceRegion = None, annotation = None):
+	def __init__(self, name, seq, path = '', sourceRegion = None, annotation = None, labels = None):
 		self.name, self.seq, self.path = name, seq, path
 		self.sourceRegion = sourceRegion
 		self.annotation = annotation
+		self.labels = set() if labels is None else labels
 		if name == None and sourceRegion != None:
 			self.name = '%s:%d..%d (%s)'%(sourceRegion.seq, sourceRegion.start, sourceRegion.end, '+' if sourceRegion.strand else '-')
 	
@@ -83,9 +118,9 @@ cdef class sequence:
 			wB = wA + size
 			if wB > len(self.seq):
 				if includeCroppedEnds:
-					windows.append( sequence('%s:%d..%d'%(self.name, wA, len(self.seq)), self.seq[wA:], self.path, sourceRegion = region(self.name, wA, len(self.seq))) )
+					windows.append( sequence('%s:%d..%d'%(self.name, wA, len(self.seq)), self.seq[wA:], self.path, sourceRegion = region(self.name, wA, len(self.seq)), labels = self.labels) )
 				break
-			windows.append( sequence('%s:%d..%d'%(self.name, wA, wB), self.seq[wA:wB], self.path, sourceRegion = region(self.name, wA, wB)) )
+			windows.append( sequence('%s:%d..%d'%(self.name, wA, wB), self.seq[wA:wB], self.path, sourceRegion = region(self.name, wA, wB), labels = self.labels) )
 			wA += step
 		wsequences = sequences('%s windows(%d/%d)'%(self.name, size, step), windows)
 		return wsequences
@@ -238,6 +273,63 @@ cdef class sequences:
 		:rtype: regions
 		"""
 		return regions(self.name, [ s.sourceRegion for s in self.sequences if s.sourceRegion != None ])
+	
+	# Adds a label to sequences
+	def label(self, label):
+		""" Adds a label to sequences.
+		
+		:param label: Label to add to sequences.
+		:type label: sequenceLabel
+		
+		:return: Sequences with label added.
+		:rtype: sequences
+		
+		Note: Mutates and returns the same `sequences` instance.
+		"""
+		for s in self.sequences:
+			s.labels.add(label)
+		return self
+	
+	# Gets sequences with the given label
+	def withLabel(self, labels, ensureAllLabels = True):
+		""" Extracts sequences with the given label or labels.
+		
+		:param labels: List of labels, or single labels, to extract sequences with.
+		:param ensureAllLabels: If true, an exception is raised if no sequences with a label were found. Default true.
+		:type labels: list, sequenceLabel
+		:type ensureAllLabels: bool
+		
+		:return: Single label or list of labels.
+		:rtype: sequences, list
+		
+		If multiple labels are given, a list of `sequences` instances are returned in the same order as the labels.
+		"""
+		if isinstance(labels, list):
+			ret = [
+				sequences(self.name + ' (%s)'%lbl.name, [
+					s for s in self.sequences if lbl in s.labels
+				])
+				for lbl in labels
+			]
+			if ensureAllLabels and any(len(seqs) == 0 for seqs in ret):
+				raise Exception("Not all requested labels were found among the sequences")
+			return ret
+		else:
+			ret = sequences(self.name + ' (%s)'%labels.name, [
+				s for s in self.sequences if labels in s.labels
+			])
+			if ensureAllLabels and len(ret) == 0:
+				raise Exception("No sequences with the requested label were found")
+			return ret
+	
+	# Gets labels for sequences
+	def labels(self):
+		""" Gets labels for sequences.
+		
+		:return: Set of labels.
+		:rtype: set
+		"""
+		return set(l for s in self.sequences for l in s.labels)
 	
 	# Saves to FASTA file.
 	def saveFASTA(self, path):

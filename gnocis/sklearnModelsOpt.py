@@ -9,7 +9,7 @@
 
 from .features import featureScaler
 from .models import sequenceModel
-from .sequences import sequences
+from .sequences import sequences, positive, negative
 import numpy as np
 import cupy as cp
 from sklearn import svm
@@ -38,17 +38,19 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree, scale = True):
+	def __init__(self, name, features, trainingSet, windowSize, windowStep, kDegree, scale = True, labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.trainingSet = trainingSet
+		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		if scale:
-			features = featureScaler( features, positives = wPos, negatives = wNeg )
+			features = featureScaler( features, trainingSet = wPos + wNeg )
 		self.scale = scale
 		self.features = features
 		self.windowSize, self.windowStep = windowSize, windowStep
-		self.positives, self.negatives = positives, negatives
 		self.kernel = kDegree
 		self.threshold = 0.0
 		assert(kDegree == 2)
@@ -73,7 +75,7 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 		self.bias = -bias
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelSVMOptimizedQuadratic(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel, self.scale)
+		return lambda ts: sequenceModelSVMOptimizedQuadratic(self.name, self.features, ts, windowSize = self.windowSize, windowStep = self.windowStep, alpha = self.alpha, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -83,7 +85,7 @@ class sequenceModelSVMOptimizedQuadratic(sequenceModel):
 		return self.pairWeights @ fv @ fv - self.bias
 	
 	def __str__(self):
-		return 'Support Vector Machine<Features: %s (%d); Positives: %s; Negatives: %s; Kernel: %s; Support vectors: %d; Quadratic optimized>'%(str(self.features), len(self.features), str(self.positives), str(self.negatives), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
+		return 'Support Vector Machine<Features: %s (%d); Training set: %s; Positive label: %s; Negative label; Kernel: %s; Support vectors: %d; Quadratic optimized>'%(str(self.features), len(self.features), str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
 	
 	def __repr__(self): return self.__str__()
 
@@ -110,16 +112,18 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree, scale = True):
+	def __init__(self, name, features, trainingSet, windowSize, windowStep, kDegree, scale = True, labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.trainingSet = trainingSet
+		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		if scale:
-			features = featureScaler( features, positives = wPos, negatives = wNeg )
+			features = featureScaler( features, trainingSet = wPos + wNeg )
 		self.scale = scale
 		self.features = features
-		self.positives, self.negatives = positives, negatives
 		self.kernel = kDegree
 		self.threshold = 0.0
 		assert(kDegree == 2)
@@ -169,7 +173,7 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 				) + cls.intercept_[0]
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelSVMOptimizedQuadraticAutoScale(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel, self.scale)
+		return lambda ts: sequenceModelSVMOptimizedQuadraticAutoScale(self.name, self.features, ts, windowSize = self.windowSize, windowStep = self.windowStep, alpha = self.alpha, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -180,7 +184,7 @@ class sequenceModelSVMOptimizedQuadraticAutoScale(sequenceModel):
 		return (self.pairWeights @ fv @ fv) + (self.linWeights @ fv) + self.bias
 	
 	def __str__(self):
-		return 'Support Vector Machine<Features: %s (%d); Positives: %s; Negatives: %s; Kernel: %s; Support vectors: %d; Quadratic optimized>'%(str(self.features), len(self.features), str(self.positives), str(self.negatives), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
+		return 'Support Vector Machine<Features: %s (%d); Training set: %s; Positive label: %s; Negative label; Kernel: %s; Support vectors: %d; Quadratic optimized>'%(str(self.features), len(self.features), str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
 	
 	def __repr__(self): return self.__str__()
 
@@ -207,16 +211,18 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree, scale = True):
+	def __init__(self, name, features, trainingSet, windowSize, windowStep, kDegree, scale = True, labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.trainingSet = trainingSet
+		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		if scale:
-			features = featureScaler( features, positives = wPos, negatives = wNeg )
+			features = featureScaler( features, trainingSet = wPos + wNeg )
 		self.scale = scale
 		self.features = features
-		self.positives, self.negatives = positives, negatives
 		self.kernel = kDegree
 		self.threshold = 0.0
 		assert(kDegree == 2)
@@ -241,7 +247,7 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 		self.bias = -bias
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelSVMOptimizedQuadraticCUDA(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel, self.scale)
+		return lambda ts: sequenceModelSVMOptimizedQuadraticCUDA(self.name, self.features, ts, windowSize = self.windowSize, windowStep = self.windowStep, alpha = self.alpha, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -251,7 +257,7 @@ class sequenceModelSVMOptimizedQuadraticCUDA(sequenceModel):
 		return self.pairWeights @ fv @ fv - self.bias
 	
 	def __str__(self):
-		return 'Support Vector Machine<Features: %s (%d); Positives: %s; Negatives: %s; Kernel: %s; Support vectors: %d; Quadratic optimized, CUDA>'%(str(self.features), len(self.features), str(self.positives), str(self.negatives), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
+		return 'Support Vector Machine<Features: %s (%d); Training set: %s; Positive label: %s; Negative label; Kernel: %s; Support vectors: %d; Quadratic optimized, CUDA>'%(str(self.features), len(self.features), str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], self.nSV)
 	
 	def __repr__(self): return self.__str__()
 

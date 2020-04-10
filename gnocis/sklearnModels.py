@@ -8,7 +8,7 @@
 # Interfacing with scikit-learn
 
 from .features import featureScaler
-from .sequences import sequences
+from .sequences import sequences, positive, negative
 from .models import sequenceModel
 import numpy as np
 from sklearn import svm
@@ -38,16 +38,18 @@ class sequenceModelSVM(sequenceModel):
 	:type kDegree: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, kDegree, scale = True):
+	def __init__(self, name, features, trainingSet, windowSize, windowStep, kDegree, scale = True, labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.trainingSet = trainingSet
+		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		if scale:
-			features = featureScaler( features, positives = wPos, negatives = wNeg )
+			features = featureScaler( features, trainingSet = wPos + wNeg )
 		self.scale = scale
 		self.features = features
-		self.positives, self.negatives = positives, negatives
 		self.kernel = kDegree
 		self.threshold = 0.0
 		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]
@@ -58,7 +60,7 @@ class sequenceModelSVM(sequenceModel):
 		self.cls.fit( np.array(vP+vN), np.array(cP+cN) )
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelSVM(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.kernel, self.scale)
+		return lambda ts: sequenceModelSVM(self.name, self.features, ts, windowSize = self.windowSize, windowStep = self.windowStep, kDegree = self.kernel, scale = self.scale, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -67,7 +69,7 @@ class sequenceModelSVM(sequenceModel):
 		return self.cls.decision_function(np.array([self.getSequenceFeatureVector(seq)]))[0]
 	
 	def __str__(self):
-		return 'Support Vector Machine<Features: %s (%d); Positives: %s; Negatives: %s; Kernel: %s; Support vectors: %d>'%(str(self.features), len(self.features), str(self.positives), str(self.negatives), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], len(self.cls.support_vectors_))
+		return 'Support Vector Machine<Features: %s (%d); Training set: %s; Positive label: %s; Negative label: %s; Kernel: %s; Support vectors: %d>'%(str(self.features), len(self.features), str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), [ 'linear', 'quadratic', 'cubic' ][self.kernel-1], len(self.cls.support_vectors_))
 	
 	def __repr__(self): return self.__str__()
 
@@ -95,16 +97,18 @@ class sequenceModelRF(sequenceModel):
 	:type maxDepth: int
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, nTrees = 100, maxDepth = None, scale = True):
+	def __init__(self, name, features, trainingSet, windowSize, windowStep, nTrees = 100, maxDepth = None, scale = True, labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.trainingSet = trainingSet
+		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		if scale:
-			features = featureScaler( features, positives = wPos, negatives = wNeg )
+			features = featureScaler( features, trainingSet = wPos + wNeg )
 		self.scale = scale
 		self.features = features
-		self.positives, self.negatives = positives, negatives
 		self.nTrees, self.maxDepth = nTrees, maxDepth
 		self.threshold = 0.0
 		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]
@@ -115,7 +119,7 @@ class sequenceModelRF(sequenceModel):
 		self.cls.fit( np.array(vP+vN), np.array(cP+cN) )
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelRF(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.nTrees, self.maxDepth, self.scale)
+		return lambda ts: sequenceModelRF(self.name, self.features, ts, windowSize = self.windowSize, windowStep = self.windowStep, nTrees = self.nTrees, maxDepth = self.maxDepth, scale = self.scale, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -124,7 +128,7 @@ class sequenceModelRF(sequenceModel):
 		return float(self.cls.predict_proba(np.array([self.getSequenceFeatureVector(seq)]))[0][1])
 	
 	def __str__(self):
-		return 'Random Forest<Features: %s; Positives: %s; Negatives: %s; Trees: %d; Max. depth: %s>'%(str(self.features), str(self.positives), str(self.negatives), self.nTrees, str(self.maxDepth))
+		return 'Random Forest<Features: %s; Training set: %s; Positive label: %s; Negative label: %s; Trees: %d; Max. depth: %s>'%(str(self.features), str(self.trainingSet), str(self.labelPositive), str(self.labelNegatives), self.nTrees, str(self.maxDepth))
 	
 	def __repr__(self): return self.__str__()
 
@@ -150,13 +154,15 @@ class sequenceModelLasso(sequenceModel):
 	:type alpha: float
 	"""
 	
-	def __init__(self, name, features, positives, negatives, windowSize, windowStep, alpha = 1.):
+	def __init__(self, name, features, trainingSet, windowSize, windowStep, alpha = 1., labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.trainingSet = trainingSet
+		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
 		wPos = sequences(positives.name, [ w for s in positives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		wNeg = sequences(negatives.name, [ w for s in negatives for w in s.getWindows(self.windowSize, self.windowStep) ])
 		self.features = features
-		self.positives, self.negatives = positives, negatives
 		self.threshold = 0.0
 		vP = [ self.getSequenceFeatureVector(w) for w in wPos ]
 		vN = [ self.getSequenceFeatureVector(w) for w in wNeg ]
@@ -167,7 +173,7 @@ class sequenceModelLasso(sequenceModel):
 		self.cls.fit( np.array(vP+vN), np.array(cP+cN) )
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelLasso(self.name, self.features, pos, neg, self.windowSize, self.windowStep, self.alpha)
+		return lambda ts: sequenceModelLasso(self.name, self.features, ts, windowSize = self.windowSize, windowStep = self.windowStep, alpha = self.alpha, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 	
 	def getSequenceFeatureVector(self, seq):
 		return self.features.getAll(seq)
@@ -176,7 +182,7 @@ class sequenceModelLasso(sequenceModel):
 		return self.cls.predict(np.array([self.getSequenceFeatureVector(seq)]))[0]
 	
 	def __str__(self):
-		return 'Lasso<Features: %s; Positives: %s; Negatives: %s; Alpha: %f>'%(str(self.features), str(self.positives), str(self.negatives), self.alpha)
+		return 'Lasso<Features: %s; Training set: %s; Positive label: %s; Negative label: %s; Alpha: %f>'%(str(self.features), str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.alpha)
 	
 	def __repr__(self): return self.__str__()
 

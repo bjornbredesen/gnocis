@@ -331,8 +331,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>_features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – The feature set to scale.</p></li>
-<li><p><strong>positives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
-<li><p><strong>negatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>trainingSet</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Training sequences.</p></li>
 </ul>
 </dd>
 </dl>
@@ -898,8 +897,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -912,24 +912,15 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="gnocis.models.sequenceModel.getCrossValidationStatisticsLOO">
-<code class="sig-name descname">getCrossValidationStatisticsLOO</code><a class="headerlink" href="#gnocis.models.sequenceModel.getCrossValidationStatisticsLOO" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="gnocis.models.sequenceModel.getCrossValidationStatisticsRandomHalves">
-<code class="sig-name descname">getCrossValidationStatisticsRandomHalves</code><a class="headerlink" href="#gnocis.models.sequenceModel.getCrossValidationStatisticsRandomHalves" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="gnocis.models.sequenceModel.getOptimalAccuracyThreshold">
 <code class="sig-name descname">getOptimalAccuracyThreshold</code><a class="headerlink" href="#gnocis.models.sequenceModel.getOptimalAccuracyThreshold" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets a threshold value optimized for accuracy to a set of positive and a set of negative sequences.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positive sequences.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negative sequences.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -948,8 +939,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -968,8 +960,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -988,8 +981,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positive sequences.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negative sequences.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 <li><p><strong>wantedPrecision</strong> (<em>float</em>) – The precision to approximate.</p></li>
 </ul>
 </dd>
@@ -1009,8 +1003,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1029,8 +1024,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1066,8 +1062,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1086,8 +1083,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>positives</strong> (<em>sequences/sequenceStream</em>) – Positives.</p></li>
-<li><p><strong>negatives</strong> (<em>sequences/sequenceStream</em>) – Negatives.</p></li>
+<li><p><strong>seqs</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Sequences.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of positives.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label of negatives.</p></li>
 <li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple of figure dimensions.</p></li>
 <li><p><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to save generated plot to. If not set, the plot will be output to IPython.</p></li>
 <li><p><strong>style</strong> (<em>str</em><em>, </em><em>optional</em>) – Matplotlib style to use.</p></li>
@@ -1191,10 +1189,11 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Model name.</p></li>
 <li><p><strong>features</strong> (<a class="reference internal" href="#gnocis.features.features" title="gnocis.features.features"><em>features</em></a>) – The feature set.</p></li>
-<li><p><strong>trainingPositives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Positive training sequences.</p></li>
-<li><p><strong>trainingNegatives</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Negative training sequences.</p></li>
+<li><p><strong>trainingSet</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Training sequences.</p></li>
 <li><p><strong>windowSize</strong> (<em>int</em>) – Window size to use.</p></li>
 <li><p><strong>windowStep</strong> (<em>int</em>) – Window step size to use.</p></li>
+<li><p><strong>labelPositive</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Positive training class label.</p></li>
+<li><p><strong>labelNegative</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Negative training class label.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2323,6 +2322,11 @@
 </dd></dl>
 
 <dl class="attribute">
+<dt id="gnocis.sequences.sequence.labels">
+<code class="sig-name descname">labels</code><a class="headerlink" href="#gnocis.sequences.sequence.labels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="gnocis.sequences.sequence.name">
 <code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.sequences.sequence.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2402,6 +2406,31 @@
 </dd>
 </dl>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sequences.sequenceLabel">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sequences.</code><code class="sig-name descname">sequenceLabel</code><a class="headerlink" href="#gnocis.sequences.sequenceLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The <cite>sequenceLabel</cite> class represents a label that can be assigned to sequences to be used for model training or testing, such as “positive” or “negative”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the sequence label.</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – Value to represent the label.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gnocis.sequences.sequenceLabel.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.sequences.sequenceLabel.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.sequences.sequenceLabel.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#gnocis.sequences.sequenceLabel.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -2638,6 +2667,38 @@
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="gnocis.sequences.sequences.label">
+<code class="sig-name descname">label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a label to sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>label</strong> (<a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – Label to add to sequences.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sequences with label added.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a></p>
+</dd>
+</dl>
+<p>Note: Mutates and returns the same <cite>sequences</cite> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.labels">
+<code class="sig-name descname">labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets labels for sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Set of labels.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="gnocis.sequences.sequences.name">
 <code class="sig-name descname">name</code><a class="headerlink" href="#gnocis.sequences.sequences.name" title="Permalink to this definition">¶</a></dt>
@@ -2679,6 +2740,27 @@
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sequences.sequences.withLabel">
+<code class="sig-name descname">withLabel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.withLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts sequences with the given label or labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>list</em><em>, </em><a class="reference internal" href="#gnocis.sequences.sequenceLabel" title="gnocis.sequences.sequenceLabel"><em>sequenceLabel</em></a>) – List of labels, or single labels, to extract sequences with.</p></li>
+<li><p><strong>ensureAllLabels</strong> (<em>bool</em>) – If true, an exception is raised if no sequences with a label were found. Default true.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Single label or list of labels.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences">sequences</a>, list</p>
+</dd>
+</dl>
+<p>If multiple labels are given, a list of <cite>sequences</cite> instances are returned in the same order as the labels.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2778,7 +2860,7 @@
 <span id="gnocis-sklearnmodels-module"></span><h2>gnocis.sklearnModels module<a class="headerlink" href="#module-gnocis.sklearnModels" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="gnocis.sklearnModels.sequenceModelLasso">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelLasso</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">alpha=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelLasso" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelLasso</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">trainingSet</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">alpha=1.0</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelLasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelLasso</cite> class trains a Lasso model using scikit-learn.</p>
 <dl class="field-list simple">
@@ -2813,7 +2895,7 @@
 
 <dl class="class">
 <dt id="gnocis.sklearnModels.sequenceModelRF">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelRF</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">nTrees=100</em>, <em class="sig-param">maxDepth=None</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelRF</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">trainingSet</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">nTrees=100</em>, <em class="sig-param">maxDepth=None</em>, <em class="sig-param">scale=True</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelRF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelRF</cite> class trains a Random Forest (RF) model using scikit-learn.</p>
 <dl class="field-list simple">
@@ -2849,7 +2931,7 @@
 
 <dl class="class">
 <dt id="gnocis.sklearnModels.sequenceModelSVM">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelSVM</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelSVM</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">trainingSet</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em>, <em class="sig-param">scale=True</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelSVM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelSVM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelSVM</cite> class trains a Support Vector Machine (SVM) using scikit-learn.</p>
 <dl class="field-list simple">
@@ -2887,7 +2969,7 @@
 <span id="gnocis-sklearnmodelsopt-module"></span><h2>gnocis.sklearnModelsOpt module<a class="headerlink" href="#module-gnocis.sklearnModelsOpt" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadratic</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadratic</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">trainingSet</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em>, <em class="sig-param">scale=True</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadratic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadratic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelSVMOptimizedQuadratic</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</p>
 <dl class="field-list simple">
@@ -2922,7 +3004,7 @@
 
 <dl class="class">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticAutoScale</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticAutoScale</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">trainingSet</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em>, <em class="sig-param">scale=True</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticAutoScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticAutoScale" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelSVMOptimizedQuadratic</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication.</p>
 <dl class="field-list simple">
@@ -2957,7 +3039,7 @@
 
 <dl class="class">
 <dt id="gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA">
-<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticCUDA</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">positives</em>, <em class="sig-param">negatives</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em>, <em class="sig-param">scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModelsOpt.</code><code class="sig-name descname">sequenceModelSVMOptimizedQuadraticCUDA</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">trainingSet</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">kDegree</em>, <em class="sig-param">scale=True</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModelsOpt.html#sequenceModelSVMOptimizedQuadraticCUDA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModelsOpt.sequenceModelSVMOptimizedQuadraticCUDA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>
 <p>The <cite>sequenceModelSVMOptimizedQuadraticCUDA</cite> class trains a quadratic kernel Support Vector Machine (SVM) using scikit-learn. The kernel is applied using matrix multiplication with CUDA.</p>
 <dl class="field-list simple">

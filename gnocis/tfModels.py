@@ -8,12 +8,9 @@
 # Interfacing with TensorFlow
 
 from .features import featureScaler
-from .sequences import sequences
+from .sequences import sequences, positive, negative
 from .models import sequenceModel
 import numpy as np
-#from sklearn import svm
-#from sklearn.ensemble import RandomForestClassifier
-#from __future__ import division, print_function, absolute_import
 import tensorflow as tf
 from tensorflow import keras
 import random
@@ -30,14 +27,16 @@ def getSequenceMatrix(seq):
 
 # Convolutional Neural Network
 class sequenceModelCNN(sequenceModel):
-	def __init__(self, name, positives, negatives, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100):
+	def __init__(self, name, trainingSet, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.windowSize, self.windowStep = windowSize, windowStep
-		self.positives, self.negatives = positives, negatives
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.trainingSet = trainingSet
 		self.threshold = 0.0
 		self.nConv, self.convLen = nConv, convLen
 		self.epochs = epochs
 		
+		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
 		scaleFac = 10
 		bloat = int(500/scaleFac)
 		hbloat = int(bloat/2)
@@ -111,10 +110,10 @@ class sequenceModelCNN(sequenceModel):
 		return p[0, 1] - p[0, 0]
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelCNN(self.name, pos, neg, self.windowSize, self.windowStep, self.nConv, self.convLen, self.epochs)
+		return lambda ts: sequenceModelCNN(self.name, ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, labelPositive = labelPositive, labelNegative = labelNegative)
 
 	def __str__(self):
-		return 'Convolutional Neural Network<Positives: %s; Negatives: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.positives), str(self.negatives), self.nConv, self.convLen, self.epochs)
+		return 'Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
 
 	def __repr__(self): return self.__str__()
 

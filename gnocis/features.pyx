@@ -270,15 +270,13 @@ cdef class featureScaler(features):
 	The `featureScaler` class scales an input feature set, based on a binary training set. 
 	
 	:param _features: The feature set to scale.
-	:param positives: Positive training sequences.
-	:param negatives: Negative training sequences.
+	:param trainingSet: Training sequences.
 	
 	:type _features: features
-	:type positives: sequences
-	:type negatives: sequences
+	:type trainingSet: sequences
 	"""
 	
-	def __init__(self, _features, positives, negatives):
+	def __init__(self, _features, trainingSet):
 		cdef feature f
 		cdef list fv, fs
 		cdef float vMin, vMax, vScale, vSub, rng
@@ -288,7 +286,7 @@ cdef class featureScaler(features):
 		cdef float v
 		#
 		fvs = [ [] for f in _features ]
-		for seq in positives + negatives:
+		for seq in trainingSet:
 			cfvs = _features.getAll(seq)
 			for i, v in enumerate(cfvs):
 				fvs[i].append(v)

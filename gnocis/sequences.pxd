@@ -11,6 +11,16 @@ from .regions cimport *
 
 
 ############################################################################
+# Sequence labels
+
+# Represents a sequence label
+cdef class sequenceLabel:
+	
+	cdef public str name
+	cdef public float value
+
+
+############################################################################
 # Sequences
 
 # Represents and loads DNA sequences.
@@ -21,6 +31,7 @@ cdef class sequence:
 	cdef bytes cbytes, cbytesIndexed
 	cdef public bytes getBytes(self)
 	cdef public bytes getBytesIndexed(self)
+	cdef public set labels
 
 # Represents a set of DNA sequences.
 cdef class sequences:

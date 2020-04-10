@@ -192,14 +192,14 @@ class testModels(unittest.TestCase):
 	
 	def testSequenceWindows(self):
 		testsetPath = './temp/PcGTrxG1.fasta'
-		tpos = nc.loadFASTA('./temp/PcGTrxG1.fasta')
-		tneg = nc.loadFASTA('./temp/NonPcGTrxG1.fasta')
+		tpos = nc.loadFASTA('./temp/PcGTrxG1.fasta').label(nc.positive)
+		tneg = nc.loadFASTA('./temp/NonPcGTrxG1.fasta').label(nc.negative)
 		nSpectrum = 5
 		winSize = 500
 		winStep = 250
 		kDegree = 2
-		featureSet = nc.featureScaler( nc.features.getKSpectrumMM(nSpectrum), positives = tpos, negatives = tneg )
-		mdl = sklnc.sequenceModelSVM( features = featureSet, positives = tpos, negatives = tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
+		featureSet = nc.features.getKSpectrumMM(nSpectrum)
+		mdl = sklnc.sequenceModelSVM( name = 'SVM', features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
 		# Single-core
 		nc.setNCores(1)
 		testset = nc.streamFASTA(testsetPath)
@@ -213,10 +213,10 @@ class testModels(unittest.TestCase):
 		self.assertEqual(diff, 0)
 		# Train second set of models, to ensure old model cannot get stuck
 		# in one process
-		tpos = nc.loadFASTA('./temp/PcGTrxG2.fasta')
-		tneg = nc.loadFASTA('./temp/NonPcGTrxG2.fasta')
-		featureSet = nc.featureScaler( nc.features.getKSpectrumMM(nSpectrum), positives = tpos, negatives = tneg )
-		mdl2 = sklnc.sequenceModelSVM( features = featureSet, positives = tpos, negatives = tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
+		tpos = nc.loadFASTA('./temp/PcGTrxG2.fasta').label(nc.positive)
+		tneg = nc.loadFASTA('./temp/NonPcGTrxG2.fasta').label(nc.negative)
+		featureSet = nc.features.getKSpectrumMM(nSpectrum)
+		mdl2 = sklnc.sequenceModelSVM( name = 'SVM', features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
 		#
 		testset = nc.streamFASTA(testsetPath)
 		scoresD = mdl2.getSequenceScores(testset)
@@ -328,8 +328,8 @@ class testModels(unittest.TestCase):
 	
 	def testOptimizations_sequenceModelSVMOptimizedQuadraticCUDA(self):
 		testsetPath = './temp/PcGTrxG1.fasta'
-		tpos = nc.loadFASTA('./temp/PcGTrxG1.fasta')
-		tneg = nc.loadFASTA('./temp/NonPcGTrxG1.fasta')
+		tpos = nc.loadFASTA('./temp/PcGTrxG1.fasta').label(nc.positive)
+		tneg = nc.loadFASTA('./temp/NonPcGTrxG1.fasta').label(nc.negative)
 		nSpectrum = 5
 		winSize = 500
 		winStep = 250
@@ -337,13 +337,13 @@ class testModels(unittest.TestCase):
 		nc.setNCores(4)
 		testset = nc.streamFASTA(testsetPath)
 		#
-		featureSet = nc.featureScaler( nc.features.getKSpectrumMM(nSpectrum), positives = tpos, negatives = tneg )
-		mdl = sklnc.sequenceModelSVM( features = featureSet, positives = tpos, negatives = tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
+		featureSet = nc.features.getKSpectrumMM(nSpectrum)
+		mdl = sklnc.sequenceModelSVM( name = 'SVM', features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
 		#
 		scoresA = mdl.getSequenceScores(testset)
 		#
-		featureSet = nc.featureScaler( nc.features.getKSpectrumMM(nSpectrum), positives = tpos, negatives = tneg )
-		mdl2 = sklncOpt.sequenceModelSVMOptimizedQuadraticCUDA( features = featureSet, positives = tpos, negatives = tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
+		featureSet = nc.features.getKSpectrumMM(nSpectrum)
+		mdl2 = sklncOpt.sequenceModelSVMOptimizedQuadraticCUDA( name = 'SVM',features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
 		#
 		scoresB = mdl2.getSequenceScores(testset)
 		diff = sum( 1 if a != b else 0 for a, b in zip(scoresA, scoresB) )

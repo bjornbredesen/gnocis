@@ -16,7 +16,7 @@ import math
 from .features cimport *
 from .validation cimport *
 from .validation import getConfusionMatrix, getConfusionMatrixStatistics, getROC, getPRC, getAUC, printValidationStatistics
-from .sequences import streamSequenceWindows
+from .sequences import streamSequenceWindows, positive, negative
 from .ioputil import nctable
 from .common import mean, CI
 
@@ -219,18 +219,21 @@ class sequenceModel:
 			return [ self.scoreSequence(cseq) for cseq in seqs ]
 	
 	# Gets the threshold that gives optimal accuracy on a pair of lists or streams of sequences. Streams are recommended when the sequence lists are large, in order to avoid running out of memory.
-	def getOptimalAccuracyThreshold(self, positives, negatives):
+	def getOptimalAccuracyThreshold(self, seqs, labelPositive = positive, labelNegative = negative):
 		""" Gets a threshold value optimized for accuracy to a set of positive and a set of negative sequences.
 		
-		:param positives: Positive sequences.
-		:param negatives: Negative sequences.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		
 		:return: List of the maximum window score per sequence
 		:rtype: list
 		"""
+		positives, negatives = seqs.withLabel([ labelPositive, labelNegative ])
 		positiveScores = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
 		negativeScores = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		vPairs = sorted(positiveScores + negativeScores, key = lambda x: x.score)
@@ -254,12 +257,14 @@ class sequenceModel:
 	def getPrecisionThreshold(self, positives, negatives, wantedPrecision):
 		""" Gets a threshold value for a desired precision to a set of positive and a set of negative sequences. Linear interpolation is used in order to achieve a close approximation.
 		
-		:param positives: Positive sequences.
-		:param negatives: Negative sequences.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		:param wantedPrecision: The precision to approximate.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		:type wantedPrecision: float
 		
 		:return: List of the maximum window score per sequence
@@ -356,97 +361,112 @@ class sequenceModel:
 		return score
 	
 	# Gets and returns a confusion matrix.
-	def getConfusionMatrix(self, positives, negatives):
+	def getConfusionMatrix(self, seqs, labelPositive = positive, labelNegative = negative):
 		""" Calculates and returns a confusion matrix for sets of positive and negative sequences.
 		
-		:param positives: Positives.
-		:param negatives: Negatives.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		
 		:return: Confusion matrix
 		:rtype: dict
 		"""
+		positives, negatives = seqs.withLabel([ labelPositive, labelNegative ])
 		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
 		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		return getConfusionMatrix(vPos, vNeg, threshold = self.threshold)
 	
 	# Generates a Receiver Operating Characteristic curve.
-	def getROC(self, positives, negatives):
+	def getROC(self, seqs, labelPositive = positive, labelNegative = negative):
 		""" Calculates and returns a Receiver Operating Characteristic (ROC) curve for sets of positive and negative sequences.
 		
-		:param positives: Positives.
-		:param negatives: Negatives.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		
 		:return: Receiver Operating Characteristic (ROC) curve
 		:rtype: list
 		"""
+		positives, negatives = seqs.withLabel([ labelPositive, labelNegative ])
 		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
 		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		return getROC(vPos, vNeg)
 	
 	# Calculates the area under a Receiver Operating Characteristic curve.
-	def getROCAUC(self, positives, negatives):
+	def getROCAUC(self, seqs, labelPositive = positive, labelNegative = negative):
 		""" Calculates and returns the area under a Receiver Operating Characteristic (ROCAUC) curve for sets of positive and negative sequences.
 		
-		:param positives: Positives.
-		:param negatives: Negatives.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		
 		:return: Area under the Receiver Operating Characteristic (ROCAUC) curve
 		:rtype: list
 		"""
-		return getAUC(self.getROC(positives, negatives))
+		return getAUC(self.getROC(seqs, labelPositive = labelPositive, labelNegative = labelNegative))
 	
 	# Generates a Precision/Recall curve.
-	def getPRC(self, positives, negatives):
+	def getPRC(self, seqs, labelPositive = positive, labelNegative = negative):
 		""" Calculates and returns a Precision/Recall curve (PRC) for sets of positive and negative sequences.
 		
-		:param positives: Positives.
-		:param negatives: Negatives.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		
 		:return: Precision/Recall curve (PRC)
 		:rtype: list
 		"""
+		positives, negatives = seqs.withLabel([ labelPositive, labelNegative ])
 		vPos = [ validationPair(score = score, label = True) for score in self.getSequenceScores(positives) ]
 		vNeg = [ validationPair(score = score, label = False) for score in self.getSequenceScores(negatives) ]
 		return getPRC(vPos, vNeg)
 	
 	# Calculates the area under a Precision/Recall Curve.
-	def getPRCAUC(self, positives, negatives):
+	def getPRCAUC(self, seqs, labelPositive = positive, labelNegative = negative):
 		""" Calculates and returns the area under a Precision/Recall curve (PRCAUC) for sets of positive and negative sequences.
 		
-		:param positives: Positives.
-		:param negatives: Negatives.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		
 		:return: Area under the Precision/Recall curve (PRCAUC)
 		:rtype: list
 		"""
-		return getAUC(self.getPRC(positives, negatives))
+		return getAUC(self.getPRC(seqs, labelPositive = labelPositive, labelNegaitve = labelNegative))
 	
-	def plotPRC(self, positives, negatives, figsize = (8, 8), outpath = None, style = 'ggplot'):
+	def plotPRC(self, seqs, labelPositive = positive, labelNegative = negative, figsize = (8, 8), outpath = None, style = 'ggplot'):
 		""" Plots a Precision/Recall curve and either displays it in an IPython session or saves it to a file.
 		
-		:param positives: Positives.
-		:param negatives: Negatives.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		:param figsize: Tuple of figure dimensions.
 		:param outpath: Path to save generated plot to. If not set, the plot will be output to IPython.
 		:param style: Matplotlib style to use.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		:type figsize: tuple, optional
 		:type outpath: str, optional
 		:type style: str, optional
@@ -458,7 +478,8 @@ class sequenceModel:
 			from IPython.core.display import display, HTML
 			with plt.style.context(style):
 				fig = plt.figure(figsize = figsize)
-				curve = self.getPRC(positives, negatives)
+				positives, negatives = seqs.withLabel([ labelPositive, labelNegative ])
+				curve = self.getPRC(seqs, labelPositive = labelPositive, labelNegative = labelNegative)
 				plt.plot([ 0., 1. ],
 					[ len(positives) / (len(positives) + len(negatives)),
 						len(positives) / (len(positives) + len(negatives))],
@@ -484,92 +505,28 @@ class sequenceModel:
 			raise err
 	
 	# Returns validation statistics dictionary.
-	def getValidationStatistics(self, positives, negatives):
+	def getValidationStatistics(self, seqs, labelPositive = positive, labelNegative = negative):
 		""" Returns common model validation statistics (confusion matrix values; ROCAUC; PRCAUC).
 		
-		:param positives: Positives.
-		:param negatives: Negatives.
+		:param seqs: Sequences.
+		:param labelPositive: Label of positives.
+		:param labelNegative: Label of negatives.
 		
-		:type positives: sequences/sequenceStream
-		:type negatives: sequences/sequenceStream
+		:type seqs: sequences
+		:type labelPositive: sequenceLabel
+		:type labelNegative: sequenceLabel
 		
 		:return: Validation statistics
 		:rtype: list
 		"""
-		CMStats = getConfusionMatrixStatistics( self.getConfusionMatrix(positives, negatives) )
+		CMStats = getConfusionMatrixStatistics( self.getConfusionMatrix(seqs, labelPositive = labelPositive, labelNegative = labelNegative) )
 		stats = {
-			'title': 'Validation', 'positives': positives, 'negatives': negatives, 'model': self,
-			'ROC AUC': self.getROCAUC(positives, negatives),
-			'PRC AUC': self.getPRCAUC(positives, negatives),
+			'title': 'Validation', 'positives': labelPositive, 'negatives': labelNegative, 'model': self,
+			'ROC AUC': self.getROCAUC(seqs, labelPositive = labelPositive, labelNegative = labelNegative),
+			'PRC AUC': self.getPRCAUC(seqs, labelPositive = labelPositive, labelNegative = labelNegative),
 		}
 		for k in CMStats.keys():
 			stats[k] = CMStats[k]
-		return stats
-	
-	# Returns cross-validation statistics dictionary, with random training set splitting and training and testing on independent halves.
-	def getCrossValidationStatisticsRandomHalves(self, positives, negatives, nfolds):
-		cpos, cneg = positives[:], negatives[:]
-		npos, nneg = len(positives), len(negatives)
-		stats = { 'title': 'Cross-validation (random halves, %d folds)'%nfolds, 'positives': positives, 'negatives': negatives, 'model': self }
-		foldStats = []
-		for i in range(nfolds):
-			random.shuffle(cpos)
-			random.shuffle(cneg)
-			tpos, tneg = cpos[:int(npos/2)], cneg[:int(nneg/2)]
-			vpos, vneg = cpos[int(npos/2):], cneg[int(nneg/2):]
-			cvmdl = self.getTrainer()(tpos, tneg)
-			foldStats.append({
-				'ROC AUC': cvmdl.getROCAUC(vpos, vneg),
-				'PRC AUC': cvmdl.getPRCAUC(vpos, vneg),
-			})
-			CMStats = getConfusionMatrixStatistics( cvmdl.getConfusionMatrix(vpos, vneg) )
-			for k in CMStats.keys():
-				foldStats[-1][k] = CMStats[k]
-		for stat in foldStats[0].keys():
-			stats[stat] = sum(v[stat] for v in foldStats) / nfolds
-		return stats
-	
-	# Returns cross-validation statistics dictionary, with leaving each training set sequence out and classifying it.
-	def getCrossValidationStatisticsLOO(self, positives, negatives):
-		cpos, cneg = positives[:], negatives[:]
-		npos, nneg = len(positives), len(negatives)
-		vPairs = [  ]
-		TP, FP, TN, FN = 0, 0, 0, 0
-		for i, e in enumerate(positives):
-			cvmdl = self.getTrainer()(positives[:i] + positives[i+1:], negatives)
-			score = cvmdl.scoreSequence(positives[i])
-			if score > cvmdl.threshold:
-				TP += 1
-			else:
-				FN += 1
-			vPairs.append( { 'score': score, 'class': True } )
-		for i, e in enumerate(negatives):
-			cvmdl = self.getTrainer()(positives, negatives[:i] + negatives[i+1:])
-			score = cvmdl.scoreSequence(negatives[i])
-			if score > cvmdl.threshold:
-				FP += 1
-			else:
-				TN += 1
-			vPairs.append( { 'score': score, 'class': False } )
-		stats = { 'title': 'Cross-validation (leave one out)', 'positives': positives, 'negatives': negatives, 'model': self }
-		CMStats = getConfusionMatrixStatistics({ 'TP':TP, 'FP':FP, 'TN':TN, 'FN':FN })
-		for k in CMStats.keys():
-			stats[k] = CMStats[k]
-		vPairs = sorted(vPairs, key = lambda x: -x['score'])
-		TP, FP, AUC = 0, 0, 0.0
-		ROCcurve = [ { 'x': 0.0, 'y': 0.0 } ]
-		PRCcurve = [ { 'x': 0.0, 'y': 0.0 } ]
-		for vp in vPairs:
-			if vp['class']:
-				TP += 1
-			else:
-				FP += 1
-			ROCcurve .append({ 'x': (FP / len( negatives )), 'y': (TP / float(len(positives))) })
-			PRCcurve .append({ 'x': (TP / float(len(positives))), 'y': (TP / float( TP + FP )) })
-		ROCcurve.append({ 'x': 1.0, 'y':1.0 })
-		PRCcurve.append({ 'x': 1.0, 'y':(len(positives)/float(len(positives)+len(negatives))) })
-		stats['ROC AUC'] = getAUC(ROCcurve)
-		stats['PRC AUC'] = getAUC(PRCcurve)
 		return stats
 	
 	# Predicts regions inside a sequence stream using a sliding window.
@@ -632,8 +589,8 @@ class sequenceModel:
 		return self.predictSequenceStreamRegions(stream)
 	
 	# Prints out test statistics.
-	def printTestStatistics(self, positives, negatives):
-		printValidationStatistics( self.getValidationStatistics(positives, negatives) )
+	def printTestStatistics(self, seqs, labelPositive = positive, labelNegative = negative):
+		printValidationStatistics( self.getValidationStatistics(seqs, labelPositive = labelPositive, labelNegative = labelNegative) )
 
 # Uniformly weighted model
 class sequenceModelDummy(sequenceModel):
@@ -681,23 +638,29 @@ class sequenceModelLogOdds(sequenceModel):
 	
 	:param name: Model name.
 	:param features: The feature set.
-	:param trainingPositives: Positive training sequences.
-	:param trainingNegatives: Negative training sequences.
+	:param trainingSet: Training sequences.
 	:param windowSize: Window size to use.
 	:param windowStep: Window step size to use.
+	:param labelPositive: Positive training class label.
+	:param labelNegative: Negative training class label.
 	
 	:type name: str
 	:type features: features
-	:type trainingPositives: sequences
-	:type trainingNegatives: sequences
+	:type trainingSet: sequences
 	:type windowSize: int
 	:type windowStep: int
+	:type labelPositive: sequenceLabel
+	:type labelNegative: sequenceLabel
 	"""
 	
-	def __init__(self, name, features, trainingPositives, trainingNegatives, windowSize, windowStep):
+	#def __init__(self, name, features, trainingPositives, trainingNegatives, windowSize, windowStep):
+	def __init__(self, name, features, trainingSet, windowSize, windowStep, labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.threshold = 0.0
 		self.features = features
+		self.trainingSet = trainingSet
+		trainingPositives, trainingNegatives = trainingSet.withLabel([ labelPositive, labelNegative ])
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
 		self.trainingPositives, self.trainingNegatives = trainingPositives, trainingNegatives
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.weights = {}
@@ -713,12 +676,12 @@ class sequenceModelLogOdds(sequenceModel):
 			self.sortedweights.append(weight)
 	
 	def __str__(self):
-		return 'Log-odds model<Features: %s; Positives: %s; Negatives: %s>'%(str(self.features), str(self.trainingPositives), str(self.trainingNegatives))
+		return 'Log-odds model<Features: %s; Training set: %s; Positive label: %s; Negative label: %s>'%(str(self.features), str(self.trainingSet), str(self.labelPositive), str(self.labelNegative))
 	
 	def __repr__(self): return self.__str__()
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelLogOdds(self.name, self.features, pos, neg, self.windowSize, self.windowStep)
+		return lambda ts: sequenceModelLogOdds(self.name, self.features, ts, windowSize = self.windowSize, windowStep = self.windowStep, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 	
 	def scoreWindow(self, seq):
 		cdef list fv, w
@@ -731,16 +694,16 @@ class sequenceModelLogOdds(sequenceModel):
 		return ret
 
 # Trains a singular-motif PREdictor model with a given set of motifs and positive and negative training sequences.
-def trainSinglePREdictorModel(name, motifs, positives, negatives, windowSize=500, windowStep=10):
-	return sequenceModelLogOdds(name, features.getMotifSpectrum(motifs), positives, negatives, windowSize, windowStep)
+def trainSinglePREdictorModel(name, motifs, trainingSet, windowSize=500, windowStep=10, labelPositive = positive, labelNegative = negative):
+	return sequenceModelLogOdds(name, features.getMotifSpectrum(motifs), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
 
 # Trains a PREdictor model with a given set of motifs and positive and negative training sequences.
 def createDummyPREdictorModel(name, motifs, windowSize=500, windowStep=10):
 	return sequenceModelDummy(name, features.getPREdictorMotifPairSpectrum(motifs, 219), windowSize, windowStep)
 
 # Trains a PREdictor model with a given set of motifs and positive and negative training sequences.
-def trainPREdictorModel(name, motifs, positives, negatives, windowSize=500, windowStep=10):
-	return sequenceModelLogOdds(name, features.getPREdictorMotifPairSpectrum(motifs, 219), positives, negatives, windowSize, windowStep)
+def trainPREdictorModel(name, motifs, trainingSet, windowSize=500, windowStep=10, labelPositive = positive, labelNegative = negative):
+	return sequenceModelLogOdds(name, features.getPREdictorMotifPairSpectrum(motifs, 219), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
 
 class crossvalidation:
 	"""
@@ -765,47 +728,54 @@ class crossvalidation:
 	:type ratioNegPos: float, optional
 	"""
 	
-	def __init__(self, models, tpos, tneg, vpos = None, vneg = None, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
-		if vpos == None:
-			vpos = tpos
-		if vneg == None:
-			vneg = tneg
-		self.ratioNegPos = ratioNegPos
-		self.ratioTrainTest = ratioTrainTest
-		self.tpos = tpos
-		self.tneg = tneg
-		self.vpos = vpos
-		self.vneg = vneg
-		self.cvtpos = []
-		self.cvtneg = []
-		self.cvvpos = []
-		self.cvvneg = []
+	#def __init__(self, models, tpos, tneg, vpos = None, vneg = None, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
+	def __init__(self, models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
 		self.models = []
 		self.PRC = {}
 		self.ROC = {}
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.ratioNegPos = ratioNegPos
+		self.ratioTrainTest = ratioTrainTest
+		self.trainingSet = trainingSet
+		self.validationSet = validationSet
+		# Construct cross-validation set
+		if validationSet == None:
+			validationSet = trainingSet
+		tslabels = list(trainingSet.labels())
+		tsByLabel = {
+			lbl: seqs.sequences[:]
+			for lbl, seqs in zip(tslabels, trainingSet.withLabel(tslabels))
+		}
+		ntrain = int( min(len(tsByLabel[lbl]) for lbl in tsByLabel) * ratioTrainTest )
+		vpos, vneg = validationSet.withLabel([ labelPositive, labelNegative ])
+		self.cvtrain = []
+		self.cvval = []
 		self.repeats = repeats
+		print('Cross-validation')
+		print(' - Training set: %s'%str(trainingSet))
+		print(' - Validation set: %s'%str(validationSet))
+		print(' - Training sequences per class: %d'%ntrain)
+		print(' - Repeats: %d'%repeats)
 		print('Generating training/test sets')
 		for rep in range(repeats):
 			print(' - Repeat %d/%d'%(rep+1, self.repeats))
 			# Construct training set as balanced subset of shuffled sequences
-			stpos = tpos.sequences[:]
-			stneg = tneg.sequences[:]
-			random.shuffle(stpos)
-			random.shuffle(stneg)
-			ntrain = int( min(len(tpos), len(tneg)) * ratioTrainTest )
-			self.cvtpos.append( sequences(tpos.name, stpos[:ntrain]) )
-			self.cvtneg.append( sequences(tneg.name, stneg[:ntrain]) )
+			for lbl in tsByLabel:
+				random.shuffle(tsByLabel[lbl])
+			self.cvtrain.append( sequences('Training set', [
+				s
+				for lbl in tsByLabel
+				for s in tsByLabel[lbl][:ntrain]
+			]) )
 			# Construct validation set from independent sequences
-			rvpos = [ s for s in vpos if s not in self.cvtpos[-1] ]
-			rvneg = [ s for s in vneg if s not in self.cvtneg[-1] ]
+			rvpos = [ s for s in vpos if s not in self.cvtrain[-1] ]
+			rvneg = [ s for s in vneg if s not in self.cvtrain[-1] ]
 			random.shuffle(rvpos)
 			random.shuffle(rvneg)
 			nvpos = int( min(len(rvpos), len(rvneg)/ratioNegPos) )
 			nvneg = int(nvpos * ratioNegPos)
-			cvpos = sequences(vpos.name, rvpos[:nvpos])
-			cvneg = sequences(vneg.name, rvneg[:nvneg])
-			self.cvvpos.append( cvpos )
-			self.cvvneg.append( cvneg )
+			self.cvval.append( sequences('Validation set', rvpos[:nvpos] + rvneg[:nvneg]) )
+		# Cross-validate models
 		for mdl in models:
 			self.addModel(mdl)
 	
@@ -822,9 +792,9 @@ class crossvalidation:
 		print('Cross-validating - ' + mdl.name)
 		for rep in range(self.repeats):
 			print(' - Repeat %d/%d'%(rep+1, self.repeats))
-			imdl = mdl.getTrainer()(self.cvtpos[rep], self.cvtneg[rep])
-			self.PRC[mdl].append(imdl.getPRC(self.cvvpos[rep], self.cvvneg[rep]))
-			self.ROC[mdl].append(imdl.getROC(self.cvvpos[rep], self.cvvneg[rep]))
+			imdl = mdl.getTrainer()(self.cvtrain[rep])
+			self.PRC[mdl].append(imdl.getPRC(self.cvval[rep], labelPositive = self.labelPositive, labelNegative = self.labelNegative))
+			self.ROC[mdl].append(imdl.getROC(self.cvval[rep], labelPositive = self.labelPositive, labelNegative = self.labelNegative))
 		self.models.append(mdl)
 	
 	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, legendLoc = 'lower left'):
@@ -836,7 +806,8 @@ class crossvalidation:
 			with plt.style.context(style):
 				fig = plt.figure(figsize = figsize)
 				# Expected random generalization
-				ry = len(self.cvvpos[0]) / (len(self.cvvpos[0]) + len(self.cvvneg[0]))
+				positives, negatives = self.cvval[0].withLabel([ self.labelPositive, self.labelNegative ])
+				ry = len(positives) / (len(positives) + len(negatives))
 				plt.plot(
 					[ 0., 1. ],
 					[ ry, ry ],
@@ -1004,14 +975,10 @@ class crossvalidation:
 		return nctable(
 			'Configuration',
 			{
-				'Positive training set:': [ str(self.tpos) ],
-				'Negative validation set:': [ str(self.tneg) ],
-				'Positive training set:': [ str(self.vpos) ],
-				'Negative validation set:': [ str(self.vneg) ],
-				'Positive training sequences per repeat': [ len(self.cvtpos[0]) ],
-				'Negative training sequences per repeat': [ len(self.cvtneg[0]) ],
-				'Positive validation sequences per repeat': [ len(self.cvvpos[0]) ],
-				'Negative validation sequences per repeat': [ len(self.cvvneg[0]) ],
+				'Training set:': [ str(self.trainingSet) ],
+				'Validation set:': [ str(self.validationSet) ],
+				'Training sequences per repeat': [ len(self.cvtrain[0]) ],
+				'Validation sequences per repeat': [ len(self.cvval[0]) ],
 				'Repeats:': [ str(self.repeats) ],
 				'Negatives per positive:': [ str(self.ratioNegPos) ],
 				'Train/test ratio:': [ str(self.ratioTrainTest) ],
@@ -1051,11 +1018,11 @@ class crossvalidation:
 		t = self.getAUCTable()
 		return '<div>' + hdr + config._repr_html_() + t._repr_html_() +\
 			'<div style="float: left;">%s</div><div style="float: right;">%s</div></div>'%(
-				self.plotPRC(returnHTML = True, figsize = (5.5, 5.5), fontsize = 8),
-				self.plotROC(returnHTML = True, figsize = (5.5, 5.5), fontsize = 8)
+				self.plotPRC(returnHTML = True, figsize = (5., 5.), fontsize = 8),
+				self.plotROC(returnHTML = True, figsize = (5., 5.), fontsize = 8)
 			) + '</div>'
 
-def crossvalidate(models, tpos, tneg, vpos = None, vneg = None, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
-	return crossvalidation(models = models, tpos = tpos, tneg = tneg, vpos = vpos, vneg = vneg, repeats = repeats, ratioTrainTest = ratioTrainTest, ratioNegPos = ratioNegPos)
+def crossvalidate(models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
+	return crossvalidation(models = models, trainingSet = trainingSet, validationSet = validationSet, labelPositive = labelPositive, labelNegative = labelNegative, repeats = repeats, ratioTrainTest = ratioTrainTest, ratioNegPos = ratioNegPos)
 
 
