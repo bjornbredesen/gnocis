@@ -15,6 +15,7 @@ from .models import sequenceModel
 from math import log
 from .common import KLdiv
 from .ioputil import nctable
+from .common import kSpectrumIndex2NT, kSpectrumNT2Index, KLdiv
 
 
 ############################################################################
@@ -196,6 +197,15 @@ cdef class featureNetworkNode:
 		:rtype: featureNetworkNode
 		"""
 		return FNNSum(self)
+	
+	def scale(self, windowSize = -1, windowStep = -1):
+		"""
+		Returns a node yielding scaled features of this node.
+		
+		:return: Scaled node
+		:rtype: featureNetworkNode
+		"""
+		return FNNScaler(self, windowSize = windowSize, windowStep = windowStep)
 
 #---------------------
 # Node type: Motif occurrence frequencies
@@ -277,6 +287,143 @@ cdef class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
 		return FNNMotifPairOccurrenceFrequencies(motifs = self.motifs, distCut = self.distCut)
 
 #---------------------
+# Node type: k-spectrum
+
+cdef class FNNkSpectrum(featureNetworkNode):
+	"""
+	Feature set that extracts the occurrence frequencies of all unambiguous motifs of length k. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.
+	
+	:param nspectrum: Length of motifs, k, to use.
+	
+	:type nspectrum: int
+	"""
+	
+	def __init__(self, nspectrum):
+		super().__init__()
+		self.nspectrum = nspectrum
+		self.nFeatures = (1 << (2*nspectrum))
+		self.bitmask = self.nFeatures - 1
+		self.kmerByIndex = {}
+		for ki in range(self.nFeatures):
+			self.kmerByIndex[ki] = ''.join( kSpectrumIndex2NT[(ki >> ((nspectrum - 1 - x)*2)) & 3] for x in range(nspectrum) )
+	
+	def __str__(self):
+		return '%d-spectrum'%self.nspectrum
+	
+	def featureNames(self):
+		return [ self.kmerByIndex[ki] for ki in range(self.nFeatures) ]
+	
+	cpdef list get(self, sequence seq):
+		cdef bytes bseq
+		cdef unsigned char bnt
+		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
+		cdef double nAdd, fv
+		cdef list nOcc, convtable
+		cdef char c
+		nspectrum = self.nspectrum
+		bitmask = (1 << (2*nspectrum))-1
+		bseq = seq.getBytesIndexed()
+		slen = len(seq)
+		nRCShift = 2*(nspectrum-1)
+		ki, kiRC = (0, 0)
+		nAdd = 1000.0 / len(seq.seq)
+		nnt = 0
+		nOcc = [ 0.0 for _ in range(self.nFeatures) ]
+		for i in range(slen):
+			bnt = bseq[i]
+			if bnt == 0xFF:
+				ki = 0
+				kiRC = 0
+				nnt = 0
+				continue
+			ki = ( ( ki << 2 ) | bnt ) & bitmask
+			kiRC = ( kiRC >> 2 ) | ( (bnt^1) << nRCShift )
+			nnt += 1
+			if nnt >= nspectrum:
+				nOcc[ki] += nAdd
+				nOcc[kiRC] += nAdd
+		return nOcc
+	
+	def train(self, trainingSet):
+		return FNNkSpectrum(self.nspectrum)
+
+#---------------------
+# Node type: k-spectrum mismatch
+
+cdef class FNNkSpectrumMM(featureNetworkNode):
+	"""
+	Feature set that extracts the occurrence frequencies of all motifs of length k, with one mismatch allowed in an arbitrary position. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.
+	
+	:param nspectrum: Length of motifs, k, to use.
+	
+	:type nspectrum: int
+	"""
+	
+	def __init__(self, nspectrum):
+		super().__init__()
+		self.nspectrum = nspectrum
+		self.nFeatures = (1 << (2*nspectrum))
+		self.bitmask = self.nFeatures - 1
+		self.kmerByIndex = {}
+		for ki in range(self.nFeatures):
+			self.kmerByIndex[ki] = ''.join( kSpectrumIndex2NT[(ki >> ((nspectrum - 1 - x)*2)) & 3] for x in range(nspectrum) )
+	
+	def __str__(self):
+		return '%d-spectrum mismatch'%self.nspectrum
+	
+	def featureNames(self):
+		return [ '%s(1xMM)'%self.kmerByIndex[ki] for ki in range(self.nFeatures) ]
+	
+	cpdef list get(self, sequence seq):
+		cdef bytes bseq
+		cdef unsigned char bnt
+		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
+		cdef double nAdd, fv
+		cdef list nOcc, convtable
+		cdef char c
+		cdef int cki, ckiRC, bki, bkiRC, mutNTI, cmut, cmask, cmuts
+		nspectrum = self.nspectrum
+		bitmask = (1 << (2*nspectrum))-1
+		bseq = seq.getBytesIndexed()
+		slen = len(seq)
+		nRCShift = 2*(nspectrum-1)
+		ki, kiRC = (0, 0)
+		nAdd = 1000.0 / len(seq.seq)
+		nnt = 0
+		nOcc = [ 0.0 for _ in range(self.nFeatures) ]
+		for i in range(slen):
+			bnt = bseq[i]
+			if bnt == 0xFF:
+				ki = 0
+				kiRC = 0
+				nnt = 0
+				continue
+			ki = ( ( ki << 2 ) | bnt ) & bitmask
+			kiRC = ( kiRC >> 2 ) | ( (bnt^1) << nRCShift )
+			nnt += 1
+			if nnt >= nspectrum:
+				nOcc[ki] += nAdd
+				nOcc[kiRC] += nAdd
+				for mutNTI in range(nspectrum):
+					# Mutate nucleotide mutNTI
+					cmask = 0x7FFFFFFF ^ ( (0x3) << (mutNTI*2) )
+					bki = ki & cmask
+					bkiRC = kiRC & cmask
+					for cmut in range(4):
+						# Mutate with the cmut nucleotide
+						cmuts = cmut << (mutNTI*2)
+						cki = bki | cmuts
+						ckiRC = bkiRC | cmuts
+						if cki != ki:
+							nOcc[cki] += nAdd
+						if ckiRC != kiRC:
+							nOcc[ckiRC] += nAdd
+		return nOcc
+	
+	def train(self, trainingSet):
+		return FNNkSpectrumMM(self.nspectrum)
+
+#---------------------
 # Node type: Log-odds
 
 class FNNLogOdds(featureNetworkNode):
@@ -328,6 +475,57 @@ class FNNLogOdds(featureNetworkNode):
 			labelPositive = self.labelPositive,
 			labelNegative = self.labelNegative,
 			trainingSet = trainingSet)
+
+#---------------------
+# Node type: Scaler
+
+cdef class FNNScaler(featureNetworkNode):
+	
+	def __init__(self, features, windowSize = -1, windowStep = -1, vScale = None, vSub = None):
+		super().__init__()
+		self.features = features
+		self.windowSize = windowSize
+		self.windowStep = windowStep
+		self.vScale = vScale
+		self.vSub = vSub
+	
+	def __str__(self):
+		return 'Scaler<%s; Window size: %d; Window step: %d; Trained: %s>'%(str(self.features), self.windowSize, self.windowStep, 'No' if self.vScale is None else 'Yes')
+	
+	def featureNames(self):
+		return self.features.featureNames()
+	
+	cpdef list get(self, sequence seq):
+		cdef float fv
+		cdef int i
+		return [
+			fv * self.vScale[i] - self.vSub[i]
+			for i, fv
+			in enumerate(self.features.get(seq))
+		]
+	
+	def train(self, trainingSet):
+		if self.windowSize > 0 and self.windowStep > 0:
+			twin = sequences(trainingSet.name, [ w for s in trainingSet for w in s.windows(self.windowSize, self.windowStep) ])
+		else:
+			twin = trainingSet
+		tFeatures = self.features.train(trainingSet)
+		fvs = [ tFeatures.get(s) for s in trainingSet ]
+		vScale = []
+		vSub = []
+		for i, _ in enumerate(fvs[0]):
+			fv = [ fv[i] for fv in fvs ]
+			cvMin = min(fv)
+			cvMax = max(fv)
+			rng = cvMax - cvMin
+			if rng == 0.0:
+				cvScale = 0.0
+			else:
+				cvScale = 2.0 / rng
+			cvSub = cvMin * cvScale + 1.0
+			vScale.append(cvScale)
+			vSub.append(cvSub)
+		return FNNScaler(tFeatures, self.windowSize, self.windowStep, vScale, vSub)
 
 #---------------------
 # Node type: Concatenation

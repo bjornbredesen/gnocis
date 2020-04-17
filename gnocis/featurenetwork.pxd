@@ -31,5 +31,35 @@ cdef class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
 	cdef public int distCut
 	
 	cpdef list get(self, sequence seq)
+
+#---------------------
+# Node type: k-spectrum
+
+cdef class FNNkSpectrum(featureNetworkNode):
 	
+	cdef public int nspectrum, nFeatures, bitmask
+	cdef public dict kmerByIndex
+	
+	cpdef list get(self, sequence seq)
+
+#---------------------
+# Node type: k-spectrum mismatch
+
+cdef class FNNkSpectrumMM(featureNetworkNode):
+	
+	cdef public int nspectrum, nFeatures, bitmask
+	cdef public dict kmerByIndex
+	
+	cpdef list get(self, sequence seq)
+	
+#---------------------
+# Node type: Scaler
+
+cdef class FNNScaler(featureNetworkNode):
+	
+	cdef public featureNetworkNode features
+	cdef int windowSize, windowStep
+	cdef list vScale, vSub
+	
+	cpdef list get(self, sequence seq)
 
