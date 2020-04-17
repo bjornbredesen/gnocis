@@ -620,7 +620,7 @@ class sequenceModelDummy(sequenceModel):
 	def __repr__(self): return self.__str__()
 	
 	def getTrainer(self):
-		return lambda pos, neg: sequenceModelDummy(self.name, self.features, self.windowSize, self.windowStep)
+		return lambda ts: sequenceModelDummy(self.name, self.features, self.windowSize, self.windowStep)
 	
 	def scoreWindow(self, seq):
 		cdef list fv
@@ -653,7 +653,6 @@ class sequenceModelLogOdds(sequenceModel):
 	:type labelNegative: sequenceLabel
 	"""
 	
-	#def __init__(self, name, features, trainingPositives, trainingNegatives, windowSize, windowStep):
 	def __init__(self, name, features, trainingSet, windowSize, windowStep, labelPositive = positive, labelNegative = negative):
 		super().__init__(name)
 		self.threshold = 0.0

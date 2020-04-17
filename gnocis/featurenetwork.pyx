@@ -7,12 +7,9 @@
 ############################################################################
 
 from __future__ import division
-#from libcpp cimport bool
-#from .motifs cimport *
-#from .sequences cimport *
-#from .common import kSpectrumIndex2NT, kSpectrumNT2Index, KLdiv
-#from .ioputil import nctable
-#from .sequences import positive, negative
+from libcpp cimport bool
+from .motifs cimport *
+from .sequences cimport *
 from .sequences import positive, negative
 from .models import sequenceModel
 from math import log
@@ -26,24 +23,60 @@ from .ioputil import nctable
 #---------------------
 # Base class
 
-class featureNetworkNode:
+cdef class featureNetworkNode:
+	"""
+	The `feature` class is a base class for sequence network nodes.
+	"""
 	
 	def __init__(self):
 		pass
 	
-	def featureNames(self):
-		# Note: Sub-classes should implement
+	cpdef list get(self, sequence seq):
+		"""
+		Extracts the feature values from a sequence.
+		
+		:param seq: The sequence to extract the feature value from.
+		
+		:type seq: sequence
+		
+		:return: Feature values
+		:rtype: list
+		"""
 		pass
 	
-	def get(self, seq):
-		# Note: Sub-classes should implement
+	def featureNames(self):
+		"""
+		Returns feature names. Should be implemented by feature network nodes.
+		
+		:return: Feature names
+		:rtype: list
+		"""
 		pass
 	
 	def train(self, trainingSet):
-		# Note: Sub-classes should implement
+		"""
+		Recursively trains feature nodes. Should be implemented by feature network nodes.
+		
+		:param trainingSet: Training set.
+		
+		:type trainingSet: sequences
+		
+		:return: Trained copy
+		:rtype: featureNetworkNode
+		"""
 		pass
 	
 	def __add__(self, other):
+		"""
+		Concatenates feature nodes.
+		
+		:param other: Other node.
+		
+		:type other: featureNetworkNode
+		
+		:return: Concatenated nodes
+		:rtype: featureNetworkNode
+		"""
 		return FNNCat([
 			_i
 			for i in [ self, other ]
@@ -57,7 +90,12 @@ class featureNetworkNode:
 		return self.get(seq)
 	
 	def __str__(self):
-		# Note: Sub-classes should implement
+		"""
+		String representation. Should be implemented by feature network nodes.
+		
+		:return: String representation
+		:rtype: string
+		"""
 		return 'Feature network node<>'
 	
 	def __repr__(self):
@@ -119,12 +157,44 @@ class featureNetworkNode:
 	# Short-hands
 	
 	def model(self, name, windowSize, windowStep):
+		"""
+		Returns a `sequenceModel` instance with this feature network node as features.
+		
+		:param name: Model name.
+		:param windowSize: Window size.
+		:param windowStep: Window step size.
+		
+		:type name: string
+		:type windowSize: int
+		:type windowStep: int
+		
+		:return: Model
+		:rtype: sequenceModel
+		"""
 		return sequenceModelFNN(name = name, features = self, windowSize = windowSize, windowStep = windowStep)
 	
 	def logOdds(self, labelPositive = positive, labelNegative = negative):
+		"""
+		Returns a log-odds network node with this node as features.
+		
+		:param labelPositive: Label of positive training sequences.
+		:param labelNegative: Label of negative training sequences.
+		
+		:type labelPositive: sequences
+		:type labelNegative: sequences
+		
+		:return: Log-odds node
+		:rtype: featureNetworkNode
+		"""
 		return FNNLogOdds(features = self, labelPositive = labelPositive, labelNegative = labelNegative)
 	
 	def sum(self):
+		"""
+		Returns a node yielding the sum of the features of this node.
+		
+		:return: Sum node
+		:rtype: featureNetworkNode
+		"""
 		return FNNSum(self)
 
 #---------------------
@@ -154,7 +224,7 @@ class FNNMotifOccurrenceFrequencies(featureNetworkNode):
 #---------------------
 # Node type: Motif pair occurrence frequencies
 
-class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
+cdef class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
 	
 	def __init__(self, motifs, distCut = 219):
 		super().__init__()
@@ -170,9 +240,14 @@ class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
 			for _iB, mB in enumerate(self.motifs[iA:]):
 				ret.append('pairFreq(%s, %s, %d)'%(mA.name, mB.name, self.distCut))
 		return ret
-		#return [ m.name for m in self.motifs ]
 	
-	def get(self, seq):
+	cpdef list get(self, sequence seq):
+		cdef list ret
+		cdef list occs
+		cdef object m, mA, mB
+		cdef int iA, _iB, iB, firstRelevantiB
+		cdef list alloA, alloB
+		cdef motifOccurrence oA, oB
 		occs = [
 			m.find(seq) for m in self.motifs
 		]
@@ -222,8 +297,9 @@ class FNNLogOdds(featureNetworkNode):
 	
 	def get(self, seq):
 		return [
-			self.weights[i] * fv
-			for i, fv in enumerate(self.features.get(seq))
+			w * fv
+			for w, fv
+			in zip(self.weights, self.features.get(seq))
 		]
 	
 	def train(self, trainingSet):
@@ -290,7 +366,7 @@ class FNNSum(featureNetworkNode):
 		return self.inputs.featureNames()
 	
 	def get(self, seq):
-		return sum(self.inputs.get(seq))
+		return [ sum(self.inputs.get(seq)) ]
 	
 	def train(self, trainingSet):
 		return FNNSum(self.inputs.train(trainingSet))
@@ -315,5 +391,10 @@ class sequenceModelFNN(sequenceModel):
 		return lambda ts: sequenceModelFNN(self.name, self.features.train(ts), self.windowSize, self.windowStep)
 	
 	def scoreWindow(self, seq):
-		return sum(self.features.get(seq))
+		cdef list fv
+		cdef float ret = 0.0
+		fv = self.features.get(seq)
+		for i in range(len(fv)):
+			ret += fv[i]
+		return ret
 
