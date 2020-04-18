@@ -8,14 +8,25 @@
 
 from __future__ import division
 from libcpp cimport bool
-from .motifs cimport *
-from .sequences cimport *
-from .sequences import positive, negative
-from .models import sequenceModel
-from math import log
-from .common import KLdiv
-from .ioputil import nctable
+from .motifs cimport motifOccurrence
+from .sequences cimport sequence, sequences
 from .common import kSpectrumIndex2NT, kSpectrumNT2Index, KLdiv
+from .ioputil import nctable
+from .models import sequenceModel
+from .sequences import positive, negative
+from math import log
+
+#from .sequences cimport sequence, sequences
+#from __future__ import division
+#from libcpp cimport bool
+#from .motifs cimport *
+#from .sequences cimport *
+#from .sequences import positive, negative
+#from .models import sequenceModel
+#from math import log
+#from .common import KLdiv
+#from .ioputil import nctable
+#from .common import kSpectrumIndex2NT, kSpectrumNT2Index, KLdiv
 
 
 ############################################################################
@@ -26,7 +37,7 @@ from .common import kSpectrumIndex2NT, kSpectrumNT2Index, KLdiv
 
 cdef class featureNetworkNode:
 	"""
-	The `feature` class is a base class for sequence network nodes.
+	The `feature` class is a base class for feature network nodes.
 	"""
 	
 	def __init__(self):
@@ -210,7 +221,7 @@ cdef class featureNetworkNode:
 #---------------------
 # Node type: Motif occurrence frequencies
 
-class FNNMotifOccurrenceFrequencies(featureNetworkNode):
+cdef class FNNMotifOccurrenceFrequencies(featureNetworkNode):
 	
 	def __init__(self, motifs):
 		super().__init__()
@@ -222,7 +233,7 @@ class FNNMotifOccurrenceFrequencies(featureNetworkNode):
 	def featureNames(self):
 		return [ 'occFreq(%s)'%m.name for m in self.motifs ]
 	
-	def get(self, seq):
+	cpdef list get(self, sequence seq):
 		return [
 			len(m.find(seq)) * 1000.0 / len(seq.seq)
 			for m in self.motifs

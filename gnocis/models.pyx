@@ -452,7 +452,7 @@ class sequenceModel:
 		:return: Area under the Precision/Recall curve (PRCAUC)
 		:rtype: list
 		"""
-		return getAUC(self.getPRC(seqs, labelPositive = labelPositive, labelNegaitve = labelNegative))
+		return getAUC(self.getPRC(seqs, labelPositive = labelPositive, labelNegative = labelNegative))
 	
 	def plotPRC(self, seqs, labelPositive = positive, labelNegative = negative, figsize = (8, 8), outpath = None, style = 'ggplot'):
 		""" Plots a Precision/Recall curve and either displays it in an IPython session or saves it to a file.
@@ -694,7 +694,7 @@ class sequenceModelLogOdds(sequenceModel):
 
 # Trains a singular-motif PREdictor model with a given set of motifs and positive and negative training sequences.
 def trainSinglePREdictorModel(name, motifs, trainingSet, windowSize=500, windowStep=10, labelPositive = positive, labelNegative = negative):
-	return sequenceModelLogOdds(name, motifs.occFreq(), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
+	return sequenceModelLogOdds(name, features.motifSpectrum(motifs), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
 
 # Trains a PREdictor model with a given set of motifs and positive and negative training sequences.
 def createDummyPREdictorModel(name, motifs, windowSize=500, windowStep=10):
@@ -702,7 +702,7 @@ def createDummyPREdictorModel(name, motifs, windowSize=500, windowStep=10):
 
 # Trains a PREdictor model with a given set of motifs and positive and negative training sequences.
 def trainPREdictorModel(name, motifs, trainingSet, windowSize=500, windowStep=10, labelPositive = positive, labelNegative = negative):
-	return sequenceModelLogOdds(name, motifs.pairFreq(219), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
+	return sequenceModelLogOdds(name, features.motifPairSpectrum(motifs, 219), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
 
 class crossvalidation:
 	"""

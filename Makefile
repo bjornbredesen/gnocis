@@ -1,5 +1,5 @@
 
-all: gnocis/biomarkers.cpp gnocis/common.cpp gnocis/features.cpp gnocis/models.cpp gnocis/motifs.cpp gnocis/regions.cpp gnocis/sequences.cpp gnocis/validation.cpp gnocis/featurenetwork.cpp library help
+all: gnocis/biomarkers.cpp gnocis/common.cpp gnocis/features.cpp gnocis/featurenetwork.cpp gnocis/models.cpp gnocis/motifs.cpp gnocis/regions.cpp gnocis/sequences.cpp gnocis/validation.cpp library help
 
 clean:
 	rm ./gnocis/*.cpp
@@ -17,6 +17,9 @@ gnocis/common.cpp: gnocis/common.pyx
 gnocis/features.cpp: gnocis/features.pyx
 	cython -3 --cplus gnocis/features.pyx --output-file gnocis/features.cpp
 
+gnocis/featurenetwork.cpp: gnocis/featurenetwork.pyx
+	cython -3 --cplus gnocis/featurenetwork.pyx --output-file gnocis/featurenetwork.cpp
+
 gnocis/models.cpp: gnocis/models.pyx
 	cython -3 --cplus gnocis/models.pyx --output-file gnocis/models.cpp
 
@@ -31,9 +34,6 @@ gnocis/sequences.cpp: gnocis/sequences.pyx
 
 gnocis/validation.cpp: gnocis/validation.pyx
 	cython -3 --cplus gnocis/validation.pyx --output-file gnocis/validation.cpp
-
-gnocis/featurenetwork.cpp: gnocis/featurenetwork.pyx
-	cython -3 --cplus gnocis/featurenetwork.pyx --output-file gnocis/featurenetwork.cpp
 
 help:
 	rm -f docsrc/_static/gnocis_icon.png

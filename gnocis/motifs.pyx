@@ -12,8 +12,10 @@ from libcpp cimport bool
 from libc.stdlib cimport malloc, free	
 from libc.string cimport memcpy
 from .sequences cimport *
+#from .featurenetwork cimport featureNetworkNode
 from .common import nucleotides, complementaryNucleotides, getReverseComplementaryDNASequence, IUPACNucleotideCodes, IUPACNucleotideCodeSemantics
 from .features import features
+#from .featurenetwork import featureNetworkNode, FNNMotifOccurrenceFrequencies, FNNMotifPairOccurrenceFrequencies
 
 
 ############################################################################
@@ -90,13 +92,15 @@ class motifs:
 		"""
 		Generates an occurrence frequency feature set
 		"""
-		return features.motifSpectrum(self)
+		from .featurenetwork import FNNMotifOccurrenceFrequencies
+		return FNNMotifOccurrenceFrequencies(self)
 	
 	def pairFreq(self, distCut):
 		"""
 		Generates a pair occurrence frequency feature set
 		"""
-		return features.motifPairSpectrum(self, distCut)
+		from .featurenetwork import FNNMotifPairOccurrenceFrequencies
+		return FNNMotifPairOccurrenceFrequencies(self, distCut)
 	
 	@staticmethod
 	def Ringrose2003():

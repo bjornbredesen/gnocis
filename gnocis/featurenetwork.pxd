@@ -8,8 +8,7 @@
 
 from __future__ import division
 from libcpp cimport bool
-from .motifs cimport *
-from .sequences cimport *
+from .sequences cimport sequence, sequences
 
 
 ############################################################################
@@ -19,6 +18,15 @@ from .sequences cimport *
 # Base class
 
 cdef class featureNetworkNode:
+	
+	cpdef list get(self, sequence seq)
+
+#---------------------
+# Node type: Motif occurrence frequencies
+
+cdef class FNNMotifOccurrenceFrequencies(featureNetworkNode):
+	
+	cdef public object motifs
 	
 	cpdef list get(self, sequence seq)
 
