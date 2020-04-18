@@ -71,3 +71,16 @@ cdef class FNNScaler(featureNetworkNode):
 	
 	cpdef list get(self, sequence seq)
 
+#---------------------
+# Node type: Log-odds
+
+cdef class FNNLogOdds(featureNetworkNode):
+
+	cdef public featureNetworkNode features
+	cdef public object labelPositive, labelNegative
+	cdef public object trainingSet
+	cdef public list _weights
+
+	cpdef list get(self, sequence seq)
+
+

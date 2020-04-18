@@ -16,18 +16,6 @@ from .models import sequenceModel
 from .sequences import positive, negative
 from math import log
 
-#from .sequences cimport sequence, sequences
-#from __future__ import division
-#from libcpp cimport bool
-#from .motifs cimport *
-#from .sequences cimport *
-#from .sequences import positive, negative
-#from .models import sequenceModel
-#from math import log
-#from .common import KLdiv
-#from .ioputil import nctable
-#from .common import kSpectrumIndex2NT, kSpectrumNT2Index, KLdiv
-
 
 ############################################################################
 # Feature network
@@ -64,6 +52,15 @@ cdef class featureNetworkNode:
 		:rtype: list
 		"""
 		pass
+	
+	def weights(self):
+		"""
+		Returns a table of weights.
+		
+		:return: Weight table
+		:rtype: nctable
+		"""
+		return None
 	
 	def train(self, trainingSet):
 		"""
@@ -437,14 +434,14 @@ cdef class FNNkSpectrumMM(featureNetworkNode):
 #---------------------
 # Node type: Log-odds
 
-class FNNLogOdds(featureNetworkNode):
+cdef class FNNLogOdds(featureNetworkNode):
 	
 	def __init__(self, features, weights = None, labelPositive = positive, labelNegative = negative, trainingSet = None):
 		super().__init__()
 		self.features = features
 		self.labelPositive = labelPositive
 		self.labelNegative = labelNegative
-		self.weights = weights
+		self._weights = weights
 		self.trainingSet = trainingSet
 	
 	def __str__(self):
@@ -453,12 +450,27 @@ class FNNLogOdds(featureNetworkNode):
 	def featureNames(self):
 		return self.features.featureNames()
 	
-	def get(self, seq):
+	cpdef list get(self, sequence seq):
+		cdef float w, fv
 		return [
 			w * fv
 			for w, fv
-			in zip(self.weights, self.features.get(seq))
+			in zip(self._weights, self.features.get(seq))
 		]
+	
+	def weights(self):
+		return nctable(
+			'Weights: ' + str(self),
+			{
+				**{
+					'Feature': self.featureNames()
+				},
+				**{
+					'Weight': self._weights
+				}
+			},
+			align = { 'Feature': 'l' }
+		)
 	
 	def train(self, trainingSet):
 		trainingPositives, trainingNegatives = trainingSet.withLabel([
@@ -514,6 +526,9 @@ cdef class FNNScaler(featureNetworkNode):
 			for i, fv
 			in enumerate(self.features.get(seq))
 		]
+	
+	def weights(self):
+		return self.features.weights()
 	
 	def train(self, trainingSet):
 		if self.windowSize > 0 and self.windowStep > 0:
@@ -577,6 +592,9 @@ class FNNSum(featureNetworkNode):
 	def get(self, seq):
 		return [ sum(self.inputs.get(seq)) ]
 	
+	def weights(self):
+		return self.inputs.weights()
+	
 	def train(self, trainingSet):
 		return FNNSum(self.inputs.train(trainingSet))
 
@@ -592,9 +610,11 @@ class sequenceModelFNN(sequenceModel):
 		self.windowSize, self.windowStep = windowSize, windowStep
 	
 	def __str__(self):
-		return 'Model<Features: %s>'%(str(self.features))
+		return 'Model<%s>'%(str(self.features))
 	
 	def __repr__(self): return self.__str__()
+	
+	def weights(self): return self.features.weights()
 	
 	def getTrainer(self):
 		return lambda ts: sequenceModelFNN(self.name, self.features.train(ts), self.windowSize, self.windowStep)
