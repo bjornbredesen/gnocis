@@ -31,7 +31,7 @@ cdef class featureNetworkNode:
 	def __init__(self):
 		pass
 	
-	cpdef list get(self, sequence seq):
+	cpdef list get(self, sequences seq):
 		"""
 		Extracts the feature values from a sequence.
 		
@@ -59,6 +59,24 @@ cdef class featureNetworkNode:
 		
 		:return: Weight table
 		:rtype: nctable
+		"""
+		return None
+	
+	def windowSize(self):
+		"""
+		Returns window size.
+		
+		:return: Window size
+		:rtype: int
+		"""
+		return None
+	
+	def windowStep(self):
+		"""
+		Returns window step size.
+		
+		:return: Window step size
+		:rtype: int
 		"""
 		return None
 	
@@ -111,16 +129,16 @@ cdef class featureNetworkNode:
 		return self.__str__()
 	
 	def table(self, seqs):
-		fv = [
-			self.get(s)
+		fvs = [
+			self.get(sequences('', [ s ]))
 			for s in seqs
 		]
 		_dict = {
 			**{
-				'Seq.': [ s.name for s in seqs ],
+				'Seq.': [ s.name for s, sfvs in zip(seqs, fvs) for fv in sfvs ],
 			},
 			**{
-				fName: [ fv[sI][fI] for sI in range(len(seqs)) ]
+				fName: [ fv[fI] for s, sfvs in zip(seqs, fvs) for fv in sfvs ]
 				for fI, fName in enumerate(self.featureNames())
 			},
 		}
@@ -165,7 +183,7 @@ cdef class featureNetworkNode:
 	#-----------------------
 	# Short-hands
 	
-	def model(self, name, windowSize, windowStep):
+	def model(self, name, windowSize = -1, windowStep = -1):
 		"""
 		Returns a `sequenceModel` instance with this feature network node as features.
 		
@@ -206,14 +224,38 @@ cdef class featureNetworkNode:
 		"""
 		return FNNSum(self)
 	
-	def scale(self, windowSize = -1, windowStep = -1):
+	def square(self):
+		"""
+		Returns a node yielding square of features of this node.
+		
+		:return: Squared node
+		:rtype: featureNetworkNode
+		"""
+		return FNNSquare(self)
+	
+	def scale(self):
 		"""
 		Returns a node yielding scaled features of this node.
 		
 		:return: Scaled node
 		:rtype: featureNetworkNode
 		"""
-		return FNNScaler(self, windowSize = windowSize, windowStep = windowStep)
+		return FNNScaler(self)
+	
+	def window(self, size, step):
+		"""
+		Returns a node yielding a sliding window node with this as input.
+		
+		:param size: Window size.
+		:param step: Window step size.
+		
+		:type size: int
+		:type step: int
+		
+		:return: Sliding window node
+		:rtype: featureNetworkNode
+		"""
+		return FNNWindow(self, windowSize = size, windowStep = step)
 
 #---------------------
 # Node type: Motif occurrence frequencies
@@ -230,11 +272,14 @@ cdef class FNNMotifOccurrenceFrequencies(featureNetworkNode):
 	def featureNames(self):
 		return [ 'occFreq(%s)'%m.name for m in self.motifs ]
 	
-	cpdef list get(self, sequence seq):
+	cpdef list getSeqVec(self, sequence seq):
 		return [
 			len(m.find(seq)) * 1000.0 / len(seq.seq)
 			for m in self.motifs
 		]
+	
+	cpdef list get(self, sequences seq):
+		return [ self.getSeqVec(s) for s in seq ]
 	
 	def train(self, trainingSet):
 		return FNNMotifOccurrenceFrequencies(self.motifs)
@@ -259,7 +304,7 @@ cdef class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
 				ret.append('pairFreq(%s, %s, %d)'%(mA.name, mB.name, self.distCut))
 		return ret
 	
-	cpdef list get(self, sequence seq):
+	cpdef list getSeqVec(self, sequence seq):
 		cdef list ret
 		cdef list occs
 		cdef object m, mA, mB
@@ -291,6 +336,9 @@ cdef class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
 				ret.append( nPairOcc * 1000.0 / len(seq.seq) )
 		return ret
 	
+	cpdef list get(self, sequences seq):
+		return [ self.getSeqVec(s) for s in seq ]
+	
 	def train(self, trainingSet):
 		return FNNMotifPairOccurrenceFrequencies(motifs = self.motifs, distCut = self.distCut)
 
@@ -321,7 +369,7 @@ cdef class FNNkSpectrum(featureNetworkNode):
 	def featureNames(self):
 		return [ self.kmerByIndex[ki] for ki in range(self.nFeatures) ]
 	
-	cpdef list get(self, sequence seq):
+	cpdef list getSeqVec(self, sequence seq):
 		cdef bytes bseq
 		cdef unsigned char bnt
 		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
@@ -351,6 +399,9 @@ cdef class FNNkSpectrum(featureNetworkNode):
 				nOcc[ki] += nAdd
 				nOcc[kiRC] += nAdd
 		return nOcc
+	
+	cpdef list get(self, sequences seq):
+		return [ self.getSeqVec(s) for s in seq ]
 	
 	def train(self, trainingSet):
 		return FNNkSpectrum(self.nspectrum)
@@ -382,7 +433,7 @@ cdef class FNNkSpectrumMM(featureNetworkNode):
 	def featureNames(self):
 		return [ '%s(1xMM)'%self.kmerByIndex[ki] for ki in range(self.nFeatures) ]
 	
-	cpdef list get(self, sequence seq):
+	cpdef list getSeqVec(self, sequence seq):
 		cdef bytes bseq
 		cdef unsigned char bnt
 		cdef int ki, kiRC, nnt, nspectrum, bitmask, nRCShift, slen
@@ -428,6 +479,9 @@ cdef class FNNkSpectrumMM(featureNetworkNode):
 							nOcc[ckiRC] += nAdd
 		return nOcc
 	
+	cpdef list get(self, sequences seq):
+		return [ self.getSeqVec(s) for s in seq ]
+	
 	def train(self, trainingSet):
 		return FNNkSpectrumMM(self.nspectrum)
 
@@ -450,12 +504,16 @@ cdef class FNNLogOdds(featureNetworkNode):
 	def featureNames(self):
 		return self.features.featureNames()
 	
-	cpdef list get(self, sequence seq):
+	cpdef list get(self, sequences seq):
 		cdef float w, fv
+		cdef list fvs
 		return [
-			w * fv
-			for w, fv
-			in zip(self._weights, self.features.get(seq))
+			[
+				w * fv
+				for w, fv
+				in zip(self._weights, fvs)
+			]
+			for s, fvs in zip(seq, self.features.get(seq))
 		]
 	
 	def weights(self):
@@ -472,12 +530,18 @@ cdef class FNNLogOdds(featureNetworkNode):
 			align = { 'Feature': 'l' }
 		)
 	
+	def windowSize(self):
+		return self.features.windowSize()
+	
+	def windowStep(self):
+		return self.features.windowStep()
+	
 	def train(self, trainingSet):
 		trainingPositives, trainingNegatives = trainingSet.withLabel([
 			self.labelPositive, self.labelNegative ])
 		tFeatures = self.features.train(trainingSet)
-		fvPos = [ tFeatures.get(s) for s in trainingPositives ]
-		fvNeg = [ tFeatures.get(s) for s in trainingNegatives ]
+		fvPos = tFeatures.get(trainingPositives)
+		fvNeg = tFeatures.get(trainingNegatives)
 		assert(len(fvPos) > 0)
 		assert(len(fvPos[0]) > 0)
 		assert(len(fvNeg) > 0)
@@ -504,39 +568,43 @@ cdef class FNNLogOdds(featureNetworkNode):
 
 cdef class FNNScaler(featureNetworkNode):
 	
-	def __init__(self, features, windowSize = -1, windowStep = -1, vScale = None, vSub = None):
+	def __init__(self, features, vScale = None, vSub = None):
 		super().__init__()
 		self.features = features
-		self.windowSize = windowSize
-		self.windowStep = windowStep
 		self.vScale = vScale
 		self.vSub = vSub
 	
 	def __str__(self):
-		return 'Scaler<%s; Window size: %d; Window step: %d; Trained: %s>'%(str(self.features), self.windowSize, self.windowStep, 'No' if self.vScale is None else 'Yes')
+		return 'Scaler<%s; Trained: %s>'%(str(self.features), 'No' if self.vScale is None else 'Yes')
 	
 	def featureNames(self):
 		return self.features.featureNames()
 	
-	cpdef list get(self, sequence seq):
+	cpdef list get(self, sequences seq):
+		cdef list sfv
 		cdef float fv
 		cdef int i
 		return [
-			fv * self.vScale[i] - self.vSub[i]
-			for i, fv
-			in enumerate(self.features.get(seq))
+			[
+				fv * self.vScale[i] - self.vSub[i]
+				for i, fv
+				in enumerate(sfv)
+			]
+			for sfv in self.features.get(seq)
 		]
 	
 	def weights(self):
 		return self.features.weights()
 	
+	def windowSize(self):
+		return self.features.windowSize()
+	
+	def windowStep(self):
+		return self.features.windowStep()
+	
 	def train(self, trainingSet):
-		if self.windowSize > 0 and self.windowStep > 0:
-			twin = sequences(trainingSet.name, [ w for s in trainingSet for w in s.windows(self.windowSize, self.windowStep) ])
-		else:
-			twin = trainingSet
 		tFeatures = self.features.train(trainingSet)
-		fvs = [ tFeatures.get(s) for s in trainingSet ]
+		fvs = tFeatures.get(trainingSet)
 		vScale = []
 		vSub = []
 		for i, _ in enumerate(fvs[0]):
@@ -551,12 +619,12 @@ cdef class FNNScaler(featureNetworkNode):
 			cvSub = cvMin * cvScale + 1.0
 			vScale.append(cvScale)
 			vSub.append(cvSub)
-		return FNNScaler(tFeatures, self.windowSize, self.windowStep, vScale, vSub)
+		return FNNScaler(tFeatures, vScale, vSub)
 
 #---------------------
 # Node type: Concatenation
 
-class FNNCat(featureNetworkNode):
+cdef class FNNCat(featureNetworkNode):
 	
 	def __init__(self, inputs):
 		super().__init__()
@@ -568,8 +636,22 @@ class FNNCat(featureNetworkNode):
 	def featureNames(self):
 		return [ n for i in self.inputs for n in i.featureNames() ]
 	
-	def get(self, seq):
-		return [ v for i in self.inputs for v in i.get(seq) ]
+	cpdef list get(self, sequences seq):
+		cdef list I
+		cdef featureNetworkNode i
+		cdef int sI, iI
+		cdef float v
+		I = [
+			i.get(seq) for i in self.inputs
+		]
+		return [
+			[
+				v
+				for iI in range(len(self.inputs))
+				for v in I[iI][sI]
+			]
+			for sI in range(len(seq))
+		]
 	
 	def train(self, trainingSet):
 		return FNNCat([ i.train(trainingSet) for i in self.inputs ])
@@ -590,23 +672,114 @@ class FNNSum(featureNetworkNode):
 		return self.inputs.featureNames()
 	
 	def get(self, seq):
-		return [ sum(self.inputs.get(seq)) ]
+		fvs = self.inputs.get(seq)
+		return [
+			[ sum(sfv) ]
+			for sfv in fvs
+		]
 	
 	def weights(self):
 		return self.inputs.weights()
 	
+	def windowSize(self):
+		return self.inputs.windowSize()
+	
+	def windowStep(self):
+		return self.inputs.windowStep()
+	
 	def train(self, trainingSet):
 		return FNNSum(self.inputs.train(trainingSet))
+
+#---------------------
+# Node type: Square
+
+class FNNSquare(featureNetworkNode):
+	
+	def __init__(self, inputs):
+		super().__init__()
+		self.inputs = inputs
+	
+	def __str__(self):
+		return 'Square<%s>'%(str(self.inputs))
+	
+	def featureNames(self):
+		names = self.inputs.featureNames()
+		return [
+			'%s * %s'%(vA, vB)
+			for iA, vA in enumerate(names)
+			for vB in names[:iA+1]
+		]
+	
+	def get(self, seq):
+		fvs = self.inputs.get(seq)
+		return [
+			[
+				vA * vB
+				for iA, vA in enumerate(sfv)
+				for vB in sfv[:iA+1]
+			]
+			for sfv in fvs
+		]
+	
+	def weights(self):
+		return self.inputs.weights()
+	
+	def windowSize(self):
+		return self.inputs.winSize
+	
+	def windowStep(self):
+		return self.inputs.winStep
+	
+	def train(self, trainingSet):
+		return FNNSquare(self.inputs.train(trainingSet))
+
+#---------------------
+# Node type: Sum
+
+class FNNWindow(featureNetworkNode):
+	
+	def __init__(self, inputs, windowSize, windowStep):
+		super().__init__()
+		self.inputs = inputs
+		self.winSize = windowSize
+		self.winStep = windowStep
+	
+	def __str__(self):
+		return 'Sliding window<%s; Window size: %d; Window step size: %d>'%(str(self.inputs), self.winSize, self.winStep)
+	
+	def featureNames(self):
+		return self.inputs.featureNames()
+	
+	def get(self, seq):
+		win = sequences(seq.name, [ w for s in seq for w in s.windows(self.winSize, self.winStep) ])
+		return self.inputs.get(win)
+	
+	def weights(self):
+		return self.inputs.weights()
+	
+	def windowSize(self):
+		return self.winSize
+	
+	def windowStep(self):
+		return self.winStep
+	
+	def train(self, trainingSet):
+		twin = sequences(trainingSet.name, [ w for s in trainingSet for w in s.windows(self.winSize, self.winStep) ])
+		return FNNWindow(self.inputs.train(twin), windowSize = self.winSize, windowStep = self.winStep)
 
 #---------------------
 # Sequence model
 
 class sequenceModelFNN(sequenceModel):
 	
-	def __init__(self, name, features, windowSize, windowStep):
+	def __init__(self, name, features, windowSize = -1, windowStep = -1):
 		super().__init__(name)
 		self.threshold = 0.0
 		self.features = features
+		if windowSize == -1:
+			windowSize = features.windowSize()
+		if windowStep == -1:
+			windowStep = features.windowStep()
 		self.windowSize, self.windowStep = windowSize, windowStep
 	
 	def __str__(self):
@@ -620,10 +793,12 @@ class sequenceModelFNN(sequenceModel):
 		return lambda ts: sequenceModelFNN(self.name, self.features.train(ts), self.windowSize, self.windowStep)
 	
 	def scoreWindow(self, seq):
-		cdef list fv
+		cdef list fvs, fv
 		cdef float ret = 0.0
-		fv = self.features.get(seq)
-		for i in range(len(fv)):
-			ret += fv[i]
+		fvs = self.features.get(sequences('', [ seq ]))
+		ret = max([
+			sum(fv)
+			for fv in fvs
+		])
 		return ret
 
