@@ -52,8 +52,9 @@
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">RandomForestClassifier</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">Lasso</span>
+<span class="kn">from</span> <span class="nn">.featurenetwork</span> <span class="k">import</span> <span class="n">baseModel</span>
 
-<span class="c1"># Support Vector Machines</span>
+<span class="c1"># Support Vector Machines - Sequence model</span>
 <div class="viewcode-block" id="sequenceModelSVM"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.sequenceModelSVM">[docs]</a><span class="k">class</span> <span class="nc">sequenceModelSVM</span><span class="p">(</span><span class="n">sequenceModel</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	The `sequenceModelSVM` class trains a Support Vector Machine (SVM) using scikit-learn.</span>
@@ -110,7 +111,7 @@
 	
 	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
-<span class="c1"># Random Forest</span>
+<span class="c1"># Random Forest - Sequence model</span>
 <div class="viewcode-block" id="sequenceModelRF"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.sequenceModelRF">[docs]</a><span class="k">class</span> <span class="nc">sequenceModelRF</span><span class="p">(</span><span class="n">sequenceModel</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	The `sequenceModelRF` class trains a Random Forest (RF) model using scikit-learn.</span>
@@ -222,6 +223,91 @@
 		<span class="k">return</span> <span class="s1">&#39;Lasso&lt;Features: </span><span class="si">%s</span><span class="s1">; Training set: </span><span class="si">%s</span><span class="s1">; Positive label: </span><span class="si">%s</span><span class="s1">; Negative label: </span><span class="si">%s</span><span class="s1">; Alpha: </span><span class="si">%f</span><span class="s1">&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainingSet</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
 	
 	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+<span class="c1"># Support Vector Machines - Base model</span>
+<div class="viewcode-block" id="SVM"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.SVM">[docs]</a><span class="k">class</span> <span class="nc">SVM</span><span class="p">(</span><span class="n">baseModel</span><span class="p">):</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">labelPositive</span> <span class="o">=</span> <span class="n">positive</span><span class="p">,</span> <span class="n">labelNegative</span> <span class="o">=</span> <span class="n">negative</span><span class="p">,</span> <span class="n">kDegree</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="mi">4</span><span class="p">):</span>
+		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span> <span class="o">=</span> <span class="n">labelPositive</span><span class="p">,</span> <span class="n">labelNegative</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span> <span class="o">=</span> <span class="n">labelNegative</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kDegree</span> <span class="o">=</span> <span class="n">C</span><span class="p">,</span> <span class="n">kDegree</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mdl</span> <span class="o">=</span> <span class="n">model</span>
+	
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="s1">&#39;Support Vector Machine&lt;C: </span><span class="si">%s</span><span class="s1">; Kernel degree: </span><span class="si">%s</span><span class="s1">; Positive label: </span><span class="si">%s</span><span class="s1">; Negative label: </span><span class="si">%s</span><span class="s1">&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kDegree</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span><span class="p">))</span>
+	
+<div class="viewcode-block" id="SVM.score"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.SVM.score">[docs]</a>	<span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featureVectors</span><span class="p">):</span>
+		<span class="k">return</span> <span class="p">[</span>
+			<span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">decision_function</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fv</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span>
+			<span class="k">for</span> <span class="n">fv</span> <span class="ow">in</span> <span class="n">featureVectors</span>
+		<span class="p">]</span></div>
+	
+<div class="viewcode-block" id="SVM.train"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.SVM.train">[docs]</a>	<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainingSet</span><span class="p">):</span>
+		<span class="n">fvPos</span> <span class="o">=</span> <span class="n">trainingSet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">]</span>
+		<span class="n">fvNeg</span> <span class="o">=</span> <span class="n">trainingSet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span><span class="p">]</span>
+		<span class="n">cP</span> <span class="o">=</span> <span class="p">[</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fvPos</span><span class="p">))</span> <span class="p">]</span>
+		<span class="n">cN</span> <span class="o">=</span> <span class="p">[</span> <span class="o">-</span><span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fvNeg</span><span class="p">))</span> <span class="p">]</span>
+		<span class="n">mdl</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">(</span><span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">kernel</span> <span class="o">=</span> <span class="s1">&#39;poly&#39;</span><span class="p">,</span> <span class="n">degree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kDegree</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+		<span class="n">mdl</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fvPos</span><span class="o">+</span><span class="n">fvNeg</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cP</span><span class="o">+</span><span class="n">cN</span><span class="p">)</span> <span class="p">)</span>
+		<span class="k">return</span> <span class="n">SVM</span><span class="p">(</span>
+			<span class="n">model</span> <span class="o">=</span> <span class="n">mdl</span><span class="p">,</span>
+			<span class="n">labelPositive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">,</span>
+			<span class="n">labelNegative</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span><span class="p">,</span>
+			<span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">,</span>
+			<span class="n">kDegree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kDegree</span><span class="p">)</span></div>
+	
+<div class="viewcode-block" id="SVM.weights"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.SVM.weights">[docs]</a>	<span class="k">def</span> <span class="nf">weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featureNames</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">nctable</span><span class="p">(</span>
+			<span class="s1">&#39;Weights: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+			<span class="p">{</span>
+				<span class="o">**</span><span class="p">{</span>
+					<span class="s1">&#39;Feature&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">featureNames</span>
+				<span class="p">},</span>
+				<span class="o">**</span><span class="p">{</span>
+					<span class="s1">&#39;Weight&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span>
+				<span class="p">}</span>
+			<span class="p">},</span>
+			<span class="n">align</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;Feature&#39;</span><span class="p">:</span> <span class="s1">&#39;l&#39;</span> <span class="p">}</span>
+		<span class="p">)</span></div></div>
+
+<span class="c1"># Random Forest - Base model</span>
+<div class="viewcode-block" id="RF"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.RF">[docs]</a><span class="k">class</span> <span class="nc">RF</span><span class="p">(</span><span class="n">baseModel</span><span class="p">):</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">labelPositive</span> <span class="o">=</span> <span class="n">positive</span><span class="p">,</span> <span class="n">labelNegative</span> <span class="o">=</span> <span class="n">negative</span><span class="p">,</span> <span class="n">nTrees</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">maxDepth</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span> <span class="o">=</span> <span class="n">labelPositive</span><span class="p">,</span> <span class="n">labelNegative</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span> <span class="o">=</span> <span class="n">labelNegative</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">nTrees</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxDepth</span> <span class="o">=</span> <span class="n">nTrees</span><span class="p">,</span> <span class="n">maxDepth</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mdl</span> <span class="o">=</span> <span class="n">model</span>
+	
+	<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="s1">&#39;Random Forest&lt;Trees: </span><span class="si">%s</span><span class="s1">; Max. depth: </span><span class="si">%s</span><span class="s1">; Positive label: </span><span class="si">%s</span><span class="s1">; Negative label: </span><span class="si">%s</span><span class="s1">&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nTrees</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxDepth</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span><span class="p">))</span>
+	
+<div class="viewcode-block" id="RF.score"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.RF.score">[docs]</a>	<span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featureVectors</span><span class="p">):</span>
+		<span class="k">return</span> <span class="p">[</span>
+			<span class="c1">#[ self.mdl.decision_function(np.array([fv]))[0] ]</span>
+			<span class="p">[</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fv</span><span class="p">]))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span>
+			<span class="k">for</span> <span class="n">fv</span> <span class="ow">in</span> <span class="n">featureVectors</span>
+		<span class="p">]</span></div>
+	
+<div class="viewcode-block" id="RF.train"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.RF.train">[docs]</a>	<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainingSet</span><span class="p">):</span>
+		<span class="n">fvPos</span> <span class="o">=</span> <span class="n">trainingSet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">]</span>
+		<span class="n">fvNeg</span> <span class="o">=</span> <span class="n">trainingSet</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span><span class="p">]</span>
+		<span class="n">cP</span> <span class="o">=</span> <span class="p">[</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fvPos</span><span class="p">))</span> <span class="p">]</span>
+		<span class="n">cN</span> <span class="o">=</span> <span class="p">[</span> <span class="o">-</span><span class="mf">1.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fvNeg</span><span class="p">))</span> <span class="p">]</span>
+		<span class="c1">#mdl = svm.SVC(C = self.C, kernel = &#39;poly&#39;, degree = self.kDegree, gamma = &#39;auto&#39;)</span>
+		<span class="n">mdl</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nTrees</span><span class="p">,</span> <span class="n">max_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxDepth</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">mdl</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fvPos</span><span class="o">+</span><span class="n">fvNeg</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cP</span><span class="o">+</span><span class="n">cN</span><span class="p">)</span> <span class="p">)</span>
+		<span class="k">return</span> <span class="n">RF</span><span class="p">(</span>
+			<span class="n">model</span> <span class="o">=</span> <span class="n">mdl</span><span class="p">,</span>
+			<span class="n">labelPositive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelPositive</span><span class="p">,</span>
+			<span class="n">labelNegative</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelNegative</span><span class="p">,</span>
+			<span class="n">nTrees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nTrees</span><span class="p">,</span>
+			<span class="n">maxDepth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxDepth</span><span class="p">)</span></div>
+	
+<div class="viewcode-block" id="RF.weights"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.RF.weights">[docs]</a>	<span class="k">def</span> <span class="nf">weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featureNames</span><span class="p">):</span>
+		<span class="k">return</span> <span class="kc">None</span></div></div>
 
 
 </pre></div>

@@ -107,7 +107,7 @@ class motifs:
 		"""
 		Preset for generating the Ringrose et al. (2003) motif set.
 		"""
-		return motifs('Ringrose et al. 2003 + GTGT', [
+		return motifs('Ringrose et al. 2003', [
 				IUPACMotif('En', 'GSNMACGCCCC', 1),
 				IUPACMotif('G10', 'GAGAGAGAGA', 1),
 				IUPACMotif('GAF', 'GAGAG', 0),

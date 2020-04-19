@@ -2933,6 +2933,48 @@
 <div class="section" id="module-gnocis.sklearnModels">
 <span id="gnocis-sklearnmodels-module"></span><h2>gnocis.sklearnModels module<a class="headerlink" href="#module-gnocis.sklearnModels" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
+<dt id="gnocis.sklearnModels.RF">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">RF</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em>, <em class="sig-param">nTrees=100</em>, <em class="sig-param">maxDepth=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#RF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.RF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.featurenetwork.baseModel</span></code></p>
+<dl class="method">
+<dt id="gnocis.sklearnModels.RF.score">
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param">featureVectors</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#RF.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.RF.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.RF.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">trainingSet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#RF.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.RF.train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.RF.weights">
+<code class="sig-name descname">weights</code><span class="sig-paren">(</span><em class="sig-param">featureNames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#RF.weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.RF.weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gnocis.sklearnModels.SVM">
+<em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">SVM</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em>, <em class="sig-param">kDegree=1</em>, <em class="sig-param">C=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#SVM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.SVM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.featurenetwork.baseModel</span></code></p>
+<dl class="method">
+<dt id="gnocis.sklearnModels.SVM.score">
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param">featureVectors</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#SVM.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.SVM.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.SVM.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">trainingSet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#SVM.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.SVM.train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gnocis.sklearnModels.SVM.weights">
+<code class="sig-name descname">weights</code><span class="sig-paren">(</span><em class="sig-param">featureNames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#SVM.weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.SVM.weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="gnocis.sklearnModels.sequenceModelLasso">
 <em class="property">class </em><code class="sig-prename descclassname">gnocis.sklearnModels.</code><code class="sig-name descname">sequenceModelLasso</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">features</em>, <em class="sig-param">trainingSet</em>, <em class="sig-param">windowSize</em>, <em class="sig-param">windowStep</em>, <em class="sig-param">alpha=1.0</em>, <em class="sig-param">labelPositive=Sequence label&lt;Positive; value = 1.0&gt;</em>, <em class="sig-param">labelNegative=Sequence label&lt;Negative; value = -1.0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnocis/sklearnModels.html#sequenceModelLasso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnocis.sklearnModels.sequenceModelLasso" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gnocis.models.sequenceModel</span></code></a></p>

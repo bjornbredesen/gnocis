@@ -15,8 +15,9 @@ from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
 import random
 from sklearn.linear_model import Lasso
+from .featurenetwork import baseModel
 
-# Support Vector Machines
+# Support Vector Machines - Sequence model
 class sequenceModelSVM(sequenceModel):
 	"""
 	The `sequenceModelSVM` class trains a Support Vector Machine (SVM) using scikit-learn.
@@ -73,7 +74,7 @@ class sequenceModelSVM(sequenceModel):
 	
 	def __repr__(self): return self.__str__()
 
-# Random Forest
+# Random Forest - Sequence model
 class sequenceModelRF(sequenceModel):
 	"""
 	The `sequenceModelRF` class trains a Random Forest (RF) model using scikit-learn.
@@ -185,5 +186,90 @@ class sequenceModelLasso(sequenceModel):
 		return 'Lasso<Features: %s; Training set: %s; Positive label: %s; Negative label: %s; Alpha: %f>'%(str(self.features), str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.alpha)
 	
 	def __repr__(self): return self.__str__()
+
+# Support Vector Machines - Base model
+class SVM(baseModel):
+	
+	def __init__(self, model = None, labelPositive = positive, labelNegative = negative, kDegree = 1, C = 4):
+		super().__init__()
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.labelNegative = labelNegative
+		self.C, self.kDegree = C, kDegree
+		self.mdl = model
+	
+	def __str__(self):
+		return 'Support Vector Machine<C: %s; Kernel degree: %s; Positive label: %s; Negative label: %s>'%(str(self.C), str(self.kDegree), str(self.labelPositive), str(self.labelNegative))
+	
+	def score(self, featureVectors):
+		return [
+			[ self.mdl.decision_function(np.array([fv]))[0] ]
+			for fv in featureVectors
+		]
+	
+	def train(self, trainingSet):
+		fvPos = trainingSet[self.labelPositive]
+		fvNeg = trainingSet[self.labelNegative]
+		cP = [ 1.0 for _ in range(len(fvPos)) ]
+		cN = [ -1.0 for _ in range(len(fvNeg)) ]
+		mdl = svm.SVC(C = self.C, kernel = 'poly', degree = self.kDegree, gamma = 'auto')
+		mdl.fit( np.array(fvPos+fvNeg), np.array(cP+cN) )
+		return SVM(
+			model = mdl,
+			labelPositive = self.labelPositive,
+			labelNegative = self.labelNegative,
+			C = self.C,
+			kDegree = self.kDegree)
+	
+	def weights(self, featureNames):
+		return nctable(
+			'Weights: ' + str(self),
+			{
+				**{
+					'Feature': self.featureNames
+				},
+				**{
+					'Weight': self._weights
+				}
+			},
+			align = { 'Feature': 'l' }
+		)
+
+# Random Forest - Base model
+class RF(baseModel):
+	
+	def __init__(self, model = None, labelPositive = positive, labelNegative = negative, nTrees = 100, maxDepth = None):
+		super().__init__()
+		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		self.labelNegative = labelNegative
+		self.nTrees, self.maxDepth = nTrees, maxDepth
+		self.mdl = model
+	
+	def __str__(self):
+		return 'Random Forest<Trees: %s; Max. depth: %s; Positive label: %s; Negative label: %s>'%(str(self.nTrees), str(self.maxDepth), str(self.labelPositive), str(self.labelNegative))
+	
+	def score(self, featureVectors):
+		return [
+			#[ self.mdl.decision_function(np.array([fv]))[0] ]
+			[ float(self.mdl.predict_proba(np.array([fv]))[0][1]) ]
+			for fv in featureVectors
+		]
+	
+	def train(self, trainingSet):
+		fvPos = trainingSet[self.labelPositive]
+		fvNeg = trainingSet[self.labelNegative]
+		cP = [ 1.0 for _ in range(len(fvPos)) ]
+		cN = [ -1.0 for _ in range(len(fvNeg)) ]
+		#mdl = svm.SVC(C = self.C, kernel = 'poly', degree = self.kDegree, gamma = 'auto')
+		mdl = RandomForestClassifier(n_estimators = self.nTrees, max_depth = self.maxDepth, random_state = 0)
+		mdl.fit( np.array(fvPos+fvNeg), np.array(cP+cN) )
+		return RF(
+			model = mdl,
+			labelPositive = self.labelPositive,
+			labelNegative = self.labelNegative,
+			nTrees = self.nTrees,
+			maxDepth = self.maxDepth)
+	
+	def weights(self, featureNames):
+		return None
 
 

@@ -45,7 +45,7 @@ cdef class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
 #---------------------
 # Node type: k-spectrum
 
-cdef class FNNkSpectrum(featureNetworkNode):
+cdef class kSpectrum(featureNetworkNode):
 	
 	cdef public int nspectrum, nFeatures, bitmask
 	cdef public dict kmerByIndex
@@ -56,7 +56,7 @@ cdef class FNNkSpectrum(featureNetworkNode):
 #---------------------
 # Node type: k-spectrum mismatch
 
-cdef class FNNkSpectrumMM(featureNetworkNode):
+cdef class kSpectrumMM(featureNetworkNode):
 	
 	cdef public int nspectrum, nFeatures, bitmask
 	cdef public dict kmerByIndex

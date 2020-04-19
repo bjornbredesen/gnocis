@@ -183,7 +183,24 @@ cdef class featureNetworkNode:
 	#-----------------------
 	# Short-hands
 	
-	def model(self, name, windowSize = -1, windowStep = -1):
+	def model(self, model):
+		"""
+		Returns a `sequenceModel` instance with this feature network node as features.
+		
+		:param name: Model name.
+		:param windowSize: Window size.
+		:param windowStep: Window step size.
+		
+		:type name: string
+		:type windowSize: int
+		:type windowStep: int
+		
+		:return: Model
+		:rtype: sequenceModel
+		"""
+		return FNNModel(features = self, model = model)
+	
+	def sequenceModel(self, name, windowSize = -1, windowStep = -1):
 		"""
 		Returns a `sequenceModel` instance with this feature network node as features.
 		
@@ -345,7 +362,7 @@ cdef class FNNMotifPairOccurrenceFrequencies(featureNetworkNode):
 #---------------------
 # Node type: k-spectrum
 
-cdef class FNNkSpectrum(featureNetworkNode):
+cdef class kSpectrum(featureNetworkNode):
 	"""
 	Feature set that extracts the occurrence frequencies of all unambiguous motifs of length k. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.
 	
@@ -404,12 +421,12 @@ cdef class FNNkSpectrum(featureNetworkNode):
 		return [ self.getSeqVec(s) for s in seq ]
 	
 	def train(self, trainingSet):
-		return FNNkSpectrum(self.nspectrum)
+		return kSpectrum(self.nspectrum)
 
 #---------------------
 # Node type: k-spectrum mismatch
 
-cdef class FNNkSpectrumMM(featureNetworkNode):
+cdef class kSpectrumMM(featureNetworkNode):
 	"""
 	Feature set that extracts the occurrence frequencies of all motifs of length k, with one mismatch allowed in an arbitrary position. Extraction of the entire spectrum is optimized by taking overlaps of motifs into account.
 	
@@ -483,7 +500,7 @@ cdef class FNNkSpectrumMM(featureNetworkNode):
 		return [ self.getSeqVec(s) for s in seq ]
 	
 	def train(self, trainingSet):
-		return FNNkSpectrumMM(self.nspectrum)
+		return kSpectrumMM(self.nspectrum)
 
 #---------------------
 # Node type: Log-odds
@@ -734,7 +751,7 @@ class FNNSquare(featureNetworkNode):
 		return FNNSquare(self.inputs.train(trainingSet))
 
 #---------------------
-# Node type: Sum
+# Node type: Window
 
 class FNNWindow(featureNetworkNode):
 	
@@ -766,6 +783,117 @@ class FNNWindow(featureNetworkNode):
 	def train(self, trainingSet):
 		twin = sequences(trainingSet.name, [ w for s in trainingSet for w in s.windows(self.winSize, self.winStep) ])
 		return FNNWindow(self.inputs.train(twin), windowSize = self.winSize, windowStep = self.winStep)
+
+#---------------------
+# Base model
+
+class baseModel:
+	
+	def __init__(self):
+		pass
+	
+	def __str__(self): return 'Base model'
+	
+	def __repr__(self): return self.__str__()
+	
+	def score(self, featureVectors):
+		pass
+	
+	def train(self, trainingSet):
+		pass
+	
+	def weights(self, featureNames):
+		pass
+
+class logOdds(baseModel):
+	
+	def __init__(self, weights = None, labelPositive = positive, labelNegative = negative):
+		super().__init__()
+		self._weights = weights
+		self.labelPositive = labelPositive
+		self.labelNegative = labelNegative
+	
+	def __str__(self):
+		return 'Log-odds<Positive label: %s; Negative label: %s>'%(str(self.labelPositive), str(self.labelNegative))
+	
+	def score(self, featureVectors):
+		return [
+			[
+				fv * w
+				for fv, w in zip(fvec, self._weights)
+			]
+			for fvec in featureVectors
+		]
+	
+	def train(self, trainingSet):
+		fvPos = trainingSet[self.labelPositive]
+		fvNeg = trainingSet[self.labelNegative]
+		assert(len(fvPos) > 0)
+		assert(len(fvPos[0]) > 0)
+		assert(len(fvNeg) > 0)
+		assert(len(fvPos[0]) == len(fvNeg[0]))
+		weights = []
+		for i, _ in enumerate(fvPos[0]):
+			vPos = sum( fv[i] for fv in fvPos )
+			vNeg = sum( fv[i] for fv in fvNeg )
+			if vPos == 0.0 or vNeg == 0.0:
+				vPos += 1.0
+				vNeg += 1.0
+			weight = log(vPos) - log(float(len(fvPos)))\
+				   - (log(vNeg) - log(float(len(fvNeg))))
+			weights.append(weight)
+		return logOdds(
+			weights = weights,
+			labelPositive = self.labelPositive,
+			labelNegative = self.labelNegative)
+	
+	def weights(self, featureNames):
+		return nctable(
+			'Weights: ' + str(self),
+			{
+				**{
+					'Feature': featureNames
+				},
+				**{
+					'Weight': self._weights
+				}
+			},
+			align = { 'Feature': 'l' }
+		)
+
+class FNNModel(featureNetworkNode):
+	
+	def __init__(self, features, model, trainingSet = None):
+		self.features = features
+		self.mdl = model
+		self.trainingSet = trainingSet
+	
+	def __str__(self):
+		return 'Model<Base model: %s; Features: %s; Training set: %s>'%(str(self.model), str(self.features), str(self.trainingSet))
+	
+	def featureNames(self):
+		return self.features.featureNames()
+	
+	def get(self, seq):
+		return self.mdl.score(self.features.get(seq))
+	
+	def weights(self):
+		return self.mdl.weights(self.features.featureNames())
+	
+	def windowSize(self):
+		return self.features.windowSize()
+	
+	def windowStep(self):
+		return self.features.windowStep()
+	
+	def train(self, trainingSet):
+		fs = self.features.train(trainingSet)
+		ts = {
+			lbl: fs.get(trainingSet.withLabel(lbl))
+			for lbl in trainingSet.labels()
+		}
+		model = self.mdl.train(ts)
+		return FNNModel(features = fs, model = model, trainingSet = trainingSet)
 
 #---------------------
 # Sequence model
