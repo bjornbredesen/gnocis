@@ -734,11 +734,14 @@ class crossvalidation:
 	:type ratioNegPos: float, optional
 	"""
 	
-	def __init__(self, models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
+	def __init__(self, models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = None):
 		self.models = []
 		self.PRC = {}
 		self.ROC = {}
 		self.labelPositive, self.labelNegative = labelPositive, labelNegative
+		vpos, vneg = validationSet.withLabel([ labelPositive, labelNegative ])
+		if ratioNegPos == None:
+			ratioNegPos = len(vneg) / len(vpos)
 		self.ratioNegPos = ratioNegPos
 		self.ratioTrainTest = ratioTrainTest
 		self.trainingSet = trainingSet
@@ -752,7 +755,6 @@ class crossvalidation:
 			for lbl, seqs in zip(tslabels, trainingSet.withLabel(tslabels))
 		}
 		ntrain = int( min(len(tsByLabel[lbl]) for lbl in tsByLabel) * ratioTrainTest )
-		vpos, vneg = validationSet.withLabel([ labelPositive, labelNegative ])
 		self.cvtrain = []
 		self.cvval = []
 		self.repeats = repeats
@@ -802,7 +804,7 @@ class crossvalidation:
 			self.ROC[mdl].append(imdl.getROC(self.cvval[rep], labelPositive = self.labelPositive, labelNegative = self.labelNegative))
 		self.models.append(mdl)
 	
-	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, legendLoc = 'lower left'):
+	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, bboxAnchorTo = (1.05, 1.0), legendLoc = 'lower left'):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
@@ -873,7 +875,7 @@ class crossvalidation:
 				
 				plt.xlabel('Recall', fontsize = fontsize)
 				plt.ylabel('Precision', fontsize = fontsize)
-				plt.legend(loc = legendLoc, fontsize = fontsize, fancybox = True)
+				plt.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsize, fancybox = True)
 				fig.tight_layout()
 				if outpath is None:
 					bio = BytesIO()
@@ -890,7 +892,7 @@ class crossvalidation:
 		except ImportError as err:
 			raise err
 	
-	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, legendLoc = 'lower right'):
+	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, bboxAnchorTo = (1.05, 1.0), legendLoc = 'lower right'):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
@@ -959,7 +961,7 @@ class crossvalidation:
 				
 				plt.xlabel('False Positive Rate', fontsize = fontsize)
 				plt.ylabel('True Positive Rate', fontsize = fontsize)
-				plt.legend(loc = legendLoc, fontsize = fontsize, fancybox = True)
+				plt.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsize, fancybox = True)
 				fig.tight_layout()
 				if outpath is None:
 					bio = BytesIO()
