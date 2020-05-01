@@ -24,7 +24,7 @@ class gene:
 		return self.end+1-self.start
 	
 	def __str__(self):
-		rname = '%s (%s:%d..%d (%s))'%(self.name, self.rgn.seq, self.rgn.start, self.rgn.end, '+' if self.strand else '-')
+		rname = '%s (%s:%d..%d (%s))'%(self.name, self.rgn.seq, self.rgn.start, self.rgn.end, '+' if self.rgn.strand else '-')
 		return 'Gene<%s>'%(rname)
 	
 	def __repr__(self):
