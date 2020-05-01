@@ -28,7 +28,7 @@ def getSequenceMatrix(seq):
 # Convolutional Neural Network
 class sequenceModelCNN(sequenceModel):
 	def __init__(self, name, trainingSet, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, labelPositive = positive, labelNegative = negative):
-		super().__init__(name)
+		super().__init__(name, enableMultiprocessing = False)
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.labelPositive, self.labelNegative = labelPositive, labelNegative
 		self.trainingSet = trainingSet

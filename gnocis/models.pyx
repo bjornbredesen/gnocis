@@ -155,10 +155,17 @@ maxModelID = 0
 class sequenceModel:
 	"""
 	The `sequenceModel` class is an abstract class for sequence models. A number of methods are implemented for machine learning and prediction with DNA sequences.
+	
+	:param name: Name of model.
+	:param enableMultiprocessing: If True (default), multiprocessing is enabled.
+	
+	:type name: string
+	:type enableMultiprocessing: bool
 	"""
 	
-	def __init__(self, name):
+	def __init__(self, name, enableMultiprocessing = True):
 		self.name = name
+		self.enableMultiprocessing = enableMultiprocessing
 	
 	# For pickling (used with multiprocessing)
 	def __getstate__(self):
@@ -169,7 +176,7 @@ class sequenceModel:
 	
 	# Gets a list of scores for a sequence list or stream. A stream is recommended when the sequence list is large, in order to avoid running out of memory.
 	def getSequenceScores(self, seqs):
-		""" Scores a set of sequences, returning the maximum window score for each.
+		""" Scores a set of sequences, returning the maximum window score for each. Multiprocessing is enabled by default, but can be disabled in the constructor.
 		
 		:param seqs: Sequences to score.
 		
@@ -182,7 +189,7 @@ class sequenceModel:
 		cdef list blkScores
 		cdef sequences blk
 		cdef sequence cseq
-		if nCoresUse > 1:
+		if nCoresUse > 1 and self.enableMultiprocessing:
 			# Wipe the first model, to ensure we have a clean slate
 			if not 'modelID' in self.__dict__.keys():
 				global maxModelID

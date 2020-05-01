@@ -916,6 +916,14 @@
 <em class="property">class </em><code class="sig-prename descclassname">gnocis.models.</code><code class="sig-name descname">sequenceModel</code><a class="headerlink" href="#gnocis.models.sequenceModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The <cite>sequenceModel</cite> class is an abstract class for sequence models. A number of methods are implemented for machine learning and prediction with DNA sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – Name of model.</p></li>
+<li><p><strong>enableMultiprocessing</strong> (<em>bool</em>) – If True (default), multiprocessing is enabled.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="attribute">
 <dt id="gnocis.models.sequenceModel.calibrateGenomewidePrecision">
 <code class="sig-name descname">calibrateGenomewidePrecision</code><a class="headerlink" href="#gnocis.models.sequenceModel.calibrateGenomewidePrecision" title="Permalink to this definition">¶</a></dt>
@@ -1089,7 +1097,7 @@
 <dl class="attribute">
 <dt id="gnocis.models.sequenceModel.getSequenceScores">
 <code class="sig-name descname">getSequenceScores</code><a class="headerlink" href="#gnocis.models.sequenceModel.getSequenceScores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scores a set of sequences, returning the maximum window score for each.</p>
+<dd><p>Scores a set of sequences, returning the maximum window score for each. Multiprocessing is enabled by default, but can be disabled in the constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>seqs</strong> (<em>sequences/sequenceStream</em>) – Sequences to score.</p>
