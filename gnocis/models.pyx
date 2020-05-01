@@ -804,7 +804,7 @@ class crossvalidation:
 			self.ROC[mdl].append(imdl.getROC(self.cvval[rep], labelPositive = self.labelPositive, labelNegative = self.labelNegative))
 		self.models.append(mdl)
 	
-	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, bboxAnchorTo = (1.05, 1.0), legendLoc = 'lower left'):
+	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, bboxAnchorTo = (0., -0.1), legendLoc = 'upper left'):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
@@ -892,7 +892,7 @@ class crossvalidation:
 		except ImportError as err:
 			raise err
 	
-	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, bboxAnchorTo = (1.05, 1.0), legendLoc = 'lower right'):
+	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, bboxAnchorTo = (0., -0.1), legendLoc = 'upper left'):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
