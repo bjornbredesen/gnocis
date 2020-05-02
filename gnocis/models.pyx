@@ -139,10 +139,11 @@ def setNCores(n):
 	nCoresUse = n
 	if multiprocessingPool != None:
 		multiprocessingPool.close()
+		multiprocessingPool.join()
 		del multiprocessingPool
 		multiprocessingPool = None
 	if n > 1:
-		multiprocessingPool = mp.Pool(nCoresUse, initializer = initializePoolProcess, initargs = ('',))
+		multiprocessingPool = mp.get_context('spawn').Pool(nCoresUse, initializer = initializePoolProcess, initargs = ('',))
 		initializePoolProcessIDs(multiprocessingPool)
 
 
@@ -804,7 +805,7 @@ class crossvalidation:
 			self.ROC[mdl].append(imdl.getROC(self.cvval[rep], labelPositive = self.labelPositive, labelNegative = self.labelNegative))
 		self.models.append(mdl)
 	
-	def plotPRC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, bboxAnchorTo = (0., -0.1), legendLoc = 'upper left'):
+	def plotPRC(self, figsize = (9, 9), outpath = None, style = 'ggplot', returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
@@ -872,10 +873,11 @@ class crossvalidation:
 						[ pt.x for pt in meanCurve ],
 						[ pt.y for pt in meanCurve ],
 						label = '%s - AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
-				
-				plt.xlabel('Recall', fontsize = fontsize)
-				plt.ylabel('Precision', fontsize = fontsize)
-				plt.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsize, fancybox = True)
+				plt.xticks(fontsize = fontsizeAxis, rotation = 0)
+				plt.yticks(fontsize = fontsizeAxis, rotation = 0)
+				plt.xlabel('Recall', fontsize = fontsizeLabels)
+				plt.ylabel('Precision', fontsize = fontsizeLabels)
+				plt.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsizeLegend, fancybox = True)
 				fig.tight_layout()
 				if outpath is None:
 					bio = BytesIO()
@@ -892,7 +894,7 @@ class crossvalidation:
 		except ImportError as err:
 			raise err
 	
-	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsize = 14, bboxAnchorTo = (0., -0.1), legendLoc = 'upper left'):
+	def plotROC(self, figsize = (8, 8), outpath = None, style = 'ggplot', returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
 		try:
 			import matplotlib.pyplot as plt
 			import base64
@@ -958,10 +960,11 @@ class crossvalidation:
 						[ pt.x for pt in meanCurve ],
 						[ pt.y for pt in meanCurve ],
 						label = '%s - AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
-				
-				plt.xlabel('False Positive Rate', fontsize = fontsize)
-				plt.ylabel('True Positive Rate', fontsize = fontsize)
-				plt.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsize, fancybox = True)
+				plt.xticks(fontsize = fontsizeAxis, rotation = 0)
+				plt.yticks(fontsize = fontsizeAxis, rotation = 0)
+				plt.xlabel('False Positive Rate', fontsize = fontsizeLabels)
+				plt.ylabel('True Positive Rate', fontsize = fontsizeLabels)
+				plt.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsizeLegend, fancybox = True)
 				fig.tight_layout()
 				if outpath is None:
 					bio = BytesIO()
@@ -1025,8 +1028,8 @@ class crossvalidation:
 		t = self.getAUCTable()
 		return '<div>' + hdr + config._repr_html_() + t._repr_html_() +\
 			'<div style="float: left;">%s</div><div style="float: right;">%s</div></div>'%(
-				self.plotPRC(returnHTML = True, figsize = (5., 5.), fontsize = 8),
-				self.plotROC(returnHTML = True, figsize = (5., 5.), fontsize = 8)
+				self.plotPRC(returnHTML = True, figsize = (6., 6.), fontsizeLabels = 12, fontsizeLegend = 10, fontsizeAxis = 7),
+				self.plotROC(returnHTML = True, figsize = (6., 6.), fontsizeLabels = 12, fontsizeLegend = 10, fontsizeAxis = 7)
 			) + '</div>'
 
 def crossvalidate(models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
