@@ -13,10 +13,10 @@ from .ioputil import nctable
 # Represents annotated genes
 class gene:
 	
-	def __init__(self, name, rgn, synonyms = None, exons = None, CDS = None):
+	def __init__(self, name, region, synonyms = None, exons = None, CDS = None):
 		self.name = name
 		self.synonyms = synonyms
-		self.rgn = rgn
+		self.region = region
 		self.exons = [] if exons is None else exons
 		self.CDS = [] if CDS is None else CDS
 	
@@ -24,7 +24,7 @@ class gene:
 		return self.end+1-self.start
 	
 	def __str__(self):
-		rname = '%s (%s:%d..%d (%s))'%(self.name, self.rgn.seq, self.rgn.start, self.rgn.end, '+' if self.rgn.strand else '-')
+		rname = '%s (%s:%d..%d (%s))'%(self.name, self.region.seq, self.region.start, self.region.end, '+' if self.region.strand else '-')
 		return 'Gene<%s>'%(rname)
 	
 	def __repr__(self):
@@ -64,7 +64,7 @@ class genome:
 		for r in genes:
 			_dict = getAnnoDict(r)
 			name = _dict['gene_name']
-			g = gene(name = name, rgn = r, synonyms = [ name, _dict['gene_id'] ])
+			g = gene(name = name, region = r, synonyms = [ name, _dict['gene_id'] ])
 			self.genesByName[name] = g
 			self.genesBySyn[name] = g
 			self.genesBySyn[_dict['gene_id']] = g
@@ -78,6 +78,12 @@ class genome:
 			self.genesByName[name].CDS.append(r)
 		self.genes = [ self.genesByName[k] for k in self.genesByName ]
 	
+	def getCDS(self):
+		return regions('CDS', [ r for g in self.genes for r in g.CDS ])
+	
+	def gene(self, name):
+		return self.genesByName[name]
+	
 	def __str__(self):
 		return 'Genome<%s; annotation: %s; sequences: %s>'%(self.name,
 			'' if self.annotationPath is None else self.annotationPath,
@@ -85,15 +91,15 @@ class genome:
 	
 	def _as_dict_(self):
 		return {
-			'Seq.': [ r.rgn.seq for r in self.genes ],
-			'Start': [ r.rgn.start for r in self.genes ],
-			'End': [ r.rgn.end for r in self.genes ],
-			'Strand': [ '+' if r.rgn.strand else '-' for r in self.genes ],
-			'Length': [ len(r.rgn) for r in self.genes ],
-			'Name': [ r.name for r in self.genes ],
-			'Synonyms': [ '; '.join(r.synonyms) for r in self.genes ],
-			'Exons': [ len(r.exons) for r in self.genes ],
-			'CDS': [ len(r.CDS) for r in self.genes ],
+			'Seq.': [ g.region.seq for g in self.genes ],
+			'Start': [ g.region.start for g in self.genes ],
+			'End': [ g.region.end for g in self.genes ],
+			'Strand': [ '+' if g.region.strand else '-' for g in self.genes ],
+			'Length': [ len(g.region) for g in self.genes ],
+			'Name': [ g.name for g in self.genes ],
+			'Synonyms': [ '; '.join(g.synonyms) for g in self.genes ],
+			'Exons': [ len(g.exons) for g in self.genes ],
+			'CDS': [ len(g.CDS) for g in self.genes ],
 		}
 	
 	def table(self):
@@ -166,9 +172,9 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 				if isinstance(rs, genome):
 					cgenes = [
 						g for g in rs.genes
-						if g.rgn.seq == chromosome\
-							 and g.rgn.end >= coordStart\
-							 and g.rgn.start <= coordEnd
+						if g.region.seq == chromosome\
+							 and g.region.end >= coordStart\
+							 and g.region.start <= coordEnd
 					]
 					rects = []
 					cy = 3. / 2.
@@ -177,9 +183,9 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 						exonh = 0.25
 						ccy = y + (cy + 0.5 if strand else cy - 0.5)
 						rects += [
-							Rectangle((g.rgn.start, ccy - gh), len(g.rgn), gh*2.)
+							Rectangle((g.region.start, ccy - gh), len(g.region), gh*2.)
 							for g in cgenes
-							if g.rgn.strand == strand
+							if g.region.strand == strand
 						]
 						rects += [
 							Rectangle((r.start, ccy - exonh), len(r), 2*exonh)
@@ -194,8 +200,8 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 							if r.strand == strand
 						]
 						for g in cgenes:
-							if g.rgn.strand == strand:
-								plt.text((g.rgn.start + g.rgn.end)/2.,
+							if g.region.strand == strand:
+								plt.text((g.region.start + g.region.end)/2.,
 									ccy + (0.65 if strand else -0.65),
 									g.name,
 									horizontalalignment = 'center',
