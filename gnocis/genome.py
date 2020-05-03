@@ -7,6 +7,7 @@
 ############################################################################
 
 from .regions import *
+from .curves import curves, variableStepCurve, variableStepCurveValue, fixedStepCurve
 from .sequences import *
 from .ioputil import nctable
 
@@ -141,16 +142,33 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 			ax.set_ylim(0, len(tracks))
 			ticks = ax.get_xticks()
 			ax.set_xticklabels([ coordFmt(t) for t in ticks ], fontsize = 12)
-			ax.set_yticklabels([ rs.name for rs in tracks ], fontsize = 16)
-			setY = [ 0. ]
+			ax.set_yticklabels([  ])
+			setYA = []
+			setYB = []
+			width = coordEnd - coordStart
 			y = 0.
 			for rs in tracks:
+				yA = y
 				if isinstance(rs, genome):
 					y += 3.
+				elif isinstance(rs, curves):
+					y += 3.
+					if rs.thresholdValue is not None:
+						y += 1.
 				else:
 					y += 1.
-				setY.append(y)
-			ax.set_yticks(setY)
+				setYA.append(yA)
+				setYB.append(y)
+				plt.text(coordStart - width*0.015,
+					(y + yA) / 2. + 0.05,
+					rs.name,
+					verticalalignment = 'top',
+					horizontalalignment = 'right',
+					color = ax.yaxis.label.get_color(),
+					fontsize = 15,
+					rotation = 45,
+					clip_on = False)
+			ax.set_yticks([ 0. ] + setYB)
 			ax.yaxis.set_label_coords(-0.3, 1.5)
 			plt.setp(ax.get_yticklabels(), rotation=45, ha="right",
 				rotation_mode="anchor")
@@ -166,9 +184,10 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 			for label in ax.yaxis.get_majorticklabels():
 				label.set_transform(label.get_transform() + offset)
 			# Iterate over tracks
-			rmargin = 0.1
-			for rsi, (y, rs) in enumerate(zip(setY, tracks)):
+			rmargin = 0.2
+			for rsi, ((yA, yB), rs) in enumerate(zip(zip(setYA, setYB), tracks)):
 				# Special treatment of gene annotations, with plotting of genes with exons, CDS and names
+				height = yB - yA
 				if isinstance(rs, genome):
 					cgenes = [
 						g for g in rs.genes
@@ -177,11 +196,11 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 							 and g.region.start <= coordEnd
 					]
 					rects = []
-					cy = 3. / 2.
+					cy = height / 2.
 					for strand in [ False, True ]:
 						gh = 0.02
-						exonh = 0.25
-						ccy = y + (cy + 0.5 if strand else cy - 0.5)
+						exonh = 0.2
+						ccy = yA + (cy + 0.5 if strand else cy - 0.5)
 						rects += [
 							Rectangle((g.region.start, ccy - gh), len(g.region), gh*2.)
 							for g in cgenes
@@ -201,21 +220,116 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 						]
 						for g in cgenes:
 							if g.region.strand == strand:
-								plt.text((g.region.start + g.region.end)/2.,
+								center = (g.region.start + g.region.end)/2.
+								if center <= coordStart or center >= coordEnd: continue
+								ax.text(center,
 									ccy + (0.65 if strand else -0.65),
 									g.name,
 									horizontalalignment = 'center',
 									verticalalignment = 'center')
-					
 					pc = PatchCollection(rects, facecolor='C%d'%rsi)
 					ax.add_collection(pc)
+					continue
+				# Special handling of curves
+				elif isinstance(rs, curves):
+					ccurve = next((c for c in rs if c.seq == chromosome), None)
+					if ccurve == None: continue
+					if isinstance(ccurve, fixedStepCurve):
+						iA = max(int((coordStart - ccurve.span) / ccurve.step), 0)
+						iB = max(
+								min(int((coordEnd) / ccurve.step), len(ccurve)-1),
+							0)
+						span = ccurve.span
+						step = ccurve.step
+						vals = ccurve[iA:iB+1]
+						vBase = 0.
+						vMin = min(vals)
+						vMax = max(vals)
+						yBottom = min(vBase, vMin)
+						yTop = vMax
+						cheight = height
+						predHeight = 1.
+						if rs.thresholdValue is not None:
+							yBottom = min(yBottom, rs.thresholdValue)
+							yTop = max(yTop, rs.thresholdValue)
+							cheight -= predHeight
+						vScale = (cheight - rmargin*2.) / (yTop - yBottom)
+						rects = [
+							Rectangle(((i + iA) * step,
+								yA + rmargin + ((vBase - yBottom) * vScale)),
+								span + 1, v * vScale)
+							for i, v in enumerate(vals)
+						]
+						pc = PatchCollection(rects, facecolor='C%d'%rsi)
+						ax.add_collection(pc)
+						if rs.thresholdValue is not None:
+							tthr = yA + rmargin + ((rs.thresholdValue - yBottom) * vScale)
+							ax.plot(
+								[ coordStart, coordEnd ],
+								[ tthr, tthr ],
+								linestyle = '--',
+								color = 'grey',
+								label = 'Expected at random')
+							frs = rs.regions().filter('', lambda r: r.seq == chromosome\
+								and r.end >= coordStart\
+								and r.start <= coordEnd)
+							rects = [
+								Rectangle((r.start, yB - predHeight + rmargin),
+									len(r), predHeight - 2*rmargin)
+								for r in frs
+							]
+							pc = PatchCollection(rects, facecolor='C%d'%rsi)
+							ax.add_collection(pc)
+					elif isinstance(ccurve, variableStepCurve):
+						vals = [
+							v for v in ccurve
+							if v.start+v.span >= coordStart
+							and v.start <= coordEnd
+						]
+						vBase = 0.
+						vMin = min(v.value for v in vals)
+						vMax = max(v.value for v in vals)
+						yBottom = min(vBase, vMin)
+						yTop = vMax
+						cheight = height
+						predHeight = 1.
+						if rs.thresholdValue is not None:
+							yBottom = min(yBottom, rs.thresholdValue)
+							yTop = max(yTop, rs.thresholdValue)
+							cheight -= predHeight
+						vScale = (cheight - rmargin*2.) / (yTop - yBottom)
+						rects = [
+							Rectangle((v.start, yA + rmargin + ((vBase - yBottom) * vScale)),
+								v.span + 1, v.value * vScale)
+							for v in vals
+						]
+						pc = PatchCollection(rects, facecolor='C%d'%rsi)
+						ax.add_collection(pc)
+						if rs.thresholdValue is not None:
+							tthr = yA + rmargin + ((rs.thresholdValue - yBottom) * vScale)
+							ax.plot(
+								[ coordStart, coordEnd ],
+								[ tthr, tthr ],
+								linestyle = '--',
+								color = 'grey',
+								label = 'Expected at random')
+							frs = rs.regions().filter('', lambda r: r.seq == chromosome\
+								and r.end >= coordStart\
+								and r.start <= coordEnd)
+							rects = [
+								Rectangle((r.start, yB - predHeight + rmargin),
+									len(r), predHeight - 2*rmargin)
+								for r in frs
+							]
+							pc = PatchCollection(rects, facecolor='C%d'%rsi)
+							ax.add_collection(pc)
 					continue
 				# Simpler handling of region sets
 				frs = rs.filter('', lambda r: r.seq == chromosome\
 					and r.end >= coordStart\
 					and r.start <= coordEnd)
 				rects = [
-					Rectangle((r.start, y + rmargin), len(r), 1. - 2*rmargin)
+					Rectangle((r.start, yA + rmargin), len(r), height - 2*rmargin)
 					for r in frs
 				]
 				pc = PatchCollection(rects, facecolor='C%d'%rsi)

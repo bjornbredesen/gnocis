@@ -1665,6 +1665,78 @@
 </dl>
 </dd></dl>
 
+<dl class="function">
+<dt id="gnocis.regions.nucleotidePrecisionBarplot">
+<code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">nucleotidePrecisionBarplot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.nucleotidePrecisionBarplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a prediction nucleotide precision barplot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</p></li>
+<li><p><strong>predictionSets</strong> (<em>list</em>) – List of prediction region sets.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size.</p></li>
+<li><p><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path.</p></li>
+<li><p><strong>returnHTML</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, an HTML node will be returned.</p></li>
+<li><p><strong>fontsizeLabels</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of label font.</p></li>
+<li><p><strong>fontsizeLegend</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of legend font.</p></li>
+<li><p><strong>fontsizeAxis</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of axis font.</p></li>
+<li><p><strong>style</strong> (<em>str</em><em>, </em><em>optional</em>) – Plot style to use.</p></li>
+<li><p><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</p></li>
+<li><p><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</p></li>
+<li><p><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.regions.overlapPrecisionBarplot">
+<code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">overlapPrecisionBarplot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.overlapPrecisionBarplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a prediction overlap precision barplot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</p></li>
+<li><p><strong>predictionSets</strong> (<em>list</em>) – List of prediction region sets.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size.</p></li>
+<li><p><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path.</p></li>
+<li><p><strong>returnHTML</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, an HTML node will be returned.</p></li>
+<li><p><strong>fontsizeLabels</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of label font.</p></li>
+<li><p><strong>fontsizeLegend</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of legend font.</p></li>
+<li><p><strong>fontsizeAxis</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of axis font.</p></li>
+<li><p><strong>style</strong> (<em>str</em><em>, </em><em>optional</em>) – Plot style to use.</p></li>
+<li><p><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</p></li>
+<li><p><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</p></li>
+<li><p><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.regions.overlapSensitivityBarplot">
+<code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">overlapSensitivityBarplot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.overlapSensitivityBarplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a prediction overlap sensitivity barplot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</p></li>
+<li><p><strong>predictionSets</strong> (<em>list</em>) – List of prediction region sets.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size.</p></li>
+<li><p><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path.</p></li>
+<li><p><strong>returnHTML</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, an HTML node will be returned.</p></li>
+<li><p><strong>fontsizeLabels</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of label font.</p></li>
+<li><p><strong>fontsizeLegend</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of legend font.</p></li>
+<li><p><strong>fontsizeAxis</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of axis font.</p></li>
+<li><p><strong>style</strong> (<em>str</em><em>, </em><em>optional</em>) – Plot style to use.</p></li>
+<li><p><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</p></li>
+<li><p><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</p></li>
+<li><p><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="class">
 <dt id="gnocis.regions.region">
 <em class="property">class </em><code class="sig-prename descclassname">gnocis.regions.</code><code class="sig-name descname">region</code><a class="headerlink" href="#gnocis.regions.region" title="Permalink to this definition">¶</a></dt>

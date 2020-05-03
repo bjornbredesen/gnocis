@@ -8,8 +8,9 @@
 from .about import *
 from .ioputil import nctable
 from .common import setSeed, nucleotides, complementaryNucleotides, getReverseComplementaryDNASequence, IUPACNucleotideCodes, IUPACNucleotideCodeSemantics, mean, std, SE, CI, KLdiv
-from .regions import region, regions, loadBED, loadBEDGZ, loadGFF, loadGFFGZ, loadCoordinateList
+from .regions import region, regions, loadBED, loadBEDGZ, loadGFF, loadGFFGZ, loadCoordinateList, overlapSensitivityBarplot, overlapPrecisionBarplot, nucleotidePrecisionBarplot
 from .sequences import sequence, sequences, sequenceStream, loadFASTA, loadFASTAGZ, streamFASTA, streamFASTAGZ, stream2bit, streamSequenceWindows, getSequenceWindowRegions, generatorMarkovChain, generatorIID, positive, negative
+from .curves import fixedStepCurve, variableStepCurveValue, variableStepCurve, curves, loadWIG, loadWIGGZ
 from .motifs import motifOccurrence, motifs, IUPACMotif, PWMMotif, loadMEMEPWMDatabase
 from .features import feature, features, scaledFeature, featureScaler, featureMotifOccurrenceFrequency, featurePREdictorMotifPairOccurrenceFrequency, kSpectrum, kSpectrumMM, kSpectrumGPS
 from .featurenetwork import featureNetworkNode, FNNMotifOccurrenceFrequencies, FNNMotifPairOccurrenceFrequencies, FNNLogOdds, kSpectrum, kSpectrumMM, FNNScaler, FNNWindow, FNNModel, baseModel, logOdds
