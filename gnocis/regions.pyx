@@ -56,6 +56,12 @@ cdef class region:
 		self.source, self.feature, self.group = source, feature, group
 		self.ext = None
 	
+	def singleton(self):
+		return regions(str(self), [ self ])
+	
+	def center(self):
+		return int((self.start + self.end) / 2)
+	
 	def __len__(self):
 		return self.end+1-self.start
 	
@@ -406,7 +412,7 @@ cdef class regions:
 		return len(self.overlap(other)) / len(self)
 	
 	# Returns a set of recentered regions, with regions randomly placed within larger regions.
-	def randomlyRecenter(self, long long size):
+	def recenter(self, long long size):
 		""" Gets a set of randomly recentered regions. If the target size is smaller than a given region, a region of the desired size is randomly placed within the region. If the desired size is larger, a region of the desired size is placed with equal center to the center of the region.
 		
 		:param size: Desired region size.
@@ -429,7 +435,7 @@ cdef class regions:
 				rstart = rgn.start
 			rend = rstart + size - 1
 			rlist.append(region(rgn.seq, rstart, rend, strand = rgn.strand, score = rgn.score, source = rgn.source, feature = rgn.feature, group = rgn.group))
-		return regions('%s (randomly recentered - %d bp)'%(self.name, size), rlist)
+		return regions('%s (recentered - %d bp)'%(self.name, size), rlist)
 	
 	# Returns a set of delta-resized regions.
 	def deltaResize(self, sizeDelta):
