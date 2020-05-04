@@ -1168,6 +1168,23 @@
 </dd></dl>
 
 <dl class="attribute">
+<dt id="gnocis.models.sequenceModel.predictSequenceStreamCurves">
+<code class="sig-name descname">predictSequenceStreamCurves</code><a class="headerlink" href="#gnocis.models.sequenceModel.predictSequenceStreamCurves" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the model using a sliding window across an input sequence stream or sequence set. Windows with a score &gt;= self.threshold are predicted, and predicted windows are merged into non-overlapping predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stream</strong> (<em>sequences/sequenceStream/str</em>) – Sequence material that the model is applied to for prediction.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of non-overlapping (merged) predicted regions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="gnocis.models.sequenceModel.predictSequenceStreamRegions">
 <code class="sig-name descname">predictSequenceStreamRegions</code><a class="headerlink" href="#gnocis.models.sequenceModel.predictSequenceStreamRegions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies the model using a sliding window across an input sequence stream or sequence set. Windows with a score &gt;= self.threshold are predicted, and predicted windows are merged into non-overlapping predictions.</p>

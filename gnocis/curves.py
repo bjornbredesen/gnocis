@@ -167,6 +167,13 @@ class curves:
 		return 'Curve set<%s>'%(self.name)
 	
 	def _as_dict_(self):
+		if self.thresholdValue is not None:
+			rs = self.regions()
+			return {
+				'Seq.': [ c.seq for c in self ],
+				'Values': [ len(c) for c in self ],
+				'Regions': [ len(rs.filter('', lambda r: r.seq == c.seq)) for c in self ],
+			}
 		return {
 			'Seq.': [ c.seq for c in self ],
 			'Values': [ len(c) for c in self ],

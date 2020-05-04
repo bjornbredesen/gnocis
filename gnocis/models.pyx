@@ -19,6 +19,7 @@ from .validation import getConfusionMatrix, getConfusionMatrixStatistics, getROC
 from .sequences import streamSequenceWindows, positive, negative
 from .ioputil import nctable
 from .common import mean, CI
+from .curves import curves, fixedStepCurve
 
 
 ############################################################################
@@ -584,8 +585,8 @@ class sequenceModel:
 		pred.sort()
 		return pred
 	
-	# Short-hand for predictSequenceStreamRegions.
-	def predict(self, stream):
+	# Predicts regions inside a sequence stream using a sliding window.
+	def predictSequenceStreamCurves(self, stream):
 		""" Applies the model using a sliding window across an input sequence stream or sequence set. Windows with a score >= self.threshold are predicted, and predicted windows are merged into non-overlapping predictions.
 		
 		:param stream: Sequence material that the model is applied to for prediction.
@@ -594,6 +595,68 @@ class sequenceModel:
 		:return: Set of non-overlapping (merged) predicted regions
 		:rtype: regions
 		"""
+		#cdef regions pred
+		cdef list winPosSet = []
+		cdef list winScoreSet = []
+		cdef int i = 0
+		cdef int nNT = 0
+		cdef region winPos
+		cdef sequence winSeq
+		cdef sequences winSeqSet = sequences('', [])
+		cdef float wScore
+		cdef list sScores
+		cdef double s
+		
+		for winSeq in streamSequenceWindows(stream, self.windowSize, self.windowStep):
+			winPosSet.append(winSeq.sourceRegion)
+			winSeqSet.sequences.append(winSeq)
+			i += 1
+			nNT += len(winSeq)
+			if nNT >= maxThreadFetchNT:
+				winScoreSet += self.getSequenceScores(winSeqSet)
+				winSeqSet.sequences = []
+				i = 0
+				nNT = 0
+		if len(winSeqSet.sequences) > 0:
+			winScoreSet += self.getSequenceScores(winSeqSet)
+		
+		posScores = {}
+		for seq in set(winPos.seq for winPos in winPosSet):
+			scores = [
+				(int(winPos.start/self.windowStep), wScore)
+				for winPos, wScore in zip(winPosSet, winScoreSet)
+				if winPos.seq == seq
+			]
+			sScores = [ 0. for _ in range(len(scores)) ]
+			for i, s in scores:
+				sScores[i] = s
+			posScores[seq] = sScores
+		
+		ret = curves('Predictions', [
+			fixedStepCurve(
+				seq = seq,
+				start = 0,
+				span = self.windowSize,
+				step = self.windowStep,
+				values = posScores[seq]
+			)
+			for seq in posScores
+		])
+		if self.threshold is not None:
+			ret = ret.threshold(self.threshold)
+		return ret
+	
+	# Short-hand for predictSequenceStreamRegions.
+	def predict(self, stream, curves = True):
+		""" Applies the model using a sliding window across an input sequence stream or sequence set. Windows with a score >= self.threshold are predicted, and predicted windows are merged into non-overlapping predictions.
+		
+		:param stream: Sequence material that the model is applied to for prediction.
+		:type stream: sequences/sequenceStream/str
+		
+		:return: Set of non-overlapping (merged) predicted regions
+		:rtype: regions
+		"""
+		if curves: return self.predictSequenceStreamCurves(stream)
 		return self.predictSequenceStreamRegions(stream)
 	
 	# Prints out test statistics.
