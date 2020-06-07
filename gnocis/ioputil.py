@@ -271,7 +271,7 @@ class nctable:
 	def _prepv(self):
 		_dict = self._cropv()
 		return {
-			_tblFieldConv(k): [
+			_tblFieldConv(k, strcroplen = self.strcroplen): [
 				_tblFieldConv(v, fpdec = self.fpdec, strcroplen = self.strcroplen)
 				for v in _dict[k]
 			]
