@@ -411,6 +411,65 @@ cdef class regions:
 		"""
 		return len(self.overlap(other)) / len(self)
 	
+	# Calculates the overlap precision to another set
+	def nucleotidePrecision(self, other):
+		""" Calculates the nucleotide precision to another set.
+		
+		:param other: Other region set.
+		:type other: regions
+		
+		:return: Nucleotide precision.
+		:rtype: float
+		"""
+		return sum(len(r) for r in self & other) / sum(len(r) for r in self)
+	
+	# Calculates the overlap precision to another set
+	def dummy(self, genome, useSeq = None):
+		""" Generates a dummy region set, with the same region lengths but random positions.
+		
+		:param genome: Genome.
+		:param useSeq: Chromosomes to focus on.
+		:type genome: genome
+		:type useSeq: list
+		
+		:return: Dummy region set.
+		:rtype: regions
+		"""
+		dr = []
+		seqLens = genome.sequenceLengths()
+		if useSeq is not None:
+			seqLens = { k: seqLens[k] for k in seqLens if k in useSeq }
+		genomeLen = sum(seqLens[k] for k in seqLens)
+		for r in self.regions:
+			pos = int(random.random() * (genomeLen - len(r)))
+			for k in seqLens:
+				if pos < seqLens[k]:
+					dr.append( region(seq = k, start = pos, end = pos + len(r)) )
+					break
+				pos -= seqLens[k]
+		return regions('', dr)
+	
+	def expected(self, genome, statfun, useSeq = None, repeats = 100):
+		""" Calculates an expected statistic by random dummy set creation and averaging.
+		
+		:param genome: Genome.
+		:param statfun: Function to apply to region sets that returns desired statistic.
+		:param useSeq: Chromosomes to focus on.
+		:param repeats: Number of repeats for calculating statistic.
+		:type genome: genome
+		:type statfun: Function
+		:type useSeq: list
+		:type repeats: int
+		
+		:return: Average statistic.
+		:rtype: float
+		"""
+		stats = [
+			statfun(self.dummy(genome = genome, useSeq = useSeq))
+			for _ in range(repeats)
+		]
+		return sum(stats) / len(stats)
+	
 	# Returns a set of recentered regions, with regions randomly placed within larger regions.
 	def recenter(self, long long size):
 		""" Gets a set of randomly recentered regions. If the target size is smaller than a given region, a region of the desired size is randomly placed within the region. If the desired size is larger, a region of the desired size is placed with equal center to the center of the region.
