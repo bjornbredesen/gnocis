@@ -48,7 +48,7 @@ class genome:
 		self.genesBySyn = {  }
 		if genes is not None:
 			for g in genes:
-				self.genesByName[name] = g
+				self.genesByName[g.name] = g
 				for s in g.synonyms:
 					self.genesBySyn[s] = g
 	
