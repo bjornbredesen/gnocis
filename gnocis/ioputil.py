@@ -44,6 +44,15 @@ class nctable:
 	
 	def __init__(self, title, _dict, align = None, ntop = 10, nbottom = 10, maxhorz = 9, spaces = 3, fpdec = 4, strcroplen = 24, indexName = '__index'):
 		self.title = title
+		if isinstance(_dict, list):
+			# Enables table construction by supplying a list of dicts instead of a base dict
+			# The nesting is to ensure that order is preserved
+			table = _dict
+			_dict = {  }
+			for e in table:
+				for k in e:
+					if k not in _dict:
+						_dict[k] = [ x[k] if k in x else '' for x in table ]
 		self.ntop, self.nbottom = ntop, nbottom
 		self.maxhorz = maxhorz
 		self.spaces = spaces
