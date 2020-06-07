@@ -233,6 +233,8 @@ class SVM(baseModel):
 			},
 			align = { 'Feature': 'l' }
 		)
+	
+	def __repr__(self): return self.__str__()
 
 # Random Forest - Base model
 class RF(baseModel):
@@ -271,5 +273,7 @@ class RF(baseModel):
 	
 	def weights(self, featureNames):
 		return None
+	
+	def __repr__(self): return self.__str__()
 
 

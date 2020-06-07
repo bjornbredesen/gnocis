@@ -1896,6 +1896,26 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="gnocis.regions.regions.dummy">
+<code class="sig-name descname">dummy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.dummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a dummy region set, with the same region lengths but random positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>genome</strong> (<em>genome</em>) – Genome.</p></li>
+<li><p><strong>useSeq</strong> (<em>list</em>) – Chromosomes to focus on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dummy region set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="gnocis.regions.regions.exclusion">
 <code class="sig-name descname">exclusion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.exclusion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the regions of this set with regions of another set excluded.</p>
@@ -1908,6 +1928,28 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.expected">
+<code class="sig-name descname">expected</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.expected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates an expected statistic by random dummy set creation and averaging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>genome</strong> (<em>genome</em>) – Genome.</p></li>
+<li><p><strong>statfun</strong> (<em>Function</em>) – Function to apply to region sets that returns desired statistic.</p></li>
+<li><p><strong>useSeq</strong> (<em>list</em>) – Chromosomes to focus on.</p></li>
+<li><p><strong>repeats</strong> (<em>int</em>) – Number of repeats for calculating statistic.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Average statistic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2066,6 +2108,23 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gnocis.regions.regions.nucleotidePrecision">
+<code class="sig-name descname">nucleotidePrecision</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.nucleotidePrecision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the nucleotide precision to another set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions"><em>regions</em></a>) – Other region set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nucleotide precision.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>

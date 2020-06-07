@@ -269,7 +269,9 @@
 				<span class="p">}</span>
 			<span class="p">},</span>
 			<span class="n">align</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;Feature&#39;</span><span class="p">:</span> <span class="s1">&#39;l&#39;</span> <span class="p">}</span>
-		<span class="p">)</span></div></div>
+		<span class="p">)</span></div>
+	
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
 <span class="c1"># Random Forest - Base model</span>
 <div class="viewcode-block" id="RF"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.RF">[docs]</a><span class="k">class</span> <span class="nc">RF</span><span class="p">(</span><span class="n">baseModel</span><span class="p">):</span>
@@ -307,7 +309,9 @@
 			<span class="n">maxDepth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxDepth</span><span class="p">)</span></div>
 	
 <div class="viewcode-block" id="RF.weights"><a class="viewcode-back" href="../../gnocis.html#gnocis.sklearnModels.RF.weights">[docs]</a>	<span class="k">def</span> <span class="nf">weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featureNames</span><span class="p">):</span>
-		<span class="k">return</span> <span class="kc">None</span></div></div>
+		<span class="k">return</span> <span class="kc">None</span></div>
+	
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
 
 </pre></div>

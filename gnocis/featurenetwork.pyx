@@ -869,7 +869,7 @@ class FNNModel(featureNetworkNode):
 		self.trainingSet = trainingSet
 	
 	def __str__(self):
-		return 'Model<Base model: %s; Features: %s; Training set: %s>'%(str(self.model), str(self.features), str(self.trainingSet))
+		return 'Model<Base model: %s; Features: %s; Training set: %s>'%(str(self.mdl), str(self.features), str(self.trainingSet))
 	
 	def featureNames(self):
 		return self.features.featureNames()
