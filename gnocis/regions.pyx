@@ -619,12 +619,6 @@ cdef class regions:
 			src = getSequenceStreamFromPath(src)
 		if isinstance(src, sequences) or isinstance(src, list) or isinstance(src, sequenceStream):
 			return self.extractSequences(src)
-		elif isinstance(src, str):
-			l = src.lower()
-			if l.endswith(".fa") or l.endswith(".fasta"):
-				return self.extractSequencesFromFASTA(src)
-			elif l.endswith(".2bit") or l.endswith(".2b"):
-				return self.extractSequencesFrom2bit(src)
 	
 	# Saves regions to GFF file.
 	def saveGFF(self, path):
