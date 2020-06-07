@@ -336,9 +336,9 @@ class sequenceModel:
 		genomeLen = sum(seqLens[chrom] for chrom in seqLens.keys())
 		# Train background model
 		if bgModel == None:
-			bgModel = generatorIID(trainingSequences = genome) \
+			bgModel = IID(trainingSequences = genome) \
 				if bgModelOrder <= 0 \
-				else generatorMarkovChain(trainingSequences = genome, degree = bgModelOrder)
+				else MarkovChain(trainingSequences = genome, degree = bgModelOrder)
 		# Generate calibration sequences
 		meanLen = int(sum(len(s) for s in positives) / len(positives))
 		negatives = bgModel.generateStream(n = int(factor * genomeLen / meanLen), length = meanLen)

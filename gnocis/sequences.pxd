@@ -65,7 +65,7 @@ cpdef getSequenceStreamFromPath(path, wantBlockSize = *, spacePrune = *, dropChr
 cdef class sequenceGenerator:
 	pass
 
-cdef class generatorMarkovChain(sequenceGenerator):
+cdef class MarkovChain(sequenceGenerator):
 	
 	cdef public int degree, pseudoCounts, nGenerated
 	cdef public bool addReverseComplements, prepared
@@ -75,7 +75,7 @@ cdef class generatorMarkovChain(sequenceGenerator):
 	cdef public dict comparableSpectrum
 
 # IID sequence model
-cdef class generatorIID(sequenceGenerator):
+cdef class IID(sequenceGenerator):
 	
 	cdef public int pseudoCounts, nGenerated
 	cdef public bool addComplements, prepared

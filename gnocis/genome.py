@@ -126,6 +126,12 @@ class genome:
 	def gene(self, name):
 		return self.genesByName[name]
 	
+	def windows(self, size, step):
+		return self.sequences.windows(size = size, step = step)
+	
+	def windowRegions(self, size, step):
+		return self.sequences.windowRegions(size = size, step = step)
+	
 	def __str__(self):
 		return 'Genome<%s; annotation: %s; sequences: %s>'%(self.name,
 			'' if self.annotationPath is None else self.annotationPath,

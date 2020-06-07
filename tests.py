@@ -89,7 +89,7 @@ class testSequences(unittest.TestCase):
 			sB )
 	
 	def testGeneratingSequences(self):
-		MC = nc.generatorMarkovChain(trainingSequences = genome, degree = 4, pseudoCounts = 1, addReverseComplements = True)
+		MC = nc.MarkovChain(trainingSequences = genome, degree = 4, pseudoCounts = 1, addReverseComplements = True)
 		MC.generateSet(n = 50, length = 3000).saveFASTA('./temp/test.Background.fasta')
 	
 	def testExtractRegionSequences(self):
@@ -181,7 +181,7 @@ random.shuffle(PRESeq.sequences)
 nc.sequences('PcG/TrxG 1', PRESeq[:int(len(PRESeq)/2)]).saveFASTA('./temp/PcGTrxG1.fasta')
 nc.sequences('PcG/TrxG 2', PRESeq[int(len(PRESeq)/2):]).saveFASTA('./temp/PcGTrxG2.fasta')
 
-MC = nc.generatorMarkovChain(trainingSequences = genome, degree = 4, pseudoCounts = 1, addReverseComplements = True)
+MC = nc.MarkovChain(trainingSequences = genome, degree = 4, pseudoCounts = 1, addReverseComplements = True)
 
 MC.generateSet(n = int(len(PRESeq)/2), length = 3000).saveFASTA('./temp/NonPcGTrxG1.fasta')
 MC.generateSet(n = len(PRESeq)-int(len(PRESeq)/2), length = 3000).saveFASTA('./temp/NonPcGTrxG2.fasta')

@@ -1114,9 +1114,9 @@ cdef class sequenceGenerator:
 
 # Markov chain sequence model.
 # Optimized using spectrum and lookup table. Tested for functional equivalence with original Markov chain code.
-cdef class generatorMarkovChain(sequenceGenerator):
+cdef class MarkovChain(sequenceGenerator):
 	"""
-	The `generatorMarkovChain` class trains a Markov chain for generating sequences.
+	The `MarkovChain` class trains a Markov chain for generating sequences.
 	
 	:param trainingSequences: Training sequences.
 	:param degree: Markov chain degree. Default is 4.
@@ -1143,6 +1143,8 @@ cdef class generatorMarkovChain(sequenceGenerator):
 			return
 		if isinstance(trainingSequences, str):
 			trainingSequences = getSequenceStreamFromPath(trainingSequences)
+		if type(trainingSequences).__name__ == 'genome':
+			trainingSequences = trainingSequences.sequences
 		if isinstance(trainingSequences, sequences) or isinstance(trainingSequences, list):
 			self._trainOnSequences(trainingSequences)
 			self._prepare()
@@ -1333,9 +1335,9 @@ cdef class generatorMarkovChain(sequenceGenerator):
 		return sequence('Generated sequence <Length: %d; Model: %s; Seed: %d>'%(length, str(self), seed), seq)
 
 # IID sequence model
-cdef class generatorIID(sequenceGenerator):
+cdef class IID(sequenceGenerator):
 	"""
-	The `generatorIID` class trains an i.i.d. model for generating sequences.
+	The `IID` class trains an i.i.d. model for generating sequences.
 	
 	:param trainingSequences: Training sequences.
 	:param pseudoCounts: Whether or not to use pseudocounts. Default is `True`.
@@ -1359,6 +1361,8 @@ cdef class generatorIID(sequenceGenerator):
 			return
 		if isinstance(trainingSequences, str):
 			trainingSequences = getSequenceStreamFromPath(trainingSequences)
+		if type(trainingSequences).__name__ == 'genome':
+			trainingSequences = trainingSequences.sequences
 		if isinstance(trainingSequences, sequences) or isinstance(trainingSequences, list):
 			self._trainOnSequences(trainingSequences)
 			self._prepare()

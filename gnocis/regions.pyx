@@ -617,6 +617,8 @@ cdef class regions:
 		"""
 		if isinstance(src, str):
 			src = getSequenceStreamFromPath(src)
+		if type(src).__name__ == 'genome':
+			src = src.sequences
 		if isinstance(src, sequences) or isinstance(src, list) or isinstance(src, sequenceStream):
 			return self.extractSequences(src)
 	
