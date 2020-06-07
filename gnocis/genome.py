@@ -35,17 +35,28 @@ class gene:
 # Represents a genome
 class genome:
 	
-	def __init__(self, name, annotationPath = None, seqPath = None, chromosomes = None):
+	def __init__(self, name, genes = None, sequences = None, chromosomes = None, annotation = None, annotationPath = None, seqPath = None, seqLens = None):
 		self.name = name
+		self.genes = genes
+		self.sequences = sequences
+		self.annotation = annotation
+		self.chromosomes = set() if chromosomes is None else chromosomes
 		self.annotationPath = annotationPath
 		self.seqPath = seqPath
-		self.chromosomes = chromosomes
+		self.seqLens = seqLens
+		self.genesByName = {  }
+		self.genesBySyn = {  }
+		if genes is not None:
+			for g in genes:
+				self.genesByName[name] = g
+				for s in g.synonyms:
+					self.genesBySyn[s] = g
 	
 	def loadEnsemblAnnotationGTFGZ(self, path):
 		dat = loadGFFGZ(path)
-		self.annotation = dat
-		self.annotationPath = path
-		self.chromosomes = set(r.seq for r in dat)
+		annotation = dat
+		annotationPath = path
+		chromosomes = set(r.seq for r in dat)
 		genes = dat.filter('Genes', lambda r: r.feature == 'gene')
 		exons = dat.filter('Exons', lambda r: r.feature == 'exon')
 		CDS = dat.filter('CDS', lambda r: r.feature == 'CDS')
@@ -59,25 +70,55 @@ class genome:
 				if len(q) >= 2
 			)
 		}
-		self.genes = [  ]
-		self.genesByName = {  }
-		self.genesBySyn = {  }
+		genesByName = {  }
 		for r in genes:
 			_dict = getAnnoDict(r)
 			name = _dict['gene_name']
 			g = gene(name = name, region = r, synonyms = [ name, _dict['gene_id'] ])
-			self.genesByName[name] = g
-			self.genesBySyn[name] = g
-			self.genesBySyn[_dict['gene_id']] = g
+			genesByName[name] = g
 		for r in exons:
 			_dict = getAnnoDict(r)
 			name = _dict['gene_name']
-			self.genesByName[name].exons.append(r)
+			genesByName[name].exons.append(r)
 		for r in CDS:
 			_dict = getAnnoDict(r)
 			name = _dict['gene_name']
-			self.genesByName[name].CDS.append(r)
-		self.genes = [ self.genesByName[k] for k in self.genesByName ]
+			genesByName[name].CDS.append(r)
+		genes = [ genesByName[k] for k in genesByName ]
+		return genome(name = self.name,
+			genes = genes,
+			sequences = self.sequences,
+			chromosomes = self.chromosomes | chromosomes,
+			annotation = annotation,
+			annotationPath = path,
+			seqPath = self.seqPath,
+			seqLens = self.seqLens)
+	
+	def setSequences(self, seqs):
+		return genome(name = self.name,
+			genes = self.genes,
+			sequences = seqs,
+			chromosomes = self.chromosomes | set(s.name for s in seqs),
+			annotation = self.annotation,
+			annotationPath = self.annotationPath,
+			seqPath = str(seqs),
+			seqLens = None)
+	
+	def streamFASTA(self, path):
+		return self.setSequences(streamFASTA(path))
+	
+	def streamFASTAGZ(self, path):
+		return self.setSequences(streamFASTAGZ(path))
+	
+	def stream2bit(self, path):
+		return self.setSequences(stream2bit(path))
+	
+	def sequenceLengths(self):
+		if self.sequences is None:
+			return {}
+		if self.seqLens is None:
+			self.seqLens = self.sequences.sequenceLengths()
+		return self.seqLens
 	
 	def getCDS(self):
 		return regions('CDS', [ r for g in self.genes for r in g.CDS ])
