@@ -440,14 +440,17 @@ cdef class regions:
 		if useSeq is not None:
 			seqLens = { k: seqLens[k] for k in seqLens if k in useSeq }
 		genomeLen = sum(seqLens[k] for k in seqLens)
-		for r in self.regions:
+		rs = self.regions
+		if useSeq is not None:
+			rs = [ r for r in rs if r.seq in useSeq ]
+		for r in rs:
 			pos = int(random.random() * (genomeLen - len(r)))
 			for k in seqLens:
 				if pos < seqLens[k]:
-					dr.append( region(seq = k, start = pos, end = pos + len(r)) )
+					dr.append( region(seq = k, start = pos, end = pos + len(r) - 1) )
 					break
 				pos -= seqLens[k]
-		return regions('', dr)
+		return regions(self.name + ' (dummy)', dr)
 	
 	def expected(self, genome, statfun, useSeq = None, repeats = 100):
 		""" Calculates an expected statistic by random dummy set creation and averaging.
