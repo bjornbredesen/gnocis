@@ -241,7 +241,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 				colorRaw = plt.rcParams['axes.prop_cycle'].by_key()['color'][rsi % len(plt.rcParams['axes.prop_cycle'].by_key()['color'])]
 				color = [ v/255. for v in struct.unpack('BBB', bytes.fromhex(colorRaw[1:])) ]
 				def drawRoundBox(start, end, y, height, fc, ec, rlabel = None, clip_on = True):
-					w = end - start
+					w = end - start + 1
 					rs = min(w * width * 0.00001, 500. * width * 0.00001)
 					patch = FancyBboxPatch((start, y),
 						w, height,
@@ -262,7 +262,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 									clip_on = False)
 					return patch
 				def drawBox(start, end, y, height, fc, ec, rlabel = None, clip_on = True):
-					w = end - start
+					w = end - start + 1
 					rs = min(w * width * 0.00001, 500. * width * 0.00001)
 					patch = FancyBboxPatch((start, y),
 						w, height,
@@ -316,7 +316,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 					def drawGeneExon(start, end, y, height, rlabel = None, clip_on = True):
 						drawBox(start = start, end = end, y = y, height = height,
 							fc = colExons + [1.],
-							ec = colExons + [1.],
+							ec = colInvisible,
 							rlabel = rlabel,
 							clip_on = clip_on)
 					drawGeneExon(start = coordEnd + width*0.01, end = coordEnd + width*0.01 + 3. * 0.006 * width, y = yB - 0.1 - geneheight - 0.1 - geneheight, height = geneheight, rlabel = 'Exon', clip_on = False)
@@ -325,7 +325,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 					def drawGeneCDS(start, end, y, height, rlabel = None, clip_on = True):
 						drawBox(start = start, end = end, y = y, height = height,
 							fc = colCDS + [1.],
-							ec = colCDS + [1.],
+							ec = colInvisible,
 							rlabel = rlabel,
 							clip_on = clip_on)
 					drawGeneCDS(start = coordEnd + width*0.01, end = coordEnd + width*0.01 + 3. * 0.006 * width, y = yB - 0.1 - geneheight - 0.1 - geneheight - 0.1 - geneheight, height = geneheight, rlabel = 'CDS', clip_on = False)
