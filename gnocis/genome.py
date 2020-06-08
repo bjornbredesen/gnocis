@@ -239,7 +239,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 			for rsi, ((yA, yB), rs) in enumerate(zip(zip(setYA, setYB), tracks)):
 				# Special treatment of gene annotations, with plotting of genes with exons, CDS and names
 				height = yB - yA
-				colorRaw = plt.rcParams['axes.prop_cycle'].by_key()['color'][rsi]
+				colorRaw = plt.rcParams['axes.prop_cycle'].by_key()['color'][rsi % len(plt.rcParams['axes.prop_cycle'].by_key()['color'])]
 				color = [ v/255. for v in struct.unpack('BBB', bytes.fromhex(colorRaw[1:])) ]
 				def drawRoundBox(start, end, y, height, fc, ec, rlabel = None, clip_on = True):
 					w = end - start
