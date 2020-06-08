@@ -180,8 +180,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 		from io import BytesIO
 		from IPython.core.display import display, HTML
 		from matplotlib.collections import PatchCollection
-		from matplotlib.patches import Rectangle, FancyBboxPatch
-		from matplotlib.path import Path
+		from matplotlib.patches import Rectangle, FancyBboxPatch, Polygon
 		from matplotlib.lines import Line2D
 		from matplotlib.transforms import ScaledTranslation
 		import struct
@@ -362,6 +361,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 				elif isinstance(rs, curves):
 					ccurve = next((c for c in rs if c.seq == chromosome), None)
 					if ccurve == None: continue
+					# Rasterize - logic required depends on curve type
 					if isinstance(ccurve, fixedStepCurve):
 						iA = max(int((coordStart - ccurve.span) / ccurve.step), 0)
 						iB = max(
@@ -370,185 +370,129 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 						span = ccurve.span
 						step = ccurve.step
 						vals = ccurve[iA:iB+1]
-						vBase = 0.
-						vMin = min(vals)
-						vMax = max(vals)
-						yBottom = min(vBase, vMin)
-						yTop = vMax
-						cheight = height
-						predHeight = 1.
-						if rs.thresholdValue is not None:
-							yBottom = min(yBottom, rs.thresholdValue)
-							yTop = max(yTop, rs.thresholdValue)
-							cheight -= predHeight
-						vScale = (cheight - rmargin*2.) / (yTop - yBottom)
-						rects = [
-							Rectangle(((i + iA) * step,
-								yA + rmargin + ((vBase - yBottom) * vScale)),
-								span + 1, v * vScale)
-							for i, v in enumerate(vals)
-						]
-						pc = PatchCollection(rects,
-							fc = colInvisible,
-							ec = [ c*0.5 for c in color[:3] ] + [1.],
-							linewidth=2.)
-						ax.add_collection(pc)
-						pc = PatchCollection(rects,
-							fc = color[:3] + [1.],
-							ec = colInvisible)
-						ax.add_collection(pc)
-						# Legend
-						maxv = max(vals)
-						minv = min(vals)
-						lyA = yA + rmargin + ((vBase - yBottom) * vScale) + minv * vScale
-						lyB = yA + rmargin + ((vBase - yBottom) * vScale) + maxv * vScale
-						ax.add_patch(Rectangle(
-							(coordEnd, lyA),
-							1. * 0.006 * width,
-							lyB-lyA,
-							fc = (0.2, 0.2, 0.2, 1.),
-							ec = colInvisible,
-							clip_on = False
-						))
-						tticks = [ (maxv, str(maxv)), (minv, str(minv)) ]
-						if rs.thresholdValue is not None:
-							tticks.append((rs.thresholdValue, str(rs.thresholdValue) + ' (threshold)'))
-						if minv < 0. and maxv > 0.:
-							tticks.append((0, str(0)))
-						tticks = sorted(tticks, key = lambda p: p[0])
-						for v, n in tticks:
-							ly = yA + rmargin + ((vBase - yBottom) * vScale) + v * vScale
-							ax.add_line(Line2D([ coordEnd + 0. * 0.006 * width, coordEnd + 2. * 0.006 * width ],
-								[ ly, ly ],
-								color = (0.2, 0.2, 0.2, 1.),
-								linewidth = 1.,
-								clip_on = False))
-							plt.text(coordEnd + 3. * 0.006 * width,
-									ly,
-									n,
-									verticalalignment = 'center',
-									horizontalalignment = 'left',
-									color = ax.yaxis.label.get_color(),
-									fontsize = 8,
-									clip_on = False)
-						# Thresholded
-						if rs.thresholdValue is not None:
-							tthr = yA + rmargin + ((rs.thresholdValue - yBottom) * vScale)
-							ax.plot(
-								[ coordStart, coordEnd ],
-								[ tthr, tthr ],
-								linestyle = '-',
-								color = 'grey',
-								label = 'Expected at random')
-							frs = rs.regions().filter('', lambda r: r.seq == chromosome\
-								and r.end >= coordStart\
-								and r.start <= coordEnd)
-							for r in frs:
-								drawRoundBox(start = r.start, end = r.end,
-									y = yB - predHeight + rmargin, height = predHeight - 2*rmargin,
-									fc = color[:3] + [0.4],
-									ec = [ c*0.5 for c in color[:3] ] + [1.])
-							# Legend
-							drawRoundBox(start = coordEnd + width*0.01,
-								end = coordEnd + width*0.01 + 3. * 0.006 * width,
-								y = yB - 0.1 - geneheight,
-								height = geneheight,
-								fc = color[:3] + [0.4],
-								ec = [ c*0.5 for c in color[:3] ] + [1.],
-								rlabel = 'Thresholded',
-								clip_on = False)
+						#
+						res = 2048
+						srcXA = iA * ccurve.step #coordStart
+						srcXB = iB * ccurve.step #coordEnd
+						scale = res / (srcXB - srcXA)
+						ret = [ None for _ in range(res) ]
+						for i, v in enumerate(vals):
+							dstXA = int(min(max(
+								i * ccurve.step * res / ((iB - iA) * ccurve.step),
+								0),
+								res-1))
+							dstXB = int(min(max(
+								res * (i + ccurve.span / ccurve.step) / (iB - iA),
+								0),
+								res-1))
+							for x in range(dstXA, dstXB+1):
+								Q = (ccurve.step * (iA + (iB - iA) * float(x) / res), v)
+								if ret[x] is None or Q > ret[x]:
+									ret[x] = Q
+						raster = [ v for v in ret if v is not None ]
 					elif isinstance(ccurve, variableStepCurve):
 						vals = [
 							v for v in ccurve
 							if v.start+v.span >= coordStart
 							and v.start <= coordEnd
 						]
-						vBase = 0.
-						vMin = min(v.value for v in vals)
-						vMax = max(v.value for v in vals)
-						yBottom = min(vBase, vMin)
-						yTop = vMax
-						cheight = height
-						predHeight = 1.
-						if rs.thresholdValue is not None:
-							yBottom = min(yBottom, rs.thresholdValue)
-							yTop = max(yTop, rs.thresholdValue)
-							cheight -= predHeight
-						vScale = (cheight - rmargin*2.) / (yTop - yBottom)
-						rects = [
-							Rectangle((v.start, yA + rmargin + ((vBase - yBottom) * vScale)),
-								v.span + 1, v.value * vScale)
-							for v in vals
-						]
-						pc = PatchCollection(rects,
-							fc = colInvisible,
-							ec = [ c*0.5 for c in color[:3] ] + [1.],
-							linewidth=2.)
-						ax.add_collection(pc)
-						pc = PatchCollection(rects,
-							fc = color[:3] + [1.],
-							ec = colInvisible)
-						ax.add_collection(pc)
-						# Legend
-						maxv = max([ v.value for v in vals ])
-						minv = min([ v.value for v in vals ])
-						lyA = yA + rmargin + ((vBase - yBottom) * vScale) + minv * vScale
-						lyB = yA + rmargin + ((vBase - yBottom) * vScale) + maxv * vScale
-						ax.add_patch(Rectangle(
-							(coordEnd, lyA),
-							1. * 0.006 * width,
-							lyB-lyA,
-							fc = (0.2, 0.2, 0.2, 1.),
-							ec = colInvisible,
-							clip_on = False
-						))
-						tticks = [ (maxv, str(maxv)), (minv, str(minv)) ]
-						if rs.thresholdValue is not None:
-							tticks.append((rs.thresholdValue, str(rs.thresholdValue) + ' (threshold)'))
-						if minv < 0. and maxv > 0.:
-							tticks.append((0, str(0)))
-						tticks = sorted(tticks, key = lambda p: p[0])
-						for v, n in tticks:
-							ly = yA + rmargin + ((vBase - yBottom) * vScale) + v * vScale
-							ax.add_line(Line2D([ coordEnd + 0. * 0.006 * width, coordEnd + 2. * 0.006 * width ],
-								[ ly, ly ],
-								color = (0.2, 0.2, 0.2, 1.),
-								linewidth = 1.,
-								clip_on = False))
-							plt.text(coordEnd + 3. * 0.006 * width,
-									ly,
-									n,
-									verticalalignment = 'center',
-									horizontalalignment = 'left',
-									color = ax.yaxis.label.get_color(),
-									fontsize = 8,
-									clip_on = False)
-						# Thresholded
-						if rs.thresholdValue is not None:
-							tthr = yA + rmargin + ((rs.thresholdValue - yBottom) * vScale)
-							ax.plot(
-								[ coordStart, coordEnd ],
-								[ tthr, tthr ],
-								linestyle = '-',
-								color = 'grey',
-								label = 'Expected at random')
-							frs = rs.regions().filter('', lambda r: r.seq == chromosome\
-								and r.end >= coordStart\
-								and r.start <= coordEnd)
-							for r in frs:
-								drawRoundBox(start = r.start, end = r.end,
-									y = yB - predHeight + rmargin, height = predHeight - 2*rmargin,
-									fc = color[:3] + [0.4],
-									ec = [ c*0.5 for c in color[:3] ] + [1.])
-							# Legend
-							drawRoundBox(start = coordEnd + width*0.01,
-								end = coordEnd + width*0.01 + 3. * 0.006 * width,
-								y = yB - 0.1 - geneheight,
-								height = geneheight,
-								fc = color[:3] + [0.4],
-								ec = [ c*0.5 for c in color[:3] ] + [1.],
-								rlabel = 'Thresholded',
+						#
+						res = 2048
+						srcXA = coordStart
+						srcXB = coordEnd
+						scale = res / (srcXB - srcXA)
+						ret = [ None for _ in range(res) ]
+						for v in vals:
+							dstXA = int(min(max((v.start - srcXA) * scale, 0), res-1))
+							dstXB = int(min(max((v.start + v.span - srcXA) * scale, 0), res-1))
+							for x in range(dstXA, dstXB+1):
+								ret[x] = (srcXA + (float(x) / scale), v.value)
+						raster = [ v for v in ret if v is not None ]
+					# Plot curve
+					vBase = 0.
+					vMin = min(y for x, y in raster)
+					vMax = max(y for x, y in raster)
+					yBottom = min(vBase, vMin)
+					yTop = vMax
+					cheight = height
+					predHeight = 1.
+					def V2Y(v):
+						return yA + rmargin + ((v + vBase - yBottom) * vScale)
+					if rs.thresholdValue is not None:
+						yBottom = min(yBottom, rs.thresholdValue)
+						yTop = max(yTop, rs.thresholdValue)
+						cheight -= predHeight
+					vScale = (cheight - rmargin*2.) / (yTop - yBottom)
+					polypts = [ ]
+					polypts += [
+						(x, V2Y(max(y, vBase)))
+						for x, y in raster ]
+					polypts += reversed([
+						(x, V2Y(min(y, vBase)))
+						for x, y in raster ])
+					poly = Polygon(
+						polypts,
+						fc = color[:3] + [0.4],
+						ec = [ c*0.5 for c in color[:3] ] + [1.])
+					ax.add_patch(poly)
+					# Legend
+					lyA = V2Y(vMin)
+					lyB = V2Y(vMax)
+					ax.add_patch(Rectangle(
+						(coordEnd, lyA),
+						1. * 0.006 * width,
+						lyB-lyA,
+						fc = (0.2, 0.2, 0.2, 1.),
+						ec = colInvisible,
+						clip_on = False
+					))
+					tticks = [ (vMax, str(vMax)), (vMin, str(vMin)) ]
+					if rs.thresholdValue is not None:
+						tticks.append((rs.thresholdValue, str(rs.thresholdValue) + ' (threshold)'))
+					if vMin < 0. and vMax > 0.:
+						tticks.append((0.0, str(0.0)))
+					tticks = sorted(tticks, key = lambda p: p[0])
+					for v, n in tticks:
+						ly = V2Y(v)
+						ax.add_line(Line2D([ coordEnd + 0. * 0.006 * width, coordEnd + 2. * 0.006 * width ],
+							[ ly, ly ],
+							color = (0.2, 0.2, 0.2, 1.),
+							linewidth = 1.,
+							clip_on = False))
+						plt.text(coordEnd + 3. * 0.006 * width,
+								ly,
+								n,
+								verticalalignment = 'center',
+								horizontalalignment = 'left',
+								color = ax.yaxis.label.get_color(),
+								fontsize = 8,
 								clip_on = False)
+					# Thresholded
+					if rs.thresholdValue is not None:
+						tthr = V2Y(rs.thresholdValue)
+						ax.plot(
+							[ coordStart, coordEnd ],
+							[ tthr, tthr ],
+							linestyle = '-',
+							color = 'grey',
+							label = 'Expected at random')
+						frs = rs.regions().filter('', lambda r: r.seq == chromosome\
+							and r.end >= coordStart\
+							and r.start <= coordEnd)
+						for r in frs:
+							drawRoundBox(start = r.start, end = r.end,
+								y = yB - predHeight + rmargin, height = predHeight - 2*rmargin,
+								fc = color[:3] + [0.4],
+								ec = [ c*0.5 for c in color[:3] ] + [1.])
+						# Legend
+						drawRoundBox(start = coordEnd + width*0.01,
+							end = coordEnd + width*0.01 + 3. * 0.006 * width,
+							y = yB - 0.1 - geneheight,
+							height = geneheight,
+							fc = color[:3] + [0.4],
+							ec = [ c*0.5 for c in color[:3] ] + [1.],
+							rlabel = 'Thresholded',
+							clip_on = False)
 					continue
 				# Simpler handling of region sets
 				frs = rs.filter('', lambda r: r.seq == chromosome\
