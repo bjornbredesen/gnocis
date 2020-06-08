@@ -165,6 +165,7 @@ class genome:
 		return self.table().__repr__()
 
 def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot', outpath = None, figsize = None):
+	# TODO Refactor into separate functions and classes
 	if figsize is None:
 		figsize = (10, 1. * len(tracks))
 	def coordFmt(t):
@@ -179,8 +180,11 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 		from io import BytesIO
 		from IPython.core.display import display, HTML
 		from matplotlib.collections import PatchCollection
-		from matplotlib.patches import Rectangle
+		from matplotlib.patches import Rectangle, FancyBboxPatch
+		from matplotlib.path import Path
+		from matplotlib.lines import Line2D
 		from matplotlib.transforms import ScaledTranslation
+		import struct
 		with plt.style.context(style):
 			fig, ax = plt.subplots(1, figsize = figsize)
 			# Set up axes
@@ -235,6 +239,50 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 			for rsi, ((yA, yB), rs) in enumerate(zip(zip(setYA, setYB), tracks)):
 				# Special treatment of gene annotations, with plotting of genes with exons, CDS and names
 				height = yB - yA
+				colorRaw = plt.rcParams['axes.prop_cycle'].by_key()['color'][rsi]
+				color = [ v/255. for v in struct.unpack('BBB', bytes.fromhex(colorRaw[1:])) ]
+				def drawRoundBox(start, end, y, height, fc, ec, rlabel = None, clip_on = True):
+					w = end - start
+					rs = min(w * width * 0.00001, 500. * width * 0.00001)
+					patch = FancyBboxPatch((start, y),
+						w, height,
+						boxstyle="round,rounding_size=" + str(rs),
+						mutation_aspect = 2.*max(setYB)/width,
+						fc = fc,
+						ec = ec,
+						clip_on = clip_on)
+					ax.add_patch(patch)
+					if rlabel is not None:
+						plt.text(end + width*0.015,
+									y + height*.5,
+									rlabel,
+									verticalalignment = 'center',
+									horizontalalignment = 'left',
+									color = ax.yaxis.label.get_color(),
+									fontsize = 10,
+									clip_on = False)
+					return patch
+				def drawBox(start, end, y, height, fc, ec, rlabel = None, clip_on = True):
+					w = end - start
+					rs = min(w * width * 0.00001, 500. * width * 0.00001)
+					patch = FancyBboxPatch((start, y),
+						w, height,
+						boxstyle="square",
+						mutation_aspect = 2.*max(setYB)/width,
+						fc = fc,
+						ec = ec,
+						clip_on = clip_on)
+					ax.add_patch(patch)
+					if rlabel is not None:
+						plt.text(end + width*0.015,
+									y + height*.5,
+									rlabel,
+									verticalalignment = 'center',
+									horizontalalignment = 'left',
+									color = ax.yaxis.label.get_color(),
+									fontsize = 10,
+									clip_on = False)
+					return patch
 				if isinstance(rs, genome):
 					cgenes = [
 						g for g in rs.genes
@@ -242,29 +290,64 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 							 and g.region.end >= coordStart\
 							 and g.region.start <= coordEnd
 					]
-					rects = []
 					cy = height / 2.
+					geneheight = 1. - 2.*rmargin
+					colBody = [ 0.75, 0.75, 0.75 ]
+					colExons = [ 0.45, 0.45, 0.45 ]
+					colCDS = [ 0.1, 0.1, 0.1 ]
+					colBorder = [ 0.1, 0.1, 0.1, 1. ]
+					colInvisible = [ 0., 0., 0., 0. ]
+					# Legend: Gene body
+					def drawGeneBody(start, end, y, height, rlabel = None, clip_on = True):
+						return drawRoundBox(start = start, end = end,
+							y = y, height = height,
+							fc = colBody + [0.4],
+							ec = colInvisible,
+							rlabel = rlabel,
+							clip_on = clip_on)
+					def drawGeneOutline(start, end, y, height, clip_on = True):
+						drawRoundBox(start = start, end = end,
+							y = y, height = height,
+							fc = colInvisible,
+							ec = colBorder,
+							clip_on = clip_on)
+					drawGeneBody(start = coordEnd + width*0.01, end = coordEnd + width*0.01 + 3. * 0.006 * width, y = yB - 0.1 - geneheight, height = geneheight, rlabel = 'Gene body', clip_on = False)
+					drawGeneOutline(start = coordEnd + width*0.01, end = coordEnd + width*0.01 + 3. * 0.006 * width, y = yB - 0.1 - geneheight, height = geneheight, clip_on = False)
+					# Legend: Gene exon
+					def drawGeneExon(start, end, y, height, rlabel = None, clip_on = True):
+						drawBox(start = start, end = end, y = y, height = height,
+							fc = colExons + [1.],
+							ec = colExons + [1.],
+							rlabel = rlabel,
+							clip_on = clip_on)
+					drawGeneExon(start = coordEnd + width*0.01, end = coordEnd + width*0.01 + 3. * 0.006 * width, y = yB - 0.1 - geneheight - 0.1 - geneheight, height = geneheight, rlabel = 'Exon', clip_on = False)
+					#drawGeneOutline(start = coordEnd + width*0.01, end = coordEnd + width*0.01 + 3. * 0.006 * width, y = yB - 0.1 - geneheight - 0.1 - geneheight, height = geneheight, clip_on = False)
+					# Legend: Gene CDS
+					def drawGeneCDS(start, end, y, height, rlabel = None, clip_on = True):
+						drawBox(start = start, end = end, y = y, height = height,
+							fc = colCDS + [1.],
+							ec = colCDS + [1.],
+							rlabel = rlabel,
+							clip_on = clip_on)
+					drawGeneCDS(start = coordEnd + width*0.01, end = coordEnd + width*0.01 + 3. * 0.006 * width, y = yB - 0.1 - geneheight - 0.1 - geneheight - 0.1 - geneheight, height = geneheight, rlabel = 'CDS', clip_on = False)
+					#drawGeneOutline(start = coordEnd + width*0.01, end = coordEnd + width*0.01 + 3. * 0.006 * width, y = yB - 0.1 - geneheight - 0.1 - geneheight - 0.1 - geneheight, height = geneheight, clip_on = False)
+					#
 					for strand in [ False, True ]:
 						gh = 0.02
 						exonh = 0.2
 						ccy = yA + (cy + 0.5 if strand else cy - 0.5)
-						rects += [
-							Rectangle((g.region.start, ccy - gh), len(g.region), gh*2.)
-							for g in cgenes
-							if g.region.strand == strand
-						]
-						rects += [
-							Rectangle((r.start, ccy - exonh), len(r), 2*exonh)
-							for g in cgenes
-							for r in g.exons
-							if r.strand == strand
-						]
-						rects += [
-							Rectangle((r.start, ccy - 0.5 + rmargin), len(r), 1. - 2*rmargin)
-							for g in cgenes
-							for r in g.CDS
-							if r.strand == strand
-						]
+						for g in cgenes:
+							if g.region.strand != strand: continue
+							# Gene body
+							drawGeneBody(start = g.region.start, end = g.region.end, y = ccy - geneheight*.5, height = geneheight)
+							# Exons
+							for r in g.exons:
+								drawGeneExon(start = r.start, end = r.end, y = ccy - geneheight*.5, height = geneheight)
+							# CDS
+							for r in g.CDS:
+								drawGeneCDS(start = r.start, end = r.end, y = ccy - geneheight*.5, height = geneheight)
+							#
+							drawGeneOutline(start = g.region.start, end = g.region.end, y = ccy - geneheight*.5, height = geneheight)
 						for g in cgenes:
 							if g.region.strand == strand:
 								center = (g.region.start + g.region.end)/2.
@@ -274,8 +357,6 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 									g.name,
 									horizontalalignment = 'center',
 									verticalalignment = 'center')
-					pc = PatchCollection(rects, facecolor='C%d'%rsi)
-					ax.add_collection(pc)
 					continue
 				# Special handling of curves
 				elif isinstance(rs, curves):
@@ -307,26 +388,75 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 								span + 1, v * vScale)
 							for i, v in enumerate(vals)
 						]
-						pc = PatchCollection(rects, facecolor='C%d'%rsi)
+						pc = PatchCollection(rects,
+							fc = colInvisible,
+							ec = [ c*0.5 for c in color[:3] ] + [1.],
+							linewidth=2.)
 						ax.add_collection(pc)
+						pc = PatchCollection(rects,
+							fc = color[:3] + [1.],
+							ec = colInvisible)
+						ax.add_collection(pc)
+						# Legend
+						maxv = max(vals)
+						minv = min(vals)
+						lyA = yA + rmargin + ((vBase - yBottom) * vScale) + minv * vScale
+						lyB = yA + rmargin + ((vBase - yBottom) * vScale) + maxv * vScale
+						ax.add_patch(Rectangle(
+							(coordEnd, lyA),
+							1. * 0.006 * width,
+							lyB-lyA,
+							fc = (0.2, 0.2, 0.2, 1.),
+							ec = colInvisible,
+							clip_on = False
+						))
+						tticks = [ (maxv, str(maxv)), (minv, str(minv)) ]
+						if rs.thresholdValue is not None:
+							tticks.append((rs.thresholdValue, str(rs.thresholdValue) + ' (threshold)'))
+						if minv < 0. and maxv > 0.:
+							tticks.append((0, str(0)))
+						tticks = sorted(tticks, key = lambda p: p[0])
+						for v, n in tticks:
+							ly = yA + rmargin + ((vBase - yBottom) * vScale) + v * vScale
+							ax.add_line(Line2D([ coordEnd + 0. * 0.006 * width, coordEnd + 2. * 0.006 * width ],
+								[ ly, ly ],
+								color = (0.2, 0.2, 0.2, 1.),
+								linewidth = 1.,
+								clip_on = False))
+							plt.text(coordEnd + 3. * 0.006 * width,
+									ly,
+									n,
+									verticalalignment = 'center',
+									horizontalalignment = 'left',
+									color = ax.yaxis.label.get_color(),
+									fontsize = 8,
+									clip_on = False)
+						# Thresholded
 						if rs.thresholdValue is not None:
 							tthr = yA + rmargin + ((rs.thresholdValue - yBottom) * vScale)
 							ax.plot(
 								[ coordStart, coordEnd ],
 								[ tthr, tthr ],
-								linestyle = '--',
+								linestyle = '-',
 								color = 'grey',
 								label = 'Expected at random')
 							frs = rs.regions().filter('', lambda r: r.seq == chromosome\
 								and r.end >= coordStart\
 								and r.start <= coordEnd)
-							rects = [
-								Rectangle((r.start, yB - predHeight + rmargin),
-									len(r), predHeight - 2*rmargin)
-								for r in frs
-							]
-							pc = PatchCollection(rects, facecolor='C%d'%rsi)
-							ax.add_collection(pc)
+							for r in frs:
+								drawRoundBox(start = r.start, end = r.end,
+									y = yB - predHeight + rmargin, height = predHeight - 2*rmargin,
+									fc = color[:3] + [0.4],
+									ec = [ c*0.5 for c in color[:3] ] + [1.])
+							# Legend
+							drawRoundBox(start = coordEnd + width*0.01,
+								end = coordEnd + width*0.01 + 3. * 0.006 * width,
+								y = yB - 0.1 - geneheight,
+								height = geneheight,
+								fc = color[:3] + [0.4],
+								ec = [ c*0.5 for c in color[:3] ] + [1.],
+								rlabel = 'Thresholded',
+								clip_on = False)
 					elif isinstance(ccurve, variableStepCurve):
 						vals = [
 							v for v in ccurve
@@ -350,37 +480,85 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 								v.span + 1, v.value * vScale)
 							for v in vals
 						]
-						pc = PatchCollection(rects, facecolor='C%d'%rsi)
+						pc = PatchCollection(rects,
+							fc = colInvisible,
+							ec = [ c*0.5 for c in color[:3] ] + [1.],
+							linewidth=2.)
 						ax.add_collection(pc)
+						pc = PatchCollection(rects,
+							fc = color[:3] + [1.],
+							ec = colInvisible)
+						ax.add_collection(pc)
+						# Legend
+						maxv = max([ v.value for v in vals ])
+						minv = min([ v.value for v in vals ])
+						lyA = yA + rmargin + ((vBase - yBottom) * vScale) + minv * vScale
+						lyB = yA + rmargin + ((vBase - yBottom) * vScale) + maxv * vScale
+						ax.add_patch(Rectangle(
+							(coordEnd, lyA),
+							1. * 0.006 * width,
+							lyB-lyA,
+							fc = (0.2, 0.2, 0.2, 1.),
+							ec = colInvisible,
+							clip_on = False
+						))
+						tticks = [ (maxv, str(maxv)), (minv, str(minv)) ]
+						if rs.thresholdValue is not None:
+							tticks.append((rs.thresholdValue, str(rs.thresholdValue) + ' (threshold)'))
+						if minv < 0. and maxv > 0.:
+							tticks.append((0, str(0)))
+						tticks = sorted(tticks, key = lambda p: p[0])
+						for v, n in tticks:
+							ly = yA + rmargin + ((vBase - yBottom) * vScale) + v * vScale
+							ax.add_line(Line2D([ coordEnd + 0. * 0.006 * width, coordEnd + 2. * 0.006 * width ],
+								[ ly, ly ],
+								color = (0.2, 0.2, 0.2, 1.),
+								linewidth = 1.,
+								clip_on = False))
+							plt.text(coordEnd + 3. * 0.006 * width,
+									ly,
+									n,
+									verticalalignment = 'center',
+									horizontalalignment = 'left',
+									color = ax.yaxis.label.get_color(),
+									fontsize = 8,
+									clip_on = False)
+						# Thresholded
 						if rs.thresholdValue is not None:
 							tthr = yA + rmargin + ((rs.thresholdValue - yBottom) * vScale)
 							ax.plot(
 								[ coordStart, coordEnd ],
 								[ tthr, tthr ],
-								linestyle = '--',
+								linestyle = '-',
 								color = 'grey',
 								label = 'Expected at random')
 							frs = rs.regions().filter('', lambda r: r.seq == chromosome\
 								and r.end >= coordStart\
 								and r.start <= coordEnd)
-							rects = [
-								Rectangle((r.start, yB - predHeight + rmargin),
-									len(r), predHeight - 2*rmargin)
-								for r in frs
-							]
-							pc = PatchCollection(rects, facecolor='C%d'%rsi)
-							ax.add_collection(pc)
+							for r in frs:
+								drawRoundBox(start = r.start, end = r.end,
+									y = yB - predHeight + rmargin, height = predHeight - 2*rmargin,
+									fc = color[:3] + [0.4],
+									ec = [ c*0.5 for c in color[:3] ] + [1.])
+							# Legend
+							drawRoundBox(start = coordEnd + width*0.01,
+								end = coordEnd + width*0.01 + 3. * 0.006 * width,
+								y = yB - 0.1 - geneheight,
+								height = geneheight,
+								fc = color[:3] + [0.4],
+								ec = [ c*0.5 for c in color[:3] ] + [1.],
+								rlabel = 'Thresholded',
+								clip_on = False)
 					continue
 				# Simpler handling of region sets
 				frs = rs.filter('', lambda r: r.seq == chromosome\
 					and r.end >= coordStart\
 					and r.start <= coordEnd)
-				rects = [
-					Rectangle((r.start, yA + rmargin), len(r), height - 2*rmargin)
-					for r in frs
-				]
-				pc = PatchCollection(rects, facecolor='C%d'%rsi)
-				ax.add_collection(pc)
+				for r in frs:
+					drawRoundBox(start = r.start, end = r.end,
+						y = yA + rmargin, height = height - 2*rmargin,
+						fc = color[:3] + [0.4],
+						ec = [ c*0.5 for c in color[:3] ] + [1.])
 			#
 			plt.xlabel('Chromosome ' + chromosome, fontsize=18)
 			fig.tight_layout()
