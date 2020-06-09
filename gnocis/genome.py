@@ -167,7 +167,7 @@ class genome:
 def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot', outpath = None, figsize = None):
 	# TODO Refactor into separate functions and classes
 	if figsize is None:
-		figsize = (10, 1. * len(tracks))
+		figsize = (13., 1. * len(tracks))
 	def coordFmt(t):
 		if t >= 1000000:
 			return '%.3f Mb'%(t / 1000000.)
@@ -242,7 +242,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 				color = [ v/255. for v in struct.unpack('BBB', bytes.fromhex(colorRaw[1:])) ]
 				def drawRoundBox(start, end, y, height, fc, ec, rlabel = None, clip_on = True):
 					w = end - start + 1
-					rs = min(w * width * 0.00001, 500. * width * 0.00001)
+					rs = min(w * 0.5 * width * 0.00001, 500. * width * 0.00001)
 					patch = FancyBboxPatch((start, y),
 						w, height,
 						boxstyle="round,rounding_size=" + str(rs),
@@ -433,8 +433,14 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 					poly = Polygon(
 						polypts,
 						fc = color[:3] + [0.4],
-						ec = [ c*0.5 for c in color[:3] ] + [1.])
+						ec = colInvisible)
+						#ec = [ c*0.5 for c in color[:3] ] + [1.])
 					ax.add_patch(poly)
+					ax.add_line(Line2D([ x for x, y in raster ],
+						[ V2Y(y) for x, y in raster ],
+						linewidth = 0.8,
+						color = [ c*0.75 for c in color[:3] ] + [0.75]))
+						#color = color))
 					# Legend
 					lyA = V2Y(vMin)
 					lyB = V2Y(vMax)
