@@ -28,24 +28,33 @@ def getSequenceMatrix(seq):
 
 # Convolutional Neural Network
 class sequenceModelCNN(sequenceModel):
-	def __init__(self, name, trainingSet, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, labelPositive = positive, labelNegative = negative):
+	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, labelPositive = positive, labelNegative = negative, trainingSet = None):
 		super().__init__(name, enableMultiprocessing = False)
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.labelPositive, self.labelNegative = labelPositive, labelNegative
-		self.trainingSet = trainingSet
 		self.threshold = 0.0
 		self.nConv, self.convLen = nConv, convLen
 		self.epochs = epochs
-		
-		positives, negatives = trainingSet.withLabel([ labelPositive, labelNegative ])
+		self.cls = None
+		if trainingSet is not None:
+			self.train(trainingSet)
+	
+	def train(self, trainingSet):
+		self.trainingSet = trainingSet
+		positives, negatives = trainingSet.withLabel([ self.labelPositive, self.labelNegative ])
 		scaleFac = 10
 		bloat = int(500/scaleFac)
 		hbloat = int(bloat/2)
 		
+		print('sequenceModelCNN.train:')
+		print(' - 	trainingSet: %s (%d)'%(str(trainingSet), len(trainingSet)))
+		print(' - 	positives: %s (%d)'%(str(positives), len(positives)))
+		print(' - 	negatives: %s (%d)'%(str(negatives), len(negatives)))
+		
 		model = keras.Sequential([
 			# Convolutions / Position Weight Matrices (PWMs)
-			keras.layers.Conv2D(nConv, (convLen, 4), activation='relu'),
-			keras.layers.ZeroPadding2D(padding=(int((convLen-1)/2), 0)),
+			keras.layers.Conv2D(self.nConv, (self.convLen, 4), activation='relu'),
+			keras.layers.ZeroPadding2D(padding=(int((self.convLen-1)/2), 0)),
 			keras.layers.Permute((1, 3, 2)),
 			# Scale down, for efficiency
 			keras.layers.AveragePooling2D((scaleFac, 1)),
@@ -66,11 +75,11 @@ class sequenceModelCNN(sequenceModel):
 			
 			#-----------------------------------
 			# Convolution for combinatorial motif occurrence modelling
-			keras.layers.Conv2D(nConv, (1, nConv), activation='relu'),
+			keras.layers.Conv2D(self.nConv, (1, self.nConv), activation='relu'),
 			keras.layers.Permute((1, 3, 2)),
 			
 			#-----------------------------------
-			keras.layers.MaxPooling2D((250, 1)),
+			keras.layers.MaxPooling2D((int(250/scaleFac), 1)),
 			keras.layers.Flatten(),
 			keras.layers.Dense(2, activation=tf.nn.softmax)
 		])
@@ -93,25 +102,27 @@ class sequenceModelCNN(sequenceModel):
 
 		train_labels = np.array([
 			1 for s in positives
+			for w in s.windows(self.windowSize, self.windowStep)
 		] + [
 			0 for s in negatives
+			for w in s.windows(self.windowSize, self.windowStep)
 		])
 
 		model.fit(
 			train_seq,
 			train_labels,
-			epochs = epochs,
+			epochs = self.epochs,
 			verbose = 0
 		)
 		
 		self.cls = model
-
+	
 	def scoreWindow(self, seq):
 		p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1)]))
 		return p[0, 1] - p[0, 0]
 	
 	def getTrainer(self):
-		return lambda ts: sequenceModelCNN(self.name, ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
+		return lambda ts: sequenceModelCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
 
 	def __str__(self):
 		return 'Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
