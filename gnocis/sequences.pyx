@@ -96,6 +96,16 @@ cdef class sequence:
 	def __repr__(self):
 		return self.__str__()
 	
+	def label(self, label):
+		"""
+		:param label: Label to add.
+		:type label: sequenceLabel
+		
+		:return: Returns a labelled sequence.
+		:rtype: sequence
+		"""
+		return sequence(name = self.name, seq = self.seq, path = self.path, sourceRegion = self.sourceRegion, annotation = self.annotation, labels = self.labels | set([label]))
+	
 	# Extracts sequence windows with a desired size and step size.
 	def windows(self, int size, int step, bool includeCroppedEnds = False):
 		"""
@@ -283,12 +293,10 @@ cdef class sequences:
 		
 		:return: Sequences with label added.
 		:rtype: sequences
-		
-		Note: Mutates and returns the same `sequences` instance.
 		"""
-		for s in self.sequences:
-			s.labels.add(label)
-		return self
+		return sequences(self.name, [
+			s.label(label) for s in self.sequences
+		])
 	
 	# Gets sequences with the given label
 	def withLabel(self, labels, ensureAllLabels = True):
