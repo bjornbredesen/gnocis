@@ -26,7 +26,7 @@ def getSequenceMatrix(seq):
 
 # Convolutional Neural Network
 class sequenceModelCNN(sequenceModel):
-	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, labelPositive = positive, labelNegative = negative, trainingSet = None):
+	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, labelPositive = positive, labelNegative = negative, trainingSet = None, batchsize = 1000):
 		super().__init__(name, enableMultiprocessing = False)
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.labelPositive, self.labelNegative = labelPositive, labelNegative
@@ -34,10 +34,12 @@ class sequenceModelCNN(sequenceModel):
 		self.nConv, self.convLen = nConv, convLen
 		self.epochs = epochs
 		self.cls = None
+		self.batchsize = batchsize
 		if trainingSet is not None:
 			self.train(trainingSet)
 	
 	def train(self, trainingSet):
+		print('Training')
 		self.trainingSet = trainingSet
 		positives, negatives = trainingSet.withLabel([ self.labelPositive, self.labelNegative ])
 		scaleFac = 10
@@ -83,21 +85,21 @@ class sequenceModelCNN(sequenceModel):
 			metrics = ['accuracy']
 		)
 		
-		train_seq = np.array([
-			getSequenceMatrix(w.seq).reshape(len(w), 4, 1)
-			for s in positives
-			for w in s.windows(self.windowSize, self.windowStep)
-		] + [
+		train_seq = [
 			getSequenceMatrix(w.seq).reshape(len(w), 4, 1)
 			for s in negatives
 			for w in s.windows(self.windowSize, self.windowStep)
+		] + np.array([
+			getSequenceMatrix(w.seq).reshape(len(w), 4, 1)
+			for s in positives
+			for w in s.windows(self.windowSize, self.windowStep)
 		])
 
-		train_labels = np.array([
-			1 for s in positives
-			for w in s.windows(self.windowSize, self.windowStep)
-		] + [
+		train_labels = [
 			0 for s in negatives
+			for w in s.windows(self.windowSize, self.windowStep)
+		] + np.array([
+			1 for s in positives
 			for w in s.windows(self.windowSize, self.windowStep)
 		])
 
@@ -109,13 +111,40 @@ class sequenceModelCNN(sequenceModel):
 		)
 		
 		self.cls = model
+		print(' ... done!')
+	
+	def getSequenceScores(self, seqs):
+		if self.batchsize == 0:
+			return super().getSequenceScores(seqs)
+		seqwinit = (
+			(i, win)
+			for i, cseq in enumerate(seqs)
+			for win in cseq.windows(self.windowSize, self.windowStep)
+			if len(win) == self.windowSize
+		)
+		seqscores = [ -float('INF') for _ in range(len(seqs)) ]
+		while True:
+			batch = [
+				b for b in [
+					next(seqwinit, None) for _ in range(self.batchsize)
+				]
+				if b is not None
+			]
+			if len(batch) == 0: break
+			p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1) for i, seq in batch]))
+			scores = p[:, 1] - p[:, 0]
+			for score, (i, win) in zip(scores, batch):
+				if score > seqscores[i]:
+					seqscores[i] = score
+		#
+		return seqscores
 	
 	def scoreWindow(self, seq):
 		p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1)]))
 		return p[0, 1] - p[0, 0]
 	
 	def getTrainer(self):
-		return lambda ts: sequenceModelCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, labelPositive = self.labelPositive, labelNegative = self.labelNegative)
+		return lambda ts: sequenceModelCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, labelPositive = self.labelPositive, labelNegative = self.labelNegative, batchsize = self.batchsize)
 
 	def __str__(self):
 		return 'Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
@@ -124,7 +153,7 @@ class sequenceModelCNN(sequenceModel):
 
 # Convolutional Neural Network
 class sequenceModelMultiCNN(sequenceModel):
-	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, targetLabel = positive, labels = [ positive, negative ], trainingSet = None):
+	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, targetLabel = positive, labels = [ positive, negative ], trainingSet = None, batchsize = 1000):
 		super().__init__(name, enableMultiprocessing = False)
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.targetLabel, self.labels = targetLabel, list(set([targetLabel]) | set(labels))
@@ -133,10 +162,12 @@ class sequenceModelMultiCNN(sequenceModel):
 		self.nConv, self.convLen = nConv, convLen
 		self.epochs = epochs
 		self.cls = None
+		self.batchsize = batchsize
 		if trainingSet is not None:
 			self.train(trainingSet)
 	
 	def train(self, trainingSet):
+		print('Training')
 		self.trainingSet = trainingSet
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
@@ -206,6 +237,35 @@ class sequenceModelMultiCNN(sequenceModel):
 		)
 		
 		self.cls = model
+		print(' ... done!')
+	
+	def getSequenceScores(self, seqs):
+		if self.batchsize == 0:
+			return super().getSequenceScores(seqs)
+		seqwinit = (
+			(i, win)
+			for i, cseq in enumerate(seqs)
+			for win in cseq.windows(self.windowSize, self.windowStep)
+			if len(win) == self.windowSize
+		)
+		seqscores = [ -float('INF') for _ in range(len(seqs)) ]
+		while True:
+			batch = [
+				b for b in [
+					next(seqwinit, None) for _ in range(self.batchsize)
+				]
+				if b is not None
+			]
+			if len(batch) == 0: break
+			p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1) for i, seq in batch]))
+			#scores = p[:, 1] - p[:, 0]
+			i = self.labelValues[self.targetLabel]
+			scores = p[:, i] / sum(p[:, n] for n in range(self.nLabels))
+			for score, (i, win) in zip(scores, batch):
+				if score > seqscores[i]:
+					seqscores[i] = score
+		#
+		return seqscores
 	
 	def scoreWindow(self, seq):
 		p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1)]))
@@ -213,7 +273,7 @@ class sequenceModelMultiCNN(sequenceModel):
 		return p[0, i] / sum(p[0, n] for n in range(self.nLabels))
 	
 	def getTrainer(self):
-		return lambda ts: sequenceModelMultiCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels)
+		return lambda ts: sequenceModelMultiCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels, batchsize = self.batchsize)
 
 	def __str__(self):
 		return 'Multi-class Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
