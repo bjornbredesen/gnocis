@@ -87,6 +87,12 @@ cdef class sequence:
 		if name == None and sourceRegion != None:
 			self.name = '%s:%d..%d (%s)'%(sourceRegion.seq, sourceRegion.start, sourceRegion.end, '+' if sourceRegion.strand else '-')
 	
+	def __eq__(self, other):
+		return self.seq == other.seq
+	
+	def __hash__(self):
+		return hash(self.seq)
+	
 	def __len__(self):
 		return len(self.seq)
 	
