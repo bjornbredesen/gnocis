@@ -88,6 +88,7 @@ cdef class sequence:
 			self.name = '%s:%d..%d (%s)'%(sourceRegion.seq, sourceRegion.start, sourceRegion.end, '+' if sourceRegion.strand else '-')
 	
 	def __eq__(self, other):
+		if other is None or not isinstance(other, sequence): return False
 		return self.seq == other.seq
 	
 	def __hash__(self):
