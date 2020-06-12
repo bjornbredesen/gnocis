@@ -7,13 +7,11 @@
 ############################################################################
 # Interfacing with TensorFlow
 
-from .features import featureScaler
 from .sequences import sequences, positive, negative
 from .models import sequenceModel
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-import random
 
 ntmat = {
 	'A': [ 1., 0., 0., 0. ],
@@ -43,13 +41,8 @@ class sequenceModelCNN(sequenceModel):
 		self.trainingSet = trainingSet
 		positives, negatives = trainingSet.withLabel([ self.labelPositive, self.labelNegative ])
 		scaleFac = 10
-		bloat = int(500/scaleFac)
+		bloat = int((min(500, self.windowSize)-1)/scaleFac)
 		hbloat = int(bloat/2)
-		
-		print('sequenceModelCNN.train:')
-		print(' - 	trainingSet: %s (%d)'%(str(trainingSet), len(trainingSet)))
-		print(' - 	positives: %s (%d)'%(str(positives), len(positives)))
-		print(' - 	negatives: %s (%d)'%(str(negatives), len(negatives)))
 		
 		model = keras.Sequential([
 			# Convolutions / Position Weight Matrices (PWMs)
@@ -126,6 +119,104 @@ class sequenceModelCNN(sequenceModel):
 
 	def __str__(self):
 		return 'Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
+
+	def __repr__(self): return self.__str__()
+
+# Convolutional Neural Network
+class sequenceModelMultiCNN(sequenceModel):
+	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, targetLabel = positive, labels = [ positive, negative ], trainingSet = None):
+		super().__init__(name, enableMultiprocessing = False)
+		self.windowSize, self.windowStep = windowSize, windowStep
+		self.targetLabel, self.labels = targetLabel, list(set([targetLabel]) | set(labels))
+		self.nLabels = len(self.labels)
+		self.threshold = 0.0
+		self.nConv, self.convLen = nConv, convLen
+		self.epochs = epochs
+		self.cls = None
+		if trainingSet is not None:
+			self.train(trainingSet)
+	
+	def train(self, trainingSet):
+		self.trainingSet = trainingSet
+		scaleFac = 10
+		bloat = int((min(500, self.windowSize)-1)/scaleFac)
+		hbloat = int(bloat/2)
+		
+		model = keras.Sequential([
+			# Convolutions / Position Weight Matrices (PWMs)
+			keras.layers.Conv2D(self.nConv, (self.convLen, 4), activation='relu'),
+			keras.layers.ZeroPadding2D(padding=(int((self.convLen-1)/2), 0)),
+			keras.layers.Permute((1, 3, 2)),
+			# Scale down, for efficiency
+			keras.layers.AveragePooling2D((scaleFac, 1)),
+			
+			#-----------------------------------
+			# Motif occurrence combinatorics convolution
+			# Extend motif peaks (to model distal combinatorics)
+			keras.layers.Conv2D(1, (bloat, 1),
+				activation=None,
+				trainable = False,
+				use_bias=False,
+				weights = [
+					tf.constant(
+						np.array([ 1./bloat for _ in range(bloat) ])
+						.reshape((bloat, 1, 1, 1))),
+				]),
+			keras.layers.ZeroPadding2D(padding=(hbloat, 0)),
+			
+			#-----------------------------------
+			# Convolution for combinatorial motif occurrence modelling
+			keras.layers.Conv2D(self.nConv, (1, self.nConv), activation='relu'),
+			keras.layers.Permute((1, 3, 2)),
+			
+			#-----------------------------------
+			keras.layers.MaxPooling2D((int(250/scaleFac), 1)),
+			keras.layers.Flatten(),
+			keras.layers.Dense(self.nLabels, activation=tf.nn.softmax)
+		])
+		
+		model.compile(
+			optimizer = 'adam',
+			loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+			metrics = ['accuracy']
+		)
+		
+		self.labelValues = {
+			label: i
+			for i, label in enumerate(self.labels)
+		}
+		train_seq = np.array([
+			getSequenceMatrix(win.seq).reshape(len(win), 4, 1)
+			for label in self.labels
+			for seq in trainingSet.withLabel(label)
+			for win in seq.windows(self.windowSize, self.windowStep)
+		])
+		train_labels = np.array([
+			self.labelValues[label]
+			for label in self.labels
+			for seq in trainingSet.withLabel(label)
+			for win in seq.windows(self.windowSize, self.windowStep)
+		])
+
+		model.fit(
+			train_seq,
+			train_labels,
+			epochs = self.epochs,
+			verbose = 0
+		)
+		
+		self.cls = model
+	
+	def scoreWindow(self, seq):
+		p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1)]))
+		i = self.labelValues[self.targetLabel]
+		return p[0, i] / sum(p[0, n] for n in range(self.nLabels))
+	
+	def getTrainer(self):
+		return lambda ts: sequenceModelMultiCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels)
+
+	def __str__(self):
+		return 'Multi-class Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
 
 	def __repr__(self): return self.__str__()
 
