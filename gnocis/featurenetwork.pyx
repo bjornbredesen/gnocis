@@ -180,6 +180,24 @@ cdef class featureNetworkNode:
 			}
 		)
 	
+	def multiprocessingSupported(self):
+		"""
+		Returns True if multiprocessing is supported, or otherwise False.
+		
+		:return: Whether or not multiprocessing is supported
+		:rtype: bool
+		"""
+		return True
+	
+	def batchsize(self):
+		"""
+		Returns a positive integer representing a desired vector batch size, or 0.
+		
+		:return: Desired vector batch size, or 0
+		:rtype: int
+		"""
+		return 0
+	
 	#-----------------------
 	# Short-hands
 	
@@ -521,6 +539,12 @@ cdef class FNNLogOdds(featureNetworkNode):
 	def featureNames(self):
 		return self.features.featureNames()
 	
+	def multiprocessingSupported(self):
+		return self.features.multiprocessingSupported()
+	
+	def batchsize(self):
+		return self.features.batchsize()
+	
 	cpdef list get(self, sequences seq):
 		cdef float w, fv
 		cdef list fvs
@@ -597,6 +621,12 @@ cdef class FNNScaler(featureNetworkNode):
 	def featureNames(self):
 		return self.features.featureNames()
 	
+	def multiprocessingSupported(self):
+		return self.features.multiprocessingSupported()
+	
+	def batchsize(self):
+		return self.features.batchsize()
+	
 	cpdef list get(self, sequences seq):
 		cdef list sfv
 		cdef float fv
@@ -653,6 +683,12 @@ cdef class FNNCat(featureNetworkNode):
 	def featureNames(self):
 		return [ n for i in self.inputs for n in i.featureNames() ]
 	
+	def multiprocessingSupported(self):
+		return self.inputs.multiprocessingSupported()
+	
+	def batchsize(self):
+		return self.inputs.batchsize()
+	
 	cpdef list get(self, sequences seq):
 		cdef list I
 		cdef featureNetworkNode i
@@ -687,6 +723,12 @@ class FNNSum(featureNetworkNode):
 	
 	def featureNames(self):
 		return self.inputs.featureNames()
+	
+	def multiprocessingSupported(self):
+		return self.inputs.multiprocessingSupported()
+	
+	def batchsize(self):
+		return self.inputs.batchsize()
 	
 	def get(self, seq):
 		fvs = self.inputs.get(seq)
@@ -726,6 +768,12 @@ class FNNSquare(featureNetworkNode):
 			for iA, vA in enumerate(names)
 			for vB in names[:iA+1]
 		]
+	
+	def multiprocessingSupported(self):
+		return self.inputs.multiprocessingSupported()
+	
+	def batchsize(self):
+		return self.inputs.batchsize()
 	
 	def get(self, seq):
 		fvs = self.inputs.get(seq)
@@ -767,6 +815,12 @@ class FNNWindow(featureNetworkNode):
 	def featureNames(self):
 		return self.inputs.featureNames()
 	
+	def multiprocessingSupported(self):
+		return self.inputs.multiprocessingSupported()
+	
+	def batchsize(self):
+		return self.inputs.batchsize()
+	
 	def get(self, seq):
 		win = sequences(seq.name, [ w for s in seq for w in s.windows(self.winSize, self.winStep) ])
 		return self.inputs.get(win)
@@ -789,8 +843,9 @@ class FNNWindow(featureNetworkNode):
 
 class baseModel:
 	
-	def __init__(self):
-		pass
+	def __init__(self, enableMultiprocessing = True, batchsize = 0):
+		self.enableMultiprocessing = enableMultiprocessing
+		self.batchsize = batchsize
 	
 	def __str__(self): return 'Base model'
 	
@@ -877,6 +932,12 @@ class FNNModel(featureNetworkNode):
 	def get(self, seq):
 		return self.mdl.score(self.features.get(seq))
 	
+	def multiprocessingSupported(self):
+		return self.features.multiprocessingSupported() and self.mdl.enableMultiprocessing
+	
+	def batchsize(self):
+		return max(self.features.batchsize(), self.mdl.batchsize)
+	
 	def weights(self):
 		return self.mdl.weights(self.features.featureNames())
 	
@@ -901,14 +962,51 @@ class FNNModel(featureNetworkNode):
 class sequenceModelFNN(sequenceModel):
 	
 	def __init__(self, name, features, windowSize = -1, windowStep = -1):
-		super().__init__(name)
+		super().__init__(name, enableMultiprocessing = features.multiprocessingSupported())
 		self.threshold = 0.0
 		self.features = features
+		self.batchsize = features.batchsize()
 		if windowSize == -1:
 			windowSize = features.windowSize()
 		if windowStep == -1:
 			windowStep = features.windowStep()
 		self.windowSize, self.windowStep = windowSize, windowStep
+	
+	def getSequenceScores(self, seqs):
+		if self.batchsize == 0:
+			return super().getSequenceScores(seqs)
+		# Score with batching of vectors
+		# This enables faster application on GPU for network nodes that support it
+		#cdef iter seqwinit
+		cdef list batch
+		cdef list seqscores
+		cdef object b
+		cdef float score
+		cdef list scores
+		cdef int i
+		cdef sequence win
+		seqwinit = (
+			(i, win)
+			for i, cseq in enumerate(seqs)
+			for win in cseq.windows(self.windowSize, self.windowStep)
+			if len(win) == self.windowSize
+		)
+		seqscores = [ -float('INF') for _ in range(len(seqs)) ]
+		while True:
+			batch = [
+				b for b in [
+					next(seqwinit, None) for _ in range(self.batchsize)
+				]
+				if b is not None
+			]
+			if len(batch) == 0: break
+			scores = self.features.get(sequences('', [ win for i, win in batch ]))
+			for s, (i, win) in zip(scores, batch):
+				score = s[0]
+				if score > seqscores[i]:
+					seqscores[i] = score
+		#
+		return seqscores
 	
 	def __str__(self):
 		return 'Model<%s>'%(str(self.features))
