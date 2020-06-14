@@ -73,6 +73,16 @@ cdef class FNNScaler(featureNetworkNode):
 	cdef list vScale, vSub
 	
 	cpdef list get(self, sequences seq)
+	
+#---------------------
+# Node type: Filter
+
+cdef class FNNFilter(featureNetworkNode):
+	
+	cdef public featureNetworkNode features
+	cdef list indices
+	
+	cpdef list get(self, sequences seq)
 
 #---------------------
 # Node type: Concatenation

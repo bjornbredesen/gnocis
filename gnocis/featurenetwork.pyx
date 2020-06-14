@@ -9,7 +9,7 @@
 from __future__ import division
 from libcpp cimport bool
 from .motifs cimport motifOccurrence
-from .sequences cimport sequence, sequences
+from .sequences cimport sequence, sequences, sequenceStream
 from .common import kSpectrumIndex2NT, kSpectrumNT2Index, KLdiv
 from .ioputil import nctable
 from .models import sequenceModel
@@ -276,6 +276,15 @@ cdef class featureNetworkNode:
 		:rtype: featureNetworkNode
 		"""
 		return FNNScaler(self)
+	
+	def filter(self, indices):
+		"""
+		Returns a node of features filtered by indices.
+		
+		:return: Filtered node
+		:rtype: featureNetworkNode
+		"""
+		return FNNFilter(self, indices)
 	
 	def window(self, size, step):
 		"""
@@ -669,6 +678,52 @@ cdef class FNNScaler(featureNetworkNode):
 		return FNNScaler(tFeatures, vScale, vSub)
 
 #---------------------
+# Node type: Filter
+
+cdef class FNNFilter(featureNetworkNode):
+	
+	def __init__(self, features, indices):
+		super().__init__()
+		self.features = features
+		self.indices = indices
+	
+	def __str__(self):
+		return 'Filter<%s; Indices: %s>'%(str(self.features), str(self.indices))
+	
+	def featureNames(self):
+		fn = self.features.featureNames()
+		return [ fn[i] for i in self.indices ]
+	
+	def multiprocessingSupported(self):
+		return self.features.multiprocessingSupported()
+	
+	def batchsize(self):
+		return self.features.batchsize()
+	
+	cpdef list get(self, sequences seq):
+		cdef list sfv
+		cdef float fv
+		cdef int i
+		f = self.features.get(seq)
+		return [
+			[ sfv[i] for i in self.indices ]
+			for sfv in self.features.get(seq)
+		]
+	
+	def weights(self):
+		w = self.features.weights()
+		return [ w[i] for i in self.indices ]
+	
+	def windowSize(self):
+		return self.features.windowSize()
+	
+	def windowStep(self):
+		return self.features.windowStep()
+	
+	def train(self, trainingSet):
+		return FNNFilter(self.features.train(), self.indices)
+
+#---------------------
 # Node type: Concatenation
 
 cdef class FNNCat(featureNetworkNode):
@@ -985,13 +1040,24 @@ class sequenceModelFNN(sequenceModel):
 		cdef list scores
 		cdef int i
 		cdef sequence win
-		seqwinit = (
-			(i, win)
-			for i, cseq in enumerate(seqs)
-			for win in cseq.windows(self.windowSize, self.windowStep)
-			if len(win) == self.windowSize
-		)
-		seqscores = [ -float('INF') for _ in range(len(seqs)) ]
+		if isinstance(seqs, sequenceStream):
+			nTreadFetch = 100000
+			maxThreadFetchNT = nTreadFetch * 1000
+			seqwinit = (
+				(i, win)
+				for blk in seqs.fetch(nTreadFetch, maxThreadFetchNT)
+				for i, cseq in enumerate(blk)
+				for win in cseq.windows(self.windowSize, self.windowStep)
+				if len(win) == self.windowSize
+			)
+		else:
+			seqwinit = (
+				(i, win)
+				for i, cseq in enumerate(seqs)
+				for win in cseq.windows(self.windowSize, self.windowStep)
+				if len(win) == self.windowSize
+			)
+		seqscores = [  ]
 		while True:
 			batch = [
 				b for b in [
@@ -1003,6 +1069,8 @@ class sequenceModelFNN(sequenceModel):
 			scores = self.features.get(sequences('', [ win for i, win in batch ]))
 			for s, (i, win) in zip(scores, batch):
 				score = s[0]
+				if i >= len(seqscores):
+					seqscores += [ -float('INF') for _ in range(i - len(seqscores) + 1) ]
 				if score > seqscores[i]:
 					seqscores[i] = score
 		#

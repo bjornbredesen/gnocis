@@ -7,11 +7,14 @@
 ############################################################################
 # Interfacing with TensorFlow
 
-from .sequences import sequences, positive, negative
+from .sequences import sequences, positive, negative, sequenceStream
 from .models import sequenceModel
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+
+def setSeed(seed):
+	tf.random.set_seed(seed)
 
 ntmat = {
 	'A': [ 1., 0., 0., 0. ],
@@ -116,13 +119,24 @@ class sequenceModelCNN(sequenceModel):
 	def getSequenceScores(self, seqs):
 		if self.batchsize == 0:
 			return super().getSequenceScores(seqs)
-		seqwinit = (
-			(i, win)
-			for i, cseq in enumerate(seqs)
-			for win in cseq.windows(self.windowSize, self.windowStep)
-			if len(win) == self.windowSize
-		)
-		seqscores = [ -float('INF') for _ in range(len(seqs)) ]
+		if isinstance(seqs, sequenceStream):
+			nTreadFetch = 100000
+			maxThreadFetchNT = nTreadFetch * 1000
+			seqwinit = (
+				(i, win)
+				for blk in seqs.fetch(nTreadFetch, maxThreadFetchNT)
+				for i, cseq in enumerate(blk)
+				for win in cseq.windows(self.windowSize, self.windowStep)
+				if len(win) == self.windowSize
+			)
+		else:
+			seqwinit = (
+				(i, win)
+				for i, cseq in enumerate(seqs)
+				for win in cseq.windows(self.windowSize, self.windowStep)
+				if len(win) == self.windowSize
+			)
+		seqscores = [  ]
 		while True:
 			batch = [
 				b for b in [
@@ -134,6 +148,8 @@ class sequenceModelCNN(sequenceModel):
 			p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1) for i, seq in batch]))
 			scores = p[:, 1] - p[:, 0]
 			for score, (i, win) in zip(scores, batch):
+				if i >= len(seqscores):
+					seqscores += [ -float('INF') for _ in range(i - len(seqscores) + 1) ]
 				if score > seqscores[i]:
 					seqscores[i] = score
 		#
@@ -242,13 +258,24 @@ class sequenceModelMultiCNN(sequenceModel):
 	def getSequenceScores(self, seqs):
 		if self.batchsize == 0:
 			return super().getSequenceScores(seqs)
-		seqwinit = (
-			(i, win)
-			for i, cseq in enumerate(seqs)
-			for win in cseq.windows(self.windowSize, self.windowStep)
-			if len(win) == self.windowSize
-		)
-		seqscores = [ -float('INF') for _ in range(len(seqs)) ]
+		if isinstance(seqs, sequenceStream):
+			nTreadFetch = 100000
+			maxThreadFetchNT = nTreadFetch * 1000
+			seqwinit = (
+				(i, win)
+				for blk in seqs.fetch(nTreadFetch, maxThreadFetchNT)
+				for i, cseq in enumerate(blk)
+				for win in cseq.windows(self.windowSize, self.windowStep)
+				if len(win) == self.windowSize
+			)
+		else:
+			seqwinit = (
+				(i, win)
+				for i, cseq in enumerate(seqs)
+				for win in cseq.windows(self.windowSize, self.windowStep)
+				if len(win) == self.windowSize
+			)
+		seqscores = [  ]
 		while True:
 			batch = [
 				b for b in [
@@ -262,6 +289,8 @@ class sequenceModelMultiCNN(sequenceModel):
 			i = self.labelValues[self.targetLabel]
 			scores = p[:, i] / sum(p[:, n] for n in range(self.nLabels))
 			for score, (i, win) in zip(scores, batch):
+				if i >= len(seqscores):
+					seqscores += [ -float('INF') for _ in range(i - len(seqscores) + 1) ]
 				if score > seqscores[i]:
 					seqscores[i] = score
 		#
