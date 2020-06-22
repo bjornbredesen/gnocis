@@ -42,7 +42,6 @@ class sequenceModelCNN(sequenceModel):
 			self.train(trainingSet)
 	
 	def train(self, trainingSet):
-		print('Training')
 		self.trainingSet = trainingSet
 		positives, negatives = trainingSet.withLabel([ self.labelPositive, self.labelNegative ])
 		scaleFac = 10
@@ -114,7 +113,6 @@ class sequenceModelCNN(sequenceModel):
 		)
 		
 		self.cls = model
-		print(' ... done!')
 	
 	def getSequenceScores(self, seqs):
 		if self.batchsize == 0:
@@ -183,7 +181,6 @@ class sequenceModelMultiCNN(sequenceModel):
 			self.train(trainingSet)
 	
 	def train(self, trainingSet):
-		print('Training')
 		self.trainingSet = trainingSet
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
@@ -253,7 +250,6 @@ class sequenceModelMultiCNN(sequenceModel):
 		)
 		
 		self.cls = model
-		print(' ... done!')
 	
 	def getSequenceScores(self, seqs):
 		if self.batchsize == 0:
@@ -326,7 +322,6 @@ class sequenceModelKeras(sequenceModel):
 			self.train(trainingSet)
 	
 	def train(self, trainingSet):
-		print('Training')
 		self.trainingSet = trainingSet
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
@@ -365,7 +360,6 @@ class sequenceModelKeras(sequenceModel):
 		)
 		
 		self.cls = model
-		print(' ... done!')
 	
 	def getSequenceScores(self, seqs):
 		if self.batchsize == 0:
