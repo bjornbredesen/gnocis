@@ -9,7 +9,6 @@ Gnocis manual
    introduction
    installing
    license
-   tutorial
    gnocis
 
 

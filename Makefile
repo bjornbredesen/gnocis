@@ -38,9 +38,7 @@ gnocis/validation.cpp: gnocis/validation.pyx
 help:
 	rm -f docsrc/_static/gnocis_icon.png
 	cp markdown/gnocis_icon.png docsrc/_static/gnocis_icon.png
-	rm -f docsrc/tutorial.md
 	rm -rf docs/
-	cp tutorial/README.md docsrc/tutorial.md
 	sphinx-build -M html docsrc .
 	mv html docs
 	touch docs/.nojekyll
