@@ -739,10 +739,10 @@ cdef class FNNCat(featureNetworkNode):
 		return [ n for i in self.inputs for n in i.featureNames() ]
 	
 	def multiprocessingSupported(self):
-		return self.inputs.multiprocessingSupported()
+		return all(i.multiprocessingSupported() for i in self.inputs)
 	
 	def batchsize(self):
-		return self.inputs.batchsize()
+		return min(i.batchsize() for i in self.inputs)
 	
 	cpdef list get(self, sequences seq):
 		cdef list I
