@@ -16,6 +16,7 @@ from .sequences cimport *
 from .common import nucleotides, complementaryNucleotides, getReverseComplementaryDNASequence, IUPACNucleotideCodes, IUPACNucleotideCodeSemantics
 from .features import features
 #from .featurenetwork import featureNetworkNode, FNNMotifOccurrenceFrequencies, FNNMotifPairOccurrenceFrequencies
+from .ioputil import nctable
 
 
 ############################################################################
@@ -82,8 +83,27 @@ class motifs:
 	def __str__(self):
 		return 'Motif set<%s>'%(self.name)
 	
+	def table(self):
+		return nctable(
+			'Motif set: ' + self.name,
+			[
+				{
+					'Name': m.name,
+					'Type': ('IUPAC' if isinstance(m, IUPACMotif) else (
+						'PWM' if isinstance(m, PWMMotif) else ''
+					)),
+					'Pattern': (m.motif if isinstance(m, IUPACMotif) else 'N/A'),
+					'Mismatches': (m.nmismatches if isinstance(m, IUPACMotif) else 'N/A'),
+				}
+				for m in self
+			],
+		)
+		
+	def _repr_html_(self):
+		return self.table()._repr_html_()
+	
 	def __repr__(self):
-		return self.__str__()
+		return self.table().__repr__()
 	
 	def __add__(self, other):
 		return motifs('%s + %s'%(self.name, other.name), self.motifs + other.motifs)

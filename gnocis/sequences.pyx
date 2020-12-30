@@ -18,6 +18,7 @@ from .common cimport _PyMEAPrivateData, getGlobalData
 from .common import nucleotides, complementaryNucleotides, getReverseComplementaryDNASequence, kSpectrumNT2Index, kSpectrumIndex2NT
 from .regions cimport *
 from .motifs cimport *
+from .ioputil import nctable
 
 
 ############################################################################
@@ -198,8 +199,26 @@ cdef class sequences:
 	def __str__(self):
 		return 'Sequence list<%s>'%(self.name)
 	
+	def table(self):
+		return nctable(
+			'Sequences: ' + self.name,
+			[
+				{
+					'Name': s.name,
+					'Labels': ', '.join(l.name for l in s.labels),
+					'Length': len(s.seq),
+					'Source region': '' if s.sourceRegion is None else s.sourceRegion.bstr(),
+					'Sequence': s.seq,
+				}
+				for s in self
+			],
+		)
+		
+	def _repr_html_(self):
+		return self.table()._repr_html_()
+	
 	def __repr__(self):
-		return self.__str__()
+		return self.table().__repr__()
 	
 	def __add__(self, other):
 		return sequences('%s + %s'%(self.name, other.name), self.sequences + other.sequences)
@@ -236,6 +255,19 @@ cdef class sequences:
 		random.shuffle(seqs)
 		return sequences(self.name + ' (split A)', seqs[:isplit]),\
 		       sequences(self.name + ' (split B)', seqs[isplit:])
+	
+	# Returns a random sample of the sequences
+	def sample(self, n = 0):
+		"""
+		:param n: Number of sequences to pick. If 0, the same number will be selected as are in the full set.
+		:type ratio: float
+		
+		:return: Returns a random sample of the sequences of size n. Sequences are selected with replacement, and the same sequence can occur multiple times.
+		:rtype: sequences
+		"""
+		if n <= 0: n = len(self)
+		smp = [ random.choice(self.sequences) for i in range(n) ]
+		return sequences(self.name + ' (bootstrap sample of ' + str(n) + ' seq.)', smp)
 	
 	# Returns a renamed sequence set
 	def rename(self, newname):

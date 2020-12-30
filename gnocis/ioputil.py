@@ -42,7 +42,7 @@ class nctable:
 	:type indexName: str, optional
 	"""
 	
-	def __init__(self, title, _dict, align = None, ntop = 10, nbottom = 10, maxhorz = 9, spaces = 3, fpdec = 4, strcroplen = 24, indexName = '__index'):
+	def __init__(self, title, _dict, align = None, ntop = 5, nbottom = 5, maxhorz = 9, spaces = 3, fpdec = 4, strcroplen = 24, indexName = '__index'):
 		self.title = title
 		if isinstance(_dict, list):
 			# Enables table construction by supplying a list of dicts instead of a base dict
