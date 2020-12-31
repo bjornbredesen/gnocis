@@ -1207,6 +1207,26 @@
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="gnocis.models.sequenceModel.score">
+<code class="sig-name descname">score</code><a class="headerlink" href="#gnocis.models.sequenceModel.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scores a sequence of set of sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>sequence/sequences/sequenceStream</em>) – Sequence(s) to score.</p></li>
+<li><p><strong>asTable</strong> (<em>bool</em>) – If True, a table will be output. Otherwise, a list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Score or list of scores</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float/list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="gnocis.models.sequenceModel.scoreSequence">
 <code class="sig-name descname">scoreSequence</code><a class="headerlink" href="#gnocis.models.sequenceModel.scoreSequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Scores a single sequence. The score is determined by applying the model with a sliding window, and taking the maximum score.</p>
@@ -1219,6 +1239,23 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.train">
+<code class="sig-name descname">train</code><a class="headerlink" href="#gnocis.models.sequenceModel.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scores a sequence of set of sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ts</strong> (<a class="reference internal" href="#gnocis.sequences.sequences" title="gnocis.sequences.sequences"><em>sequences</em></a>) – Training set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Trained model</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.models.sequenceModel" title="gnocis.models.sequenceModel">sequenceModel</a></p>
 </dd>
 </dl>
 </dd></dl>
