@@ -203,18 +203,14 @@ cdef class featureNetworkNode:
 	
 	def model(self, model):
 		"""
-		Returns a `sequenceModel` instance with this feature network node as features.
+		Returns an FNNModel node using a supplied baseModel.
 		
-		:param name: Model name.
-		:param windowSize: Window size.
-		:param windowStep: Window step size.
+		:param model: A base model.
 		
-		:type name: string
-		:type windowSize: int
-		:type windowStep: int
+		:type model: baseModel
 		
-		:return: Model
-		:rtype: sequenceModel
+		:return: Modelling feature network node
+		:rtype: FNNModel
 		"""
 		return FNNModel(features = self, model = model)
 	
