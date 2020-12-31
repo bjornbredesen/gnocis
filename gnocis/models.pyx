@@ -660,17 +660,31 @@ class sequenceModel:
 		return self.predictSequenceStreamRegions(stream)
 	
 	# Short-hand for getSequenceScores/scoreSequence
-	def score(self, target):
+	def score(self, target, asTable = False):
 		""" Scores a sequence of set of sequences.
 		
 		:param target: Sequence(s) to score.
-		:type stream: sequence/sequences/sequenceStream
+		:param asTable: If True, a table will be output. Otherwise, a list.
+		
+		:type target: sequence/sequences/sequenceStream
+		:type asTable: bool
 		
 		:return: Score or list of scores
 		:rtype: float/list
 		"""
 		if isinstance(target, sequence):
 			return self.scoreSequence(target)
+		if asTable:
+			return nctable(
+				'Scored sequences - Model: ' + self.name + '; Sequences: ' + target.name,
+				[
+					{
+						'Name': seq.name,
+						'Score': score,
+					}
+					for seq, score in zip(target, self.getSequenceScores(target))
+				],
+			)
 		return self.getSequenceScores(target)
 	
 	# Prints out test statistics.
