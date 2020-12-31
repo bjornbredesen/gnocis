@@ -687,6 +687,19 @@ class sequenceModel:
 			)
 		return self.getSequenceScores(target)
 	
+	# Short-hand for training
+	def train(self, ts):
+		""" Scores a sequence of set of sequences.
+		
+		:param ts: Training set.
+		
+		:type ts: sequences
+		
+		:return: Trained model
+		:rtype: sequenceModel
+		"""
+		return self.getTrainer()(ts)
+	
 	# Prints out test statistics.
 	def printTestStatistics(self, seqs, labelPositive = positive, labelNegative = negative):
 		printValidationStatistics( self.getValidationStatistics(seqs, labelPositive = labelPositive, labelNegative = labelNegative) )
