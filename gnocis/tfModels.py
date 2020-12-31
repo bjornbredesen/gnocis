@@ -38,11 +38,11 @@ class sequenceModelCNN(sequenceModel):
 		self.epochs = epochs
 		self.cls = None
 		self.batchsize = batchsize
+		self.trainingSet = trainingSet
 		if trainingSet is not None:
 			self.train(trainingSet)
 	
 	def train(self, trainingSet):
-		self.trainingSet = trainingSet
 		positives, negatives = trainingSet.withLabel([ self.labelPositive, self.labelNegative ])
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
@@ -177,11 +177,11 @@ class sequenceModelMultiCNN(sequenceModel):
 		self.epochs = epochs
 		self.cls = None
 		self.batchsize = batchsize
+		self.trainingSet = trainingSet
 		if trainingSet is not None:
 			self.train(trainingSet)
 	
 	def train(self, trainingSet):
-		self.trainingSet = trainingSet
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
 		hbloat = int(bloat/2)
@@ -318,11 +318,11 @@ class sequenceModelKeras(sequenceModel):
 		self.epochs = epochs
 		self.cls = None
 		self.batchsize = batchsize
+		self.trainingSet = trainingSet
 		if trainingSet is not None:
 			self.train(trainingSet)
 	
 	def train(self, trainingSet):
-		self.trainingSet = trainingSet
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
 		hbloat = int(bloat/2)
