@@ -659,6 +659,20 @@ class sequenceModel:
 		if curves: return self.predictSequenceStreamCurves(stream)
 		return self.predictSequenceStreamRegions(stream)
 	
+	# Short-hand for getSequenceScores/scoreSequence
+	def score(self, target):
+		""" Scores a sequence of set of sequences.
+		
+		:param target: Sequence(s) to score.
+		:type stream: sequence/sequences/sequenceStream
+		
+		:return: Score or list of scores
+		:rtype: float/list
+		"""
+		if isinstance(target, sequence):
+			return self.scoreSequence(target)
+		return self.getSequenceScores(target)
+	
 	# Prints out test statistics.
 	def printTestStatistics(self, seqs, labelPositive = positive, labelNegative = negative):
 		printValidationStatistics( self.getValidationStatistics(seqs, labelPositive = labelPositive, labelNegative = labelNegative) )
