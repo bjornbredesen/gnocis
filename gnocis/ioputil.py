@@ -167,7 +167,7 @@ class nctable:
 			for k in keys
 		}
 		std = {
-			k: (var[k]/(len(src[k])-1))**0.5 if isnum[k] else 'N/A'
+			k: ((var[k]/(len(src[k])-1))**0.5 if len(src[k]) > 1 else 0) if isnum[k] else 'N/A'
 			for k in keys
 		}
 		_dict = {
