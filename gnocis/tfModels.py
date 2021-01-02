@@ -40,9 +40,9 @@ class sequenceModelCNN(sequenceModel):
 		self.batchsize = batchsize
 		self.trainingSet = trainingSet
 		if trainingSet is not None:
-			self.train(trainingSet)
+			self._train(trainingSet)
 	
-	def train(self, trainingSet):
+	def _train(self, trainingSet):
 		positives, negatives = trainingSet.withLabel([ self.labelPositive, self.labelNegative ])
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
@@ -179,9 +179,9 @@ class sequenceModelMultiCNN(sequenceModel):
 		self.batchsize = batchsize
 		self.trainingSet = trainingSet
 		if trainingSet is not None:
-			self.train(trainingSet)
+			self._train(trainingSet)
 	
-	def train(self, trainingSet):
+	def _train(self, trainingSet):
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
 		hbloat = int(bloat/2)
@@ -301,7 +301,7 @@ class sequenceModelMultiCNN(sequenceModel):
 		return lambda ts: sequenceModelMultiCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels, batchsize = self.batchsize)
 
 	def __str__(self):
-		return 'Multi-class Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
+		return 'Multi-class Convolutional Neural Network<Training set: %s; Labels: %s; Target label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labels), str(self.targetLabel), self.nConv, self.convLen, self.epochs)
 
 	def __repr__(self): return self.__str__()
 
@@ -320,9 +320,9 @@ class sequenceModelKeras(sequenceModel):
 		self.batchsize = batchsize
 		self.trainingSet = trainingSet
 		if trainingSet is not None:
-			self.train(trainingSet)
+			self._train(trainingSet)
 	
-	def train(self, trainingSet):
+	def _train(self, trainingSet):
 		scaleFac = 10
 		bloat = int((min(500, self.windowSize)-1)/scaleFac)
 		hbloat = int(bloat/2)
