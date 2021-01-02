@@ -5,6 +5,14 @@
 # bjorn.bredesen@ii.uib.no
 ############################################################################
 
+def progress(taskName, it, nIt, pLen = 20):
+	progress = it / nIt
+	pI = int(progress * pLen)
+	pL = pLen - pI
+	perc = 100. * progress
+	bar = '[' + ('|'*pI) + (' '*pL) + '] %5.2f %%'%perc + ' (%d/%d) - '%(it, nIt) + taskName
+	print(bar, end = '\r')
+
 def _tblFieldConv(v, fpdec = 5, strcroplen = 16):
 	if isinstance(v, int):
 		return str(v)
