@@ -23,6 +23,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Build package
       run: |
+        cython -3 --cplus gnocis/*.pyx
         python setup.py sdist bdist_wheel
         cp dist/gnocis-*.whl dist/gnocis.whl
     - name: Install package

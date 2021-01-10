@@ -8,14 +8,14 @@
 
 from setuptools import setup
 from setuptools.extension import Extension
-from Cython.Build import cythonize
+#from Cython.Build import cythonize
 
 with open('README.md') as f:
 	readme = '\n'.join(l for l in f)
 
 setup(
-	ext_modules = cythonize('gnocis/*.pyx', language="c++"),
-	#ext_modules = [ Extension(name = 'gnocis.' + x, sources = ['gnocis/'+ x + '.cpp']) for x in ['biomarkers', 'common', 'features', 'featurenetwork', 'models', 'motifs', 'regions', 'sequences', 'validation'] ],
+	#ext_modules = cythonize('gnocis/*.pyx', language="c++"),
+	ext_modules = [ Extension(name = 'gnocis.' + x, sources = ['gnocis/'+ x + '.cpp']) for x in ['biomarkers', 'common', 'features', 'featurenetwork', 'models', 'motifs', 'regions', 'sequences', 'validation'] ],
 	name = "gnocis",
 	packages = [ "gnocis" ],
 	author = "Bjørn Bredesen",
