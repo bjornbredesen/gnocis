@@ -29,12 +29,13 @@ jobs:
         dir build
     - name: Install package
       run: |
-        dir dist
-        dir dist\*.whl | rename-item -NewName "gnocis.whl"
-        dir dist
-        pip install ./dist/gnocis.whl
+        Get-ChildItem "dist" -Filter *.whl | Foreach-Object { pip install $_.FullName }
         ren gnocis gnocis_repo
     - name: Run unit tests
       run: |
         python tests.py
+#        pip install ./dist/gnocis.whl
+#        dir dist
+#        dir dist\*.whl | rename-item -NewName "gnocis.whl"
+#        dir dist
 
