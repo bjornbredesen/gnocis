@@ -1,6 +1,6 @@
-name: Build Python package
+name: Run tests (single version of Python)
 
-on: workflow_dispatch
+on: [push]
 
 jobs:
   build:
@@ -26,8 +26,11 @@ jobs:
         cython -3 --cplus gnocis/*.pyx
         python3 setup.py sdist bdist_wheel
         cp dist/gnocis-*.whl dist/gnocis.whl
-    - name: Archive wheel
-      uses: actions/upload-artifact@v2
-      with:
-        name: wheel-linux
-        path: dist/gnocis.whl
+    - name: Install package
+      run: |
+        pip install dist/gnocis-*.whl
+        mv gnocis/ gnocis_repo/
+    - name: Run unit tests
+      run: |
+        python tests.py
+
