@@ -22,7 +22,6 @@ jobs:
         pip install pytest setuptools wheel twine cython numpy sklearn
     - name: Build package
       run: |
-        cython -3 --cplus gnocis/*.pyx
         python setup.py sdist bdist_wheel
         cp dist/gnocis-*.whl dist/gnocis.whl
     - name: Install package
