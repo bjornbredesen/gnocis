@@ -7,7 +7,7 @@ import random
 import gnocis as nc
 import gnocis.sklearnModels as sklnc
 import time
-from os import system
+from os import mkdir, rmdir
 
 import unittest
 
@@ -25,8 +25,11 @@ if __name__ == '__main__':
 	global PRESeq
 	global MC
 	global testSeqs
-	system('rm -rf ./temp')
-	system('mkdir ./temp')
+	try:
+		rmdir('temp')
+	except:
+		pass
+	mkdir('temp')
 	genome = nc.streamFASTAGZ('tutorial/DmelR5.fasta.gz',
 			restrictToSequences = [ '2L', '2R', '3L', '3R', '4', 'X' ])
 	#
