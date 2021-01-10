@@ -325,28 +325,6 @@ class testModels(unittest.TestCase):
 			if f > 0
 		)
 		self.assertEqual(specmotifs, motifs)
-	
-	def testOptimizations_sequenceModelSVMOptimizedQuadraticCUDA(self):
-		tpos = nc.sequences('PcG/TrxG 1', PRESeq[:int(len(PRESeq)/2)]).label(nc.positive)
-		tneg = MC.generateSet(n = int(len(PRESeq)/2), length = 3000).label(nc.negative)
-		nSpectrum = 5
-		winSize = 500
-		winStep = 250
-		kDegree = 2
-		nc.setNCores(4)
-		testset = tpos
-		#
-		featureSet = nc.features.kSpectrumMM(nSpectrum)
-		mdl = sklnc.sequenceModelSVM( name = 'SVM', features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
-		#
-		scoresA = mdl.getSequenceScores(testset)
-		#
-		featureSet = nc.features.kSpectrumMM(nSpectrum)
-		mdl2 = sklncOpt.sequenceModelSVMOptimizedQuadraticCUDA( name = 'SVM',features = featureSet, trainingSet = tpos + tneg, windowSize = winSize, windowStep = winStep, kDegree = kDegree )
-		#
-		scoresB = mdl2.getSequenceScores(testset)
-		diff = sum( 1 if a != b else 0 for a, b in zip(scoresA, scoresB) )
-		self.assertEqual(diff, 0)
 
 
 #-----------------------------------
