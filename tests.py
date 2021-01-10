@@ -14,7 +14,8 @@ import unittest
 #-----------------------------------
 # Data
 
-def prep():
+if __name__ == '__main__':
+	print('Gnocis test suite')
 	print(' - Preparing data')
 	global genome
 	global rsA, rsB
@@ -327,11 +328,9 @@ class testModels(unittest.TestCase):
 		)
 		self.assertEqual(specmotifs, motifs)
 
-
 #-----------------------------------
 
 if __name__ == '__main__':
-	print('Gnocis test suite')
-	prep()
+	print(' - Running tests')
 	unittest.main()
 
