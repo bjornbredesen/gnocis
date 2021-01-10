@@ -49,3 +49,7 @@ library:
 	cp -f ./gnocis/gnocis/*.so ./gnocis/
 	rm -rf ./gnocis/gnocis
 
+wheel:
+	cython -3 --cplus gnocis/*.pyx
+	python3 setup.py sdist bdist_wheel
+
