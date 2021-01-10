@@ -28,5 +28,5 @@ jobs:
     - name: Archive wheel
       uses: actions/upload-artifact@v2
       with:
-        name: gnocis-linux
+        name: gnocis-mac
         path: dist/gnocis.whl
