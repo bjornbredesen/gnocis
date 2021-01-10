@@ -29,7 +29,10 @@ jobs:
         dir build
     - name: Install package
       run: |
+        dir dist
         dir dist\*.whl | rename-item -NewName "gnocis.whl"
+        dir dist
+        pip install gnocis.whl
         ren gnocis gnocis_repo
     - name: Run unit tests
       run: |
