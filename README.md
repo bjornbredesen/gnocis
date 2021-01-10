@@ -2,7 +2,7 @@
 ![alt text](markdown/gnocis.png "")
 
 # Gnocis
-Bjørn Bredesen, 2018-2019
+Bjørn Bredesen, 2018-
 
 
 ----------------------------------------------------------------------
@@ -98,9 +98,11 @@ The manual is available at: https://bjornbredesen.github.io/gnocis/
 
 ## Requirements
 
- * Python 3.5
+ * Python 3.6, 3.7, 3.8
  * Cython
- * sklearn (for SVM and RF modelling)
+ * Optional: sklearn – for SVM and RF modelling
+ * Optional: CuPy and CUDA – for CUDA-optimized SVM
+ * Optional: TensorFlow – for neural networks
 
 
 -------------------------------------------------
@@ -115,7 +117,7 @@ If you use Gnocis in published research, Gnocis must be cited. An article for Gn
 
 MIT License
 
-Copyright (c) 2019 Bjørn Bredesen
+Copyright (c) 2018- Bjørn Bredesen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
