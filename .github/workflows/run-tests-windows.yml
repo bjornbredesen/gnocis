@@ -32,7 +32,7 @@ jobs:
         dir dist
         dir dist\*.whl | rename-item -NewName "gnocis.whl"
         dir dist
-        pip install dist\gnocis.whl
+        pip install dist/gnocis.whl
         ren gnocis gnocis_repo
     - name: Run unit tests
       run: |
