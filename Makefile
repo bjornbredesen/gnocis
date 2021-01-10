@@ -1,5 +1,5 @@
 
-all: gnocis/biomarkers.cpp gnocis/common.cpp gnocis/features.cpp gnocis/featurenetwork.cpp gnocis/models.cpp gnocis/motifs.cpp gnocis/regions.cpp gnocis/sequences.cpp gnocis/validation.cpp library help
+all: library help
 
 clean:
 	rm ./gnocis/*.cpp
