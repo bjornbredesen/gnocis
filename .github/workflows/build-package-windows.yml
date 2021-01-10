@@ -26,10 +26,10 @@ jobs:
         python setup.py sdist bdist_wheel
     - name: Install package
       run: |
-        Get-ChildItem "dist" -Filter *.whl | Foreach-Object { copy $_.FullName ..\gnocis.whl }
+        Get-ChildItem "dist" -Filter *.whl | Foreach-Object { copy $_.FullName .\gnocis.whl }
         Dir
     - name: Archive wheel
       uses: actions/upload-artifact@v2
       with:
         name: wheel-linux
-        path: dist\gnocis.whl
+        path: gnocis.whl
