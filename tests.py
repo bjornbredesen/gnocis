@@ -15,6 +15,7 @@ import unittest
 # Data
 
 def prep():
+	print(' - Preparing data')
 	global genome
 	global rsA, rsB
 	global PcG
@@ -64,6 +65,7 @@ def prep():
 		 nc.sequence('Y', ''.join( random.choice(['A', 'C', 'G', 'T'])
 		 	for _ in range(1000) )),
 	 ])
+	print('    ... done!')
 
 #-----------------------------------
 # Regions
@@ -329,6 +331,7 @@ class testModels(unittest.TestCase):
 #-----------------------------------
 
 if __name__ == '__main__':
+	print('Gnocis test suite')
 	prep()
 	unittest.main()
 
