@@ -23,6 +23,10 @@ jobs:
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
+    - name: Check build
+      run: |
+        dir dist
+        dir build
     - name: Install package
       run: |
         pip install dist\*.whl
