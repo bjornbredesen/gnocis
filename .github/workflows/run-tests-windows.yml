@@ -23,7 +23,7 @@ jobs:
     - name: Build package
       run: |
         cython -3 --cplus gnocis/*.pyx
-        python3 setup.py sdist bdist_wheel
+        python setup.py sdist bdist_wheel
         cp dist/gnocis-*.whl dist/gnocis.whl
     - name: Install package
       run: |
