@@ -25,7 +25,11 @@ jobs:
       run: |
         cython -3 --cplus gnocis/*.pyx
         python setup.py build_ext --build-lib=gnocis sdist bdist_wheel
-# TODO
-#    - name: Test with pytest
-#      run: |
-#        pytest
+    - name: Run unit tests
+      run: |
+        python tests.py > test_results.txt
+    - name: Archive test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: test_results.txt
