@@ -25,6 +25,10 @@ jobs:
       run: |
         cython -3 --cplus gnocis/*.pyx
         python setup.py build_ext --build-lib=gnocis sdist bdist_wheel
+    - name: Install package
+      run: |
+        pip install dist/gnocis-*.whl
+        mv gnocis/ gnocis_repo/
     - name: Run unit tests
       run: |
         python tests.py > test_results.txt
