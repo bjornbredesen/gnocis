@@ -1,11 +1,11 @@
-name: Build Python package for Windows
+name: Build wheel (Linux)
 
 on: workflow_dispatch
 
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.6]
@@ -20,16 +20,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest setuptools wheel twine cython numpy sklearn
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Build package
       run: |
-        Get-ChildItem "gnocis" -Filter *.pyx | Foreach-Object { cython -3 --cplus $_.FullName }
+        cython -3 --cplus gnocis/*.pyx
         python setup.py sdist bdist_wheel
-    - name: Install package
-      run: |
-        Get-ChildItem "dist" -Filter *.whl | Foreach-Object { copy $_.FullName .\gnocis.whl }
-        Dir
+        cp dist/gnocis-*.whl dist/gnocis.whl
     - name: Archive wheel
       uses: actions/upload-artifact@v2
       with:
-        name: wheel-linux
-        path: gnocis.whl
+        name: gnocis-linux
+        path: dist/gnocis.whl
