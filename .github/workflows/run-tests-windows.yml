@@ -23,11 +23,11 @@ jobs:
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
-        cp dist\\gnocis-*.whl dist\\gnocis.whl
+        copy dist\gnocis-*.whl dist\gnocis.whl
     - name: Install package
       run: |
-        pip install dist\\gnocis.whl
-        mv gnocis/ gnocis_repo/
+        pip install dist\gnocis.whl
+        ren gnocis gnocis_repo
     - name: Run unit tests
       run: |
         python tests.py
