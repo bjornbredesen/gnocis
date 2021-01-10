@@ -6,7 +6,6 @@ import random
 
 import gnocis as nc
 import gnocis.sklearnModels as sklnc
-import gnocis.sklearnModelsOpt as sklncOpt
 import time
 from os import system
 
