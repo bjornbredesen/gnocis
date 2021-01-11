@@ -260,7 +260,7 @@ cdef class sequences:
 	def sample(self, n = 0):
 		"""
 		:param n: Number of sequences to pick. If 0, the same number will be selected as are in the full set.
-		:type ratio: float
+		:type n: int
 		
 		:return: Returns a random sample of the sequences of size n. Sequences are selected with replacement, and the same sequence can occur multiple times.
 		:rtype: sequences
