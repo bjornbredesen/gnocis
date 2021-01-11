@@ -23,11 +23,12 @@ The recommended way to install Gnocis is through the PyPI package manager. In or
 `pip install gnocis`
 
 
-Alternatively, Gnocis can be build from source. To build a wheel and install it, run:
+Alternatively, Gnocis can be built from source. To build a wheel and install it, run:
 
-`make wheel`
-`pip install dist/*.whl`
-
+```
+make wheel
+pip install dist/*.whl
+```
 
 Finally, Gnocis can be used by building from source and including the entire `gnocis` directory in the source tree. In order to do so, run
 
