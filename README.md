@@ -110,6 +110,7 @@ For an in-depth tutorial, see the Jupyter Notebooks in the `tutorial/` folder.
  * ...
 
 
+-------------------------------------------------
 
 ## Requirements
 
@@ -159,4 +160,10 @@ SOFTWARE.
 Logo: Copyright Bjørn Bredesen
 
 Font: Emporium. Credit: emnazar. https://www.dafont.com/emporium-2.font
+
+----------------------------------------------------------------------
+
+## Stability
+
+https://github.com/bjornbredesen/gnocis/workflows/Run%20tests%20(single%20version%20of%20Python)/badge.svg
 
