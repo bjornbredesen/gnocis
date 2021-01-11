@@ -44,6 +44,7 @@ help:
 	touch docs/.nojekyll
 
 library:
+	cython -3 --cplus gnocis/*.pyx
 	python3.6 setup.py build_ext --build-lib=gnocis sdist bdist_wheel
 	rm -f ./gnocis/*.so
 	cp -f ./gnocis/gnocis/*.so ./gnocis/
