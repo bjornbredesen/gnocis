@@ -162,7 +162,7 @@ cdef class regions:
 		"""
 		return ', '.join( r.bstr() for r in self.regions )
 	
-	# Returns a random division of the sequences
+	# Returns a random division of the regions
 	def randomSplit(self, ratio = 0.5):
 		"""
 		:param ratio: Ratio for the split, between 0 and 1. For the return touple, `(A, B)`, a ratio of 0 means all the regions are in `B`, and opposite for a ratio of 1.
@@ -176,6 +176,19 @@ cdef class regions:
 		random.shuffle(rgns)
 		return regions(self.name + ' (split A)', rgns[:isplit]),\
 		       regions(self.name + ' (split B)', rgns[isplit:])
+	
+	# Returns a random sample of the regopns
+	def sample(self, n = 0):
+		"""
+		:param n: Number of regions to pick. If 0, the same number will be selected as are in the full set.
+		:type n: int
+		
+		:return: Returns a random sample of the regions of size n. Regions are selected with replacement, and the same region can occur multiple times.
+		:rtype: regions
+		"""
+		if n <= 0: n = len(self)
+		smp = [ random.choice(self.sequences) for i in range(n) ]
+		return sequences(self.name + ' (bootstrap sample of ' + str(n) + ' seq.)', smp)
 	
 	# Returns a filtered subset of regions.
 	def filter(self, fltName, flt):
