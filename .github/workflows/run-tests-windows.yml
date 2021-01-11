@@ -1,4 +1,4 @@
-name: Run tests on Windows (single version of Python)
+name: Tests (Windows, single version of Python)
 
 on: [push]
 
