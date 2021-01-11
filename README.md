@@ -9,7 +9,9 @@ Bjørn Bredesen, 2018-
 
 ## About
 
-Gnocis is a system in Python 3 for the analysis and the modelling of *cis*-regulatory element DNA sequences. A broad suite of tools is implemented for data preparation, feature set definition, model training and prediction.
+In order to use machine learning for *cis*-regulatory element prediction, a variety of functionality is required. A variety of packages exist for Python 3 for machine learning and sequence analysis.
+
+Gnocis is a system in Python 3 for the interactive and reproducible analysis and modelling of *cis*-regulatory element DNA sequences. A broad suite of tools is implemented for data preparation, feature set definition, model formulation, training, cross-validation and genome-wide prediction.
 
 
 ----------------------------------------------------------------------
@@ -90,6 +92,17 @@ For an in-depth tutorial, see the Jupyter Notebooks in the `tutorial/` folder.
         - IUPAC nucleotide motifs
         - Position Weight Matrices
         - *k*-mer spectra
+ * Feature networks
+    * Directed acyclic graphs of features
+    * Transformations of feature sets: filtering; concatenation; scaling; square; ...
+    * Feature network nodes for constructing models
+    * Application to sequences
+ * Optionally integrates with established packages
+    * Numpy – for integration with external methods
+    * Pandas – for integration with external methods
+    * Scikit-learn – for extended analyses and classic machine learning
+    * TensorFlow – for neural networks
+    * Jupyter Notebooks – for interactive and reproducible analysis and modelling
  * Easy to use
  * Objects are represented by classes, with human-readable descriptions
  * Optimized with Cython
