@@ -187,8 +187,8 @@ cdef class regions:
 		:rtype: regions
 		"""
 		if n <= 0: n = len(self)
-		smp = [ random.choice(self.sequences) for i in range(n) ]
-		return sequences(self.name + ' (bootstrap sample of ' + str(n) + ' seq.)', smp)
+		smp = [ random.choice(self.regions) for i in range(n) ]
+		return regions(self.name + ' (bootstrap sample of ' + str(n) + ' regions)', smp)
 	
 	# Returns a filtered subset of regions.
 	def filter(self, fltName, flt):
