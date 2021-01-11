@@ -1,4 +1,4 @@
-name: Run tests (single version of Python)
+name: Tests (Linux, single version of Python)
 
 on: [push]
 
