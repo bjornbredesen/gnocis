@@ -25,332 +25,67 @@ ntmat = {
 }
 
 def getSequenceMatrix(seq):
-	return np.array([ ntmat[nt] for nt in seq ])
+	return np.array([ [ ntmat[nt] ] for nt in seq ])
 
-# Convolutional Neural Network
-class sequenceModelCNN(sequenceModel):
-	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, labelPositive = positive, labelNegative = negative, trainingSet = None, batchsize = 1000):
-		super().__init__(name, enableMultiprocessing = False)
-		self.windowSize, self.windowStep = windowSize, windowStep
-		self.labelPositive, self.labelNegative = labelPositive, labelNegative
-		self.threshold = 0.0
-		self.nConv, self.convLen = nConv, convLen
-		self.epochs = epochs
-		self.cls = None
-		self.batchsize = batchsize
-		self.trainingSet = trainingSet
-		if trainingSet is not None:
-			self._train(trainingSet)
-	
-	def _train(self, trainingSet):
-		positives, negatives = trainingSet.withLabel([ self.labelPositive, self.labelNegative ])
-		scaleFac = 10
-		bloat = int((min(500, self.windowSize)-1)/scaleFac)
-		hbloat = int(bloat/2)
-		
-		model = keras.Sequential([
-			# Convolutions / Position Weight Matrices (PWMs)
-			keras.layers.Conv2D(self.nConv, (self.convLen, 4), activation='relu'),
-			keras.layers.ZeroPadding2D(padding=(int((self.convLen-1)/2), 0)),
-			keras.layers.Permute((1, 3, 2)),
-			# Scale down, for efficiency
-			keras.layers.AveragePooling2D((scaleFac, 1)),
-			
-			#-----------------------------------
-			# Motif occurrence combinatorics convolution
-			# Extend motif peaks (to model distal combinatorics)
-			keras.layers.Conv2D(1, (bloat, 1),
-				activation=None,
-				trainable = False,
-				use_bias=False,
-				weights = [
-					tf.constant(
-						np.array([ 1./bloat for _ in range(bloat) ])
-						.reshape((bloat, 1, 1, 1))),
-				]),
-			keras.layers.ZeroPadding2D(padding=(hbloat, 0)),
-			
-			#-----------------------------------
-			# Convolution for combinatorial motif occurrence modelling
-			keras.layers.Conv2D(self.nConv, (1, self.nConv), activation='relu'),
-			keras.layers.Permute((1, 3, 2)),
-			
-			#-----------------------------------
-			keras.layers.MaxPooling2D((int(250/scaleFac), 1)),
-			keras.layers.Flatten(),
-			keras.layers.Dense(2, activation=tf.nn.softmax)
-		])
-		
-		model.compile(
-			optimizer = 'adam',
-			loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-			metrics = ['accuracy']
-		)
-		
-		train_seq = [
-			getSequenceMatrix(w.seq).reshape(len(w), 4, 1)
-			for s in negatives
-			for w in s.windows(self.windowSize, self.windowStep)
-		] + np.array([
-			getSequenceMatrix(w.seq).reshape(len(w), 4, 1)
-			for s in positives
-			for w in s.windows(self.windowSize, self.windowStep)
-		])
-
-		train_labels = [
-			0 for s in negatives
-			for w in s.windows(self.windowSize, self.windowStep)
-		] + np.array([
-			1 for s in positives
-			for w in s.windows(self.windowSize, self.windowStep)
-		])
-
-		model.fit(
-			train_seq,
-			train_labels,
-			epochs = self.epochs,
-			verbose = 0
-		)
-		
-		self.cls = model
-	
-	def getSequenceScores(self, seqs):
-		if self.batchsize == 0:
-			return super().getSequenceScores(seqs)
-		if isinstance(seqs, sequenceStream):
-			nTreadFetch = 100000
-			maxThreadFetchNT = nTreadFetch * 1000
-			seqwinit = (
-				(i, win)
-				for blk in seqs.fetch(nTreadFetch, maxThreadFetchNT)
-				for i, cseq in enumerate(blk)
-				for win in cseq.windows(self.windowSize, self.windowStep)
-				if len(win) == self.windowSize
-			)
-		else:
-			seqwinit = (
-				(i, win)
-				for i, cseq in enumerate(seqs)
-				for win in cseq.windows(self.windowSize, self.windowStep)
-				if len(win) == self.windowSize
-			)
-		seqscores = [  ]
-		while True:
-			batch = [
-				b for b in [
-					next(seqwinit, None) for _ in range(self.batchsize)
-				]
-				if b is not None
-			]
-			if len(batch) == 0: break
-			p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1) for i, seq in batch]))
-			scores = p[:, 1] - p[:, 0]
-			for score, (i, win) in zip(scores, batch):
-				if i >= len(seqscores):
-					seqscores += [ -float('INF') for _ in range(i - len(seqscores) + 1) ]
-				if score > seqscores[i]:
-					seqscores[i] = score
-		#
-		return seqscores
-	
-	def scoreWindow(self, seq):
-		p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1)]))
-		return p[0, 1] - p[0, 0]
-	
-	def getTrainer(self):
-		return lambda ts: sequenceModelCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, labelPositive = self.labelPositive, labelNegative = self.labelNegative, batchsize = self.batchsize)
-
-	def __str__(self):
-		return 'Convolutional Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.nConv, self.convLen, self.epochs)
-
-	def __repr__(self): return self.__str__()
-
-# Convolutional Neural Network
-class sequenceModelMultiCNN(sequenceModel):
-	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100, targetLabel = positive, labels = [ positive, negative ], trainingSet = None, batchsize = 1000):
-		super().__init__(name, enableMultiprocessing = False)
-		self.windowSize, self.windowStep = windowSize, windowStep
-		self.targetLabel, self.labels = targetLabel, list(set([targetLabel]) | set(labels))
-		self.nLabels = len(self.labels)
-		self.threshold = 0.0
-		self.nConv, self.convLen = nConv, convLen
-		self.epochs = epochs
-		self.cls = None
-		self.batchsize = batchsize
-		self.trainingSet = trainingSet
-		if trainingSet is not None:
-			self._train(trainingSet)
-	
-	def _train(self, trainingSet):
-		scaleFac = 10
-		bloat = int((min(500, self.windowSize)-1)/scaleFac)
-		hbloat = int(bloat/2)
-		
-		model = keras.Sequential([
-			# Convolutions / Position Weight Matrices (PWMs)
-			keras.layers.Conv2D(self.nConv, (self.convLen, 4), activation='relu'),
-			keras.layers.ZeroPadding2D(padding=(int((self.convLen-1)/2), 0)),
-			keras.layers.Permute((1, 3, 2)),
-			# Scale down, for efficiency
-			keras.layers.AveragePooling2D((scaleFac, 1)),
-			
-			#-----------------------------------
-			# Motif occurrence combinatorics convolution
-			# Extend motif peaks (to model distal combinatorics)
-			keras.layers.Conv2D(1, (bloat, 1),
-				activation=None,
-				trainable = False,
-				use_bias=False,
-				weights = [
-					tf.constant(
-						np.array([ 1./bloat for _ in range(bloat) ])
-						.reshape((bloat, 1, 1, 1))),
-				]),
-			keras.layers.ZeroPadding2D(padding=(hbloat, 0)),
-			
-			#-----------------------------------
-			# Convolution for combinatorial motif occurrence modelling
-			keras.layers.Conv2D(self.nConv, (1, self.nConv), activation='relu'),
-			keras.layers.Permute((1, 3, 2)),
-			
-			#-----------------------------------
-			keras.layers.MaxPooling2D((int(250/scaleFac), 1)),
-			keras.layers.Flatten(),
-			keras.layers.Dense(self.nLabels, activation=tf.nn.softmax)
-		])
-		
-		model.compile(
-			optimizer = 'adam',
-			loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-			metrics = ['accuracy']
-		)
-		
-		self.labelValues = {
-			label: i
-			for i, label in enumerate(self.labels)
-		}
-		train_seq = np.array([
-			getSequenceMatrix(win.seq).reshape(len(win), 4, 1)
-			for label in self.labels
-			for seq in trainingSet.withLabel(label)
-			for win in seq.windows(self.windowSize, self.windowStep)
-		])
-		train_labels = np.array([
-			self.labelValues[label]
-			for label in self.labels
-			for seq in trainingSet.withLabel(label)
-			for win in seq.windows(self.windowSize, self.windowStep)
-		])
-
-		model.fit(
-			train_seq,
-			train_labels,
-			epochs = self.epochs,
-			verbose = 0
-		)
-		
-		self.cls = model
-	
-	def getSequenceScores(self, seqs):
-		if self.batchsize == 0:
-			return super().getSequenceScores(seqs)
-		if isinstance(seqs, sequenceStream):
-			nTreadFetch = 100000
-			maxThreadFetchNT = nTreadFetch * 1000
-			seqwinit = (
-				(i, win)
-				for blk in seqs.fetch(nTreadFetch, maxThreadFetchNT)
-				for i, cseq in enumerate(blk)
-				for win in cseq.windows(self.windowSize, self.windowStep)
-				if len(win) == self.windowSize
-			)
-		else:
-			seqwinit = (
-				(i, win)
-				for i, cseq in enumerate(seqs)
-				for win in cseq.windows(self.windowSize, self.windowStep)
-				if len(win) == self.windowSize
-			)
-		seqscores = [  ]
-		while True:
-			batch = [
-				b for b in [
-					next(seqwinit, None) for _ in range(self.batchsize)
-				]
-				if b is not None
-			]
-			if len(batch) == 0: break
-			p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1) for i, seq in batch]))
-			#scores = p[:, 1] - p[:, 0]
-			i = self.labelValues[self.targetLabel]
-			scores = p[:, i] / sum(p[:, n] for n in range(self.nLabels))
-			for score, (i, win) in zip(scores, batch):
-				if i >= len(seqscores):
-					seqscores += [ -float('INF') for _ in range(i - len(seqscores) + 1) ]
-				if score > seqscores[i]:
-					seqscores[i] = score
-		#
-		return seqscores
-	
-	def scoreWindow(self, seq):
-		p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1)]))
-		i = self.labelValues[self.targetLabel]
-		return p[0, i] / sum(p[0, n] for n in range(self.nLabels))
-	
-	def getTrainer(self):
-		return lambda ts: sequenceModelMultiCNN(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, nConv = self.nConv, convLen = self.convLen, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels, batchsize = self.batchsize)
-
-	def __str__(self):
-		return 'Multi-class Convolutional Neural Network<Training set: %s; Labels: %s; Target label: %s; Convolutions: %d; Convolution length: %d; Epochs: %d>'%(str(self.trainingSet), str(self.labels), str(self.targetLabel), self.nConv, self.convLen, self.epochs)
-
-	def __repr__(self): return self.__str__()
-
-
-# Convolutional Neural Network
 class sequenceModelKeras(sequenceModel):
-	def __init__(self, name, windowSize, windowStep, kerasModel, epochs = 100, targetLabel = positive, labels = [ positive, negative ], trainingSet = None, batchsize = 1000):
+	def __init__(self, name, windowSize, windowStep, modelConstructor, epochs = 100, targetLabel = positive, labels = [ positive, negative ], trainingSet = None, batchsize = 1000, trainWindows = False):
 		super().__init__(name, enableMultiprocessing = False)
+		self.modelConstructor = modelConstructor
 		self.windowSize, self.windowStep = windowSize, windowStep
 		self.targetLabel, self.labels = targetLabel, list(set([targetLabel]) | set(labels))
 		self.nLabels = len(self.labels)
 		self.threshold = 0.0
-		self.kerasModel = kerasModel
 		self.epochs = epochs
 		self.cls = None
 		self.batchsize = batchsize
 		self.trainingSet = trainingSet
+		self.trainWindows = trainWindows
 		if trainingSet is not None:
 			self._train(trainingSet)
-	
+
 	def _train(self, trainingSet):
-		scaleFac = 10
-		bloat = int((min(500, self.windowSize)-1)/scaleFac)
-		hbloat = int(bloat/2)
+		model = self.modelConstructor()
 		
-		model = self.kerasModel
+		print('TensorFlow / Keras model structure')
+		model.summary()
+		print('Training')
 		
+		#----------------------------------------------------------
+
 		model.compile(
 			optimizer = 'adam',
 			loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
 			metrics = ['accuracy']
 		)
-		
+
 		self.labelValues = {
 			label: i
 			for i, label in enumerate(self.labels)
 		}
-		train_seq = np.array([
-			getSequenceMatrix(win.seq).reshape(len(win), 4, 1)
-			for label in self.labels
-			for seq in trainingSet.withLabel(label)
-			for win in seq.windows(self.windowSize, self.windowStep)
-		])
-		train_labels = np.array([
-			self.labelValues[label]
-			for label in self.labels
-			for seq in trainingSet.withLabel(label)
-			for win in seq.windows(self.windowSize, self.windowStep)
-		])
+		if self.trainWindows:
+			train_seq = np.array([
+				getSequenceMatrix(win.seq)
+				for label in self.labels
+				for seq in trainingSet.withLabel(label)
+				for win in seq.windows(self.windowSize, self.windowStep)
+			])
+			train_labels = np.array([
+				self.labelValues[label]
+				for label in self.labels
+				for seq in trainingSet.withLabel(label)
+				for win in seq.windows(self.windowSize, self.windowStep)
+			])
+		else:
+			train_seq = np.array([
+				getSequenceMatrix(seq.seq)
+				for label in self.labels
+				for seq in trainingSet.withLabel(label)
+			])
+			train_labels = np.array([
+				self.labelValues[label]
+				for label in self.labels
+				for seq in trainingSet.withLabel(label)
+			])
 
 		model.fit(
 			train_seq,
@@ -358,13 +93,18 @@ class sequenceModelKeras(sequenceModel):
 			epochs = self.epochs,
 			verbose = 0
 		)
-		
+		print(' ... done training')
+
 		self.cls = model
-	
+
 	def getSequenceScores(self, seqs):
 		if self.batchsize == 0:
 			return super().getSequenceScores(seqs)
 		if isinstance(seqs, sequenceStream):
+			raise Exception("Scoring of sequence stream is not supported")
+			# TODO Fix
+			#  - For the below code, the index needs to take the blocks into account
+			#	in order to work properly
 			nTreadFetch = 100000
 			maxThreadFetchNT = nTreadFetch * 1000
 			seqwinit = (
@@ -390,10 +130,9 @@ class sequenceModelKeras(sequenceModel):
 				if b is not None
 			]
 			if len(batch) == 0: break
-			p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1) for i, seq in batch]))
-			#scores = p[:, 1] - p[:, 0]
+			p = self.cls.predict(np.array([getSequenceMatrix(seq.seq) for i, seq in batch]))
 			i = self.labelValues[self.targetLabel]
-			scores = p[:, i] / sum(p[:, n] for n in range(self.nLabels))
+			scores = p[:, i] * p[:, i] / (sum(p[:, n] for n in range(self.nLabels)) + 0.1) # Pseudocount to avoid zero division
 			for score, (i, win) in zip(scores, batch):
 				if i >= len(seqscores):
 					seqscores += [ -float('INF') for _ in range(i - len(seqscores) + 1) ]
@@ -401,17 +140,105 @@ class sequenceModelKeras(sequenceModel):
 					seqscores[i] = score
 		#
 		return seqscores
-	
+
 	def scoreWindow(self, seq):
-		p = self.cls.predict(np.array([getSequenceMatrix(seq.seq).reshape(len(seq), 4, 1)]))
+		p = self.cls.predict(np.array([ getSequenceMatrix(seq.seq) ]))
 		i = self.labelValues[self.targetLabel]
-		return p[0, i] / sum(p[0, n] for n in range(self.nLabels))
-	
+		return p[0, i] * p[0, i] / (sum(p[0, n] for n in range(self.nLabels)) + 0.1)
+
 	def getTrainer(self):
-		return lambda ts: sequenceModelKeras(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, kerasModel = self.kerasModel, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels, batchsize = self.batchsize)
+		return lambda ts: sequenceModelKeras(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels, batchsize = self.batchsize, modelConstructor = self.modelConstructor)
 
 	def __str__(self):
-		return 'Multi-class Keras Neural Network<Training set: %s; Positive label: %s; Negative label: %s; Epochs: %d>'%(str(self.trainingSet), str(self.labelPositive), str(self.labelNegative), self.epochs)
+		return 'Multi-class Keras model <Training set: %s; Labels: %s; Target label: %s; Epochs: %d>'%(str(self.trainingSet), str(self.labels), str(self.targetLabel), self.epochs)
+
+	def __repr__(self): return self.__str__()
+
+class sequenceModelDeepMOCCA(sequenceModelKeras):
+	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100,
+				 targetLabel = positive, labels = [ positive, negative ], trainingSet = None,
+				 batchsize = 1000, trainWindows = True,
+				 includeDinucleotides = True,
+				 pairingDistance = 500):
+		self.nConv, self.convLen = nConv, convLen
+		self.includeDinucleotides = includeDinucleotides
+		self.pairingDistance = pairingDistance
+		modelConstructor = lambda: self.constructModel(windowSize = windowSize,
+						nConv = nConv, convLen = convLen, labels = labels)
+		super().__init__(name = name, windowSize = windowSize, windowStep = windowStep,
+						modelConstructor = modelConstructor, epochs = epochs,
+						targetLabel = targetLabel, labels = labels,
+						trainingSet = trainingSet,
+						batchsize = batchsize, trainWindows = trainWindows)
+
+	def constructModel(self, windowSize, nConv, convLen, labels):
+		scaleFac = 10
+		bloat = int((min(self.pairingDistance, windowSize)-1)/scaleFac)
+		hbloat = int(bloat/2)
+		nLabels = len(labels)
+
+		#----------------------------------------------------------
+		# Model structure
+		I = keras.Input(shape = (None, 1, 4))
+
+		# - Merges down NT channels and outputs nConv convolutions
+		C1 = keras.layers.Conv2D(nConv, kernel_size = (convLen, 1), activation = 'relu',
+									  data_format = "channels_last")(I)
+		
+		if self.includeDinucleotides:
+			C1P = keras.layers.ZeroPadding2D(padding = (int(convLen / 2) - 1, 0))(C1)
+
+			# Dinucleotide convolutions
+			# - Merges down NT channels and outputs nConv convolutions
+			C2 = keras.layers.Conv2D(nConv, kernel_size = (2, 1), activation = 'relu',
+										  data_format = "channels_last")(I)
+			C2P = C2
+
+			Combine = keras.layers.Concatenate(axis=-1)([ C1P, C2P ])
+		else:
+			Combine = C1
+
+		# Reduces resolution (but not channels/convolutions)
+		DS = keras.layers.AveragePooling2D((scaleFac, 1))(Combine)
+
+		# Bloating - Averages convolution outputs over a window
+		BLT0 = keras.layers.Permute((1, 3, 2))(DS)
+		BLT1 = keras.layers.Conv2D(1, kernel_size = (bloat, 1),
+									  activation=None,
+									  trainable = False,
+									  use_bias=False,
+									  weights = [
+										tf.constant(
+										   np.array([ 1./bloat for _ in range(bloat) ])
+											 .reshape((bloat, 1, 1, 1))),
+									  ],
+									  data_format = "channels_last")(BLT0)
+		BLT = keras.layers.Permute((1, 3, 2))(BLT1)
+
+		# Merges convolutions into mixing convolutions
+		C2 = keras.layers.Conv2D(nConv, kernel_size = (1, 1), activation = 'relu',
+									  data_format = "channels_last")(BLT)
+		Pool = keras.layers.GlobalMaxPooling2D(data_format = "channels_last")(C2)
+
+		# Max pooling of mixing convolutions
+		Term = keras.layers.Dense(nLabels, activation=tf.nn.softmax)(Pool)
+
+		model = keras.Model(I, Term)
+		
+		return model
+		
+	def getTrainer(self):
+		return lambda ts: sequenceModelDeepMOCCA(self.name,
+			trainingSet = ts, windowSize = self.windowSize,
+			windowStep = self.windowStep, nConv = self.nConv,
+			convLen = self.convLen, epochs = self.epochs,
+			targetLabel = self.targetLabel, labels = self.labels,
+			batchsize = self.batchsize, trainWindows = self.trainWindows,
+			includeDinucleotides = self.includeDinucleotides,
+			pairingDistance = self.pairingDistance)
+
+	def __str__(self):
+		return 'Deep-MOCCA <Training set: %s; Labels: %s; Target label: %s; Convolutions: %d; Convolution length: %d; Pairing distance: %d; Include dinucleotides: %s; Epochs: %d>'%(str(self.trainingSet), str(self.labels), str(self.targetLabel), self.nConv, self.convLen, self.pairingDistance, 'Yes' if self.pairingDistance else 'No', self.epochs)
 
 	def __repr__(self): return self.__str__()
 
