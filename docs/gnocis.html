@@ -2283,6 +2283,22 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="gnocis.regions.regions.sample">
+<code class="sig-name descname">sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.sample" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – Number of regions to pick. If 0, the same number will be selected as are in the full set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a random sample of the regions of size n. Regions are selected with replacement, and the same region can occur multiple times.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="gnocis.regions.regions.saveBED">
 <code class="sig-name descname">saveBED</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regions.saveBED" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves the regions to a BED (<a class="reference external" href="https://www.ensembl.org/info/website/upload/bed.html">https://www.ensembl.org/info/website/upload/bed.html</a>) file.</p>
@@ -2946,7 +2962,7 @@
 <code class="sig-name descname">sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.sequences.sequences.sample" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>n</strong> – Number of sequences to pick. If 0, the same number will be selected as are in the full set.</p>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – Number of sequences to pick. If 0, the same number will be selected as are in the full set.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Returns a random sample of the sequences of size n. Sequences are selected with replacement, and the same sequence can occur multiple times.</p>
