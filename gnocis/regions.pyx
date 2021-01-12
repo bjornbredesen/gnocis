@@ -823,6 +823,70 @@ def loadCoordinateList(path, dropChr = True):
 	return rs
 
 # Generates a prediction overlap precision barplot
+def predictionBarplot(predictionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
+	""" Generates a prediction overlap precision barplot.
+	
+	:param predictionSets: List of prediction region sets.
+	:param figsize: Figure size.
+	:param outpath: Output path.
+	:param returnHTML: If True, an HTML node will be returned.
+	:param fontsizeLabels: Size of label font.
+	:param fontsizeLegend: Size of legend font.
+	:param fontsizeAxis: Size of axis font.
+	:param style: Plot style to use.
+	:param showLegend: Flag for whether or not to render legend.
+	:param bboxAnchorTo: Legend anchor point.
+	:param legendLoc: Legend location.
+	
+	:type predictionSets: list
+	:type figsize: tuple, optional
+	:type outpath: str, optional
+	:type returnHTML: bool, optional
+	:type fontsizeLabels: float, optional
+	:type fontsizeLegend: float, optional
+	:type fontsizeAxis: float, optional
+	:type style: str, optional
+	:type showLegend: bool, optional
+	:type bboxAnchorTo: tuple, optional
+	:type legendLoc: str, optional
+	"""
+	import matplotlib.pyplot as plt
+	import base64
+	from io import BytesIO
+	from IPython.core.display import display, HTML
+	import matplotlib.ticker as mtick
+	with plt.style.context(style):
+		width = 0.5
+		bw = width / (len(predictionSets)-1)
+		fig, ax = plt.subplots(figsize = figsize)
+		for psi, ps in enumerate(predictionSets):
+			ax.bar(bw*psi, len(ps), bw, label = ps.name)
+			plt.text(bw*psi, len(ps), str(len(ps)),
+									verticalalignment = 'bottom',
+									horizontalalignment = 'center',
+									color = 'black',
+									fontsize = 10)
+		ax.set_ylabel('Predictions', fontsize = fontsizeLabels)
+		plt.yticks(fontsize = fontsizeAxis, rotation = 0)
+		ax.set_xticks([ -10 ])
+		plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+		if showLegend:
+			ax.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsizeLegend, fancybox = True)
+		fig.tight_layout()
+		if outpath is None:
+			bio = BytesIO()
+			fig.savefig(bio, format='png')
+			plt.close('all')
+			encoded = base64.b64encode(bio.getvalue()).decode('utf-8')
+			html = '<img src=\'data:image/png;base64,%s\'>'%encoded
+			if returnHTML:
+				return html
+			display(HTML(html))
+		else:
+			fig.savefig(outpath)
+			plt.close('all')
+
+# Generates a prediction overlap precision barplot
 def overlapPrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
 	""" Generates a prediction overlap precision barplot.
 	
