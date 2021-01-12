@@ -46,10 +46,6 @@ class sequenceModelKeras(sequenceModel):
 	def _train(self, trainingSet):
 		model = self.modelConstructor()
 		
-		print('TensorFlow / Keras model structure')
-		model.summary()
-		print('Training')
-		
 		#----------------------------------------------------------
 
 		model.compile(
@@ -93,26 +89,27 @@ class sequenceModelKeras(sequenceModel):
 			epochs = self.epochs,
 			verbose = 0
 		)
-		print(' ... done training')
 
 		self.cls = model
 
-	def getSequenceScores(self, seqs):
+	def getSequenceScores(self, seqs, nStreamFetch = 100000, maxStreamFetchNT = 100000000):
 		if self.batchsize == 0:
 			return super().getSequenceScores(seqs)
 		if isinstance(seqs, sequenceStream):
-			raise Exception("Scoring of sequence stream is not supported")
-			# TODO Fix
-			#  - For the below code, the index needs to take the blocks into account
-			#	in order to work properly
-			nTreadFetch = 100000
-			maxThreadFetchNT = nTreadFetch * 1000
+			def fetchseq():
+				i = 0
+				for blk in seqs.fetch(nStreamFetch, maxStreamFetchNT):
+					for cseq in blk:
+						for win in cseq.windows(self.windowSize, self.windowStep):
+							if len(win) != self.windowSize:
+								continue
+							#
+							yield (i, win)
+						i += 1
+			#
 			seqwinit = (
 				(i, win)
-				for blk in seqs.fetch(nTreadFetch, maxThreadFetchNT)
-				for i, cseq in enumerate(blk)
-				for win in cseq.windows(self.windowSize, self.windowStep)
-				if len(win) == self.windowSize
+				for i, win in fetchseq()
 			)
 		else:
 			seqwinit = (
@@ -132,7 +129,8 @@ class sequenceModelKeras(sequenceModel):
 			if len(batch) == 0: break
 			p = self.cls.predict(np.array([getSequenceMatrix(seq.seq) for i, seq in batch]))
 			i = self.labelValues[self.targetLabel]
-			scores = p[:, i] * p[:, i] / (sum(p[:, n] for n in range(self.nLabels)) + 0.1) # Pseudocount to avoid zero division
+			scores = p[:, i]
+			#scores = p[:, i] * p[:, i] / (sum(p[:, n] for n in range(self.nLabels)) + 0.1) # Pseudocount to avoid zero division
 			for score, (i, win) in zip(scores, batch):
 				if i >= len(seqscores):
 					seqscores += [ -float('INF') for _ in range(i - len(seqscores) + 1) ]
@@ -144,7 +142,8 @@ class sequenceModelKeras(sequenceModel):
 	def scoreWindow(self, seq):
 		p = self.cls.predict(np.array([ getSequenceMatrix(seq.seq) ]))
 		i = self.labelValues[self.targetLabel]
-		return p[0, i] * p[0, i] / (sum(p[0, n] for n in range(self.nLabels)) + 0.1)
+		return p[0, i]
+		#return p[0, i] * p[0, i] / (sum(p[0, n] for n in range(self.nLabels)) + 0.1)
 
 	def getTrainer(self):
 		return lambda ts: sequenceModelKeras(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels, batchsize = self.batchsize, modelConstructor = self.modelConstructor)
