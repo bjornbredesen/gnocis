@@ -1023,7 +1023,7 @@ class sequenceModelFNN(sequenceModel):
 			windowStep = features.windowStep()
 		self.windowSize, self.windowStep = windowSize, windowStep
 	
-	def getSequenceScores(self, seqs):
+	def getSequenceScores(self, seqs, nStreamFetch = 100000, maxStreamFetchNT = 100000000):
 		if self.batchsize == 0:
 			return super().getSequenceScores(seqs)
 		# Score with batching of vectors
@@ -1037,14 +1037,20 @@ class sequenceModelFNN(sequenceModel):
 		cdef int i
 		cdef sequence win
 		if isinstance(seqs, sequenceStream):
-			nTreadFetch = 100000
-			maxThreadFetchNT = nTreadFetch * 1000
+			def fetchseq():
+				i = 0
+				for blk in seqs.fetch(nStreamFetch, maxStreamFetchNT):
+					for cseq in blk:
+						for win in cseq.windows(self.windowSize, self.windowStep):
+							if len(win) != self.windowSize:
+								continue
+							#
+							yield (i, win)
+						i += 1
+			#
 			seqwinit = (
 				(i, win)
-				for blk in seqs.fetch(nTreadFetch, maxThreadFetchNT)
-				for i, cseq in enumerate(blk)
-				for win in cseq.windows(self.windowSize, self.windowStep)
-				if len(win) == self.windowSize
+				for i, win in fetchseq()
 			)
 		else:
 			seqwinit = (
