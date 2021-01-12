@@ -27,7 +27,7 @@ ntmat = {
 def getSequenceMatrix(seq):
 	return np.array([ [ ntmat[nt] ] for nt in seq ])
 
-class sequenceModelKeras(sequenceModel):
+class KerasModel(sequenceModel):
 	def __init__(self, name, windowSize, windowStep, modelConstructor, epochs = 100, targetLabel = positive, labels = [ positive, negative ], trainingSet = None, batchsize = 1000, trainWindows = False):
 		super().__init__(name, enableMultiprocessing = False)
 		self.modelConstructor = modelConstructor
@@ -153,7 +153,7 @@ class sequenceModelKeras(sequenceModel):
 
 	def __repr__(self): return self.__str__()
 
-class sequenceModelDeepMOCCA(sequenceModelKeras):
+class DeepMOCCA(sequenceModelKeras):
 	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100,
 				 targetLabel = positive, labels = [ positive, negative ], trainingSet = None,
 				 batchsize = 1000, trainWindows = True,
