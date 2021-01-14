@@ -5,13 +5,43 @@
 # bjorn.bredesen@ii.uib.no
 ############################################################################
 
-def progress(taskName, it, nIt, pLen = 20):
-	progress = it / nIt
-	pI = int(progress * pLen)
-	pL = pLen - pI
-	perc = 100. * progress
-	bar = '[' + ('|'*pI) + (' '*pL) + '] %5.2f %%'%perc + ' (%d/%d) - '%(it, nIt) + taskName
-	print(bar, end = '\r')
+progressTasks = []
+
+class progressTask:
+	
+	def __init__(self, desc, steps):
+		self.desc = desc
+		self.step = 0
+		self.steps = steps
+		self.lastDisplay = ''
+		progressTasks.append(self)
+	
+	def update(self, step):
+		self.step = step
+		self.display()
+	
+	def display(self, pLen = 20):
+		xA = 0.
+		xB = 1.
+		desc = ''
+		#
+		for t in progressTasks:
+			stepSize = (xB - xA) / t.steps
+			cxA = xA + stepSize * t.step
+			xA, xB = cxA, cxA + stepSize
+			desc += ' - %s (%d/%d)'%(t.desc, t.step, t.steps)
+		#
+		pI = int(xA * pLen)
+		pL = pLen - pI
+		perc = 100. * xA
+		bar = '[' + ('|'*pI) + (' '*pL) + '] %5.2f %%'%perc + desc
+		self.lastDisplay = bar
+		print(bar, end = '\r')
+	
+	def done(self):
+		print(' ' * len(self.lastDisplay))
+		global progressTasks
+		progressTasks = [ t for t in progressTasks if t != self ]
 
 def _tblFieldConv(v, fpdec = 5, strcroplen = 16):
 	if isinstance(v, int):
