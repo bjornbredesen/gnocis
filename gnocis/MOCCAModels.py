@@ -161,7 +161,7 @@ class SVMMOCCA(sequenceModel):
 		return loadGFF(outGFFPath)
 	
 	def getTrainer(self):
-		return lambda ts: sequenceModelSVMMOCCA(name = self.name, MOCCAPath = self.MOCCAPath, motifs = self.motifs, windowSize = self.windowSize, windowStep = self.windowStep, kDegree = self.kDegree, labelsPositive = self.labelsPositive, labelsNegative = self.labelsNegative, trainingSet = ts, silent = self.silent, TempPath = self.tmpPath)
+		return lambda ts: SVMMOCCA(name = self.name, MOCCAPath = self.MOCCAPath, motifs = self.motifs, windowSize = self.windowSize, windowStep = self.windowStep, kDegree = self.kDegree, labelsPositive = self.labelsPositive, labelsNegative = self.labelsNegative, trainingSet = ts, silent = self.silent, TempPath = self.tmpPath)
 	
 	def __str__(self):
 		return 'SVM-MOCCA<Motifs: %s; kDegree: %d>'%(str(self.motifs), self.kDegree)
