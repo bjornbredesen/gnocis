@@ -146,14 +146,14 @@ class KerasModel(sequenceModel):
 		#return p[0, i] * p[0, i] / (sum(p[0, n] for n in range(self.nLabels)) + 0.1)
 
 	def getTrainer(self):
-		return lambda ts: sequenceModelKeras(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels, batchsize = self.batchsize, modelConstructor = self.modelConstructor)
+		return lambda ts: KerasModel(self.name, trainingSet = ts, windowSize = self.windowSize, windowStep = self.windowStep, epochs = self.epochs, targetLabel = self.targetLabel, labels = self.labels, batchsize = self.batchsize, modelConstructor = self.modelConstructor)
 
 	def __str__(self):
 		return 'Multi-class Keras model <Training set: %s; Labels: %s; Target label: %s; Epochs: %d>'%(str(self.trainingSet), str(self.labels), str(self.targetLabel), self.epochs)
 
 	def __repr__(self): return self.__str__()
 
-class DeepMOCCA(sequenceModelKeras):
+class DeepMOCCA(KerasModel):
 	def __init__(self, name, windowSize, windowStep, nConv = 20, convLen = 10, epochs = 100,
 				 targetLabel = positive, labels = [ positive, negative ], trainingSet = None,
 				 batchsize = 1000, trainWindows = True,
@@ -227,7 +227,7 @@ class DeepMOCCA(sequenceModelKeras):
 		return model
 		
 	def getTrainer(self):
-		return lambda ts: sequenceModelDeepMOCCA(self.name,
+		return lambda ts: DeepMOCCA(self.name,
 			trainingSet = ts, windowSize = self.windowSize,
 			windowStep = self.windowStep, nConv = self.nConv,
 			convLen = self.convLen, epochs = self.epochs,
