@@ -29,17 +29,17 @@ class progressTask:
 			stepSize = (xB - xA) / t.steps
 			cxA = xA + stepSize * t.step
 			xA, xB = cxA, cxA + stepSize
-			desc += ' - %s (%d/%d)'%(t.desc, t.step, t.steps)
+			desc += ' - %s (%d/%d)'%(t.desc, t.step+1, t.steps)
 		#
-		pI = int(xA * pLen)
+		pI = int(xB * pLen)
 		pL = pLen - pI
-		perc = 100. * xA
+		perc = 100. * xB
 		bar = '[' + ('|'*pI) + (' '*pL) + '] %5.2f %%'%perc + desc
 		self.lastDisplay = bar
 		print(bar, end = '\r')
 	
 	def done(self):
-		print(' ' * len(self.lastDisplay))
+		print(' ' * len(self.lastDisplay), end = '\r')
 		global progressTasks
 		progressTasks = [ t for t in progressTasks if t != self ]
 
