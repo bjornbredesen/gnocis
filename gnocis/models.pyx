@@ -17,7 +17,7 @@ from .features cimport *
 from .validation cimport *
 from .validation import getConfusionMatrix, getConfusionMatrixStatistics, getROC, getPRC, getAUC, printValidationStatistics
 from .sequences import streamSequenceWindows, positive, negative
-from .ioputil import nctable, progress
+from .ioputil import nctable, progressTask
 from .common import mean, CI
 from .curves import curves, fixedStepCurve
 
@@ -868,8 +868,9 @@ class crossvalidation:
 		print(' - Validation set: %s'%str(validationSet))
 		print(' - Training sequences per class: %d'%ntrain)
 		print(' - Repeats: %d'%repeats)
+		task = progressTask('Generating training/test sets', steps = self.repeats)
 		for rep in range(repeats):
-			progress('Generating training/test sets', it = rep, nIt = self.repeats)
+			task.update(step = rep)
 			# Construct training set as balanced subset of shuffled sequences
 			for lbl in tsByLabel:
 				random.shuffle(tsByLabel[lbl])
@@ -886,10 +887,14 @@ class crossvalidation:
 			nvpos = int( min(len(rvpos), len(rvneg)/ratioNegPos) )
 			nvneg = int(nvpos * ratioNegPos)
 			self.cvval.append( sequences('Validation set', rvpos[:nvpos] + rvneg[:nvneg]) )
-			progress('Generating training/test sets', it = rep+1, nIt = self.repeats)
+			task.update(step = rep+1)
+		task.done()
 		# Cross-validate models
-		for mdl in models:
+		task = progressTask('CV', steps = len(models))
+		for i, mdl in enumerate(models):
+			task.update(step = i)
 			self.addModel(mdl)
+		task.done()
 	
 	"""
 	Adds a model to the cross-validation.
@@ -901,15 +906,17 @@ class crossvalidation:
 	def addModel(self, mdl):
 		self.PRC[mdl] = []
 		self.ROC[mdl] = []
+		task = progressTask(mdl.name, steps = self.repeats*3)
 		for rep in range(self.repeats):
-			progress('Cross-validating ' + mdl.name, it = rep*3, nIt = self.repeats*3)
+			task.update(step = rep*3)
 			imdl = mdl.train(self.cvtrain[rep])
-			progress('Cross-validating ' + mdl.name, it = rep*3+1, nIt = self.repeats*3)
+			task.update(step = rep*3+1)
 			self.PRC[mdl].append(imdl.getPRC(self.cvval[rep], labelPositive = self.labelPositive, labelNegative = self.labelNegative))
-			progress('Cross-validating ' + mdl.name, it = rep*3+2, nIt = self.repeats*3)
+			task.update(step = rep*3+2)
 			self.ROC[mdl].append(imdl.getROC(self.cvval[rep], labelPositive = self.labelPositive, labelNegative = self.labelNegative))
-			progress('Cross-validating ' + mdl.name, it = rep*3+3, nIt = self.repeats*3)
+			task.update(step = rep*3+3)
 		self.models.append(mdl)
+		task.done()
 	
 	def plotPRC(self, figsize = (9, 9), outpath = None, style = 'ggplot', returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
 		try:
