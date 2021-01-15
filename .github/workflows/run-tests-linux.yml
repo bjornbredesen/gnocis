@@ -1,6 +1,13 @@
 name: Tests (Linux, single version of Python)
 
-on: [push]
+on:
+  push:
+    paths-ignore:
+    - 'tutorial/**'
+    - 'docs/**'
+    - 'docsrc/**'
+    - 'markdown/**'
+    - '.github/**'
 
 jobs:
   build:
