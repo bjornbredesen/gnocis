@@ -25,11 +25,6 @@ jobs:
         Get-ChildItem "gnocis" -Filter *.pyx | Foreach-Object { cython -3 --cplus $_.FullName }
         python setup.py sdist bdist_wheel
         Get-ChildItem "dist" -Filter *.whl | Foreach-Object { copy $_.FullName .\gnocis.whl }
-    - name: Archive wheel
-      uses: actions/upload-artifact@v2
-      with:
-        name: gnocis-windows
-        path: gnocis.whl
     - name: Publish wheel to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
