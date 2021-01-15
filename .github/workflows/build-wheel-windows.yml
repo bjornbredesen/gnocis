@@ -23,8 +23,7 @@ jobs:
     - name: Build package
       run: |
         Get-ChildItem "gnocis" -Filter *.pyx | Foreach-Object { cython -3 --cplus $_.FullName }
-        python setup.py sdist bdist_wheel
-        Get-ChildItem "dist" -Filter *.whl | Foreach-Object { copy $_.FullName .\gnocis.whl }
+        python setup.py bdist_wheel
     - name: Publish wheel to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:

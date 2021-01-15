@@ -23,8 +23,7 @@ jobs:
     - name: Build package
       run: |
         cython -3 --cplus gnocis/*.pyx
-        python setup.py sdist bdist_wheel
-        cp dist/gnocis-*.whl dist/gnocis.whl
+        python setup.py bdist_wheel
     - name: Publish wheel to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
