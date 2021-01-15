@@ -9,6 +9,7 @@ Bjørn Bredesen, 2018-
 ![](https://github.com/bjornbredesen/gnocis/workflows/Tests%20(Linux,%20single%20version%20of%20Python)/badge.svg)
 ![](https://github.com/bjornbredesen/gnocis/workflows/Tests%20(Windows,%20single%20version%20of%20Python)/badge.svg)
 ![](https://github.com/bjornbredesen/gnocis/workflows/Tests%20(MacOS,%20single%20version%20of%20Python)/badge.svg)
+![](https://github.com/bjornbredesen/gnocis/workflows/Publish%20to%20PyPI/badge.svg)
 
 
 ----------------------------------------------------------------------
