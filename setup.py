@@ -19,7 +19,7 @@ setup(
 	packages = [ "gnocis" ],
 	author = "Bjørn Bredesen",
 	author_email = "bjorn@bjornbredesen.no",
-	version = "0.9.9a1",
+	version = "0.9.9",
 	url = "https://github.com/bjornbredesen/gnocis",
 	license = "MIT",
 	description = "Gnocis is a system for the analysis and the modelling of cis-regulatory DNA sequences.",
