@@ -37,6 +37,7 @@ jobs:
         python tests/run-all.py
   
   publish-linux:
+    needs: [test]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -65,6 +66,7 @@ jobs:
         twine upload dist/*
 
   publish-windows:
+    needs: [test]
     runs-on: windows-latest
     strategy:
       matrix:
@@ -92,6 +94,7 @@ jobs:
         twine upload dist/*
 
   publish-mac:
+    needs: [test]
     runs-on: macos-latest
     strategy:
       matrix:
