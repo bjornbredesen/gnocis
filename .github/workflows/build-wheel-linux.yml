@@ -24,7 +24,7 @@ jobs:
     - name: Build package
       run: |
         cython -3 --cplus gnocis/*.pyx
-        python setup.py sdist bdist_wheel
+        python setup.py sdist
         cp dist/gnocis-*.whl dist/gnocis.whl
     - name: Archive wheel
       uses: actions/upload-artifact@v2
