@@ -121,7 +121,7 @@ For an in-depth tutorial, see the Jupyter Notebooks in the `tutorial/` folder.
 
 ## Requirements
 
- * Python 3.6, 3.7, 3.8
+ * Python 3.6, 3.7, 3.8, 3.9
  * Cython
  * Optional: sklearn – for SVM and RF modelling
  * Optional: CuPy and CUDA – for CUDA-optimized SVM
