@@ -39,5 +39,5 @@ jobs:
         mv gnocis/ gnocis_repo/
     - name: Run unit tests
       run: |
-        python tests.py
+        python tests/run-base.py
 
