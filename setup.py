@@ -32,6 +32,8 @@ setup(
 		"Intended Audience :: Information Technology",
 		"License :: OSI Approved :: MIT License",
 		"Operating System :: POSIX :: Linux",
+		"Operating System :: Microsoft :: Windows",
+		"Operating System :: MacOS",
 		"Programming Language :: Cython",
 		"Programming Language :: Python :: 3.6",
 		"Programming Language :: Python :: 3.7",
