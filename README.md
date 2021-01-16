@@ -122,7 +122,9 @@ For an in-depth tutorial, see the Jupyter Notebooks in the `tutorial/` folder.
 ## Requirements
 
  * Python 3.6, 3.7, 3.8, 3.9
- * Cython
+ * Windows, MacOS or Linux
+ * C++ compiler when installing on Linux
+ * Optional: Cython – required only when building from source
  * Optional: sklearn – for SVM and RF modelling
  * Optional: CuPy and CUDA – for CUDA-optimized SVM
  * Optional: TensorFlow – for neural networks
