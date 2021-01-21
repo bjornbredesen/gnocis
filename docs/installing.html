@@ -43,12 +43,15 @@
             
   <div class="section" id="installing">
 <h1>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h1>
-<p>To install via the PyPI package manager, open a terminal and execute</p>
+<p>The recommended way to install Gnocis is through the PyPI package manager. In order to install via the PyPI package manager, open a terminal and execute:</p>
 <p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gnocis</span></code></p>
-<p>To build from source, run</p>
+<p>Alternatively, Gnocis can be built from source. To build a wheel and install it, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">wheel</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">dist</span><span class="o">/*.</span><span class="n">whl</span>
+</pre></div>
+</div>
+<p>Finally, Gnocis can be used by building from source and including the entire <code class="docutils literal notranslate"><span class="pre">gnocis</span></code> directory in the source tree. In order to do so, run</p>
 <p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">all</span></code></p>
-<p>To install a source build, run</p>
-<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code></p>
 </div>
 
 
@@ -106,7 +109,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Bjørn Bredesen.
+        &#169; Copyright 2021, Bjørn Bredesen.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
     </div>
   </body>
