@@ -8,10 +8,6 @@
 
 from setuptools import setup
 from setuptools.extension import Extension
-#from Cython.Build import cythonize
-
-with open('README.md') as f:
-	readme = '\n'.join(l for l in f)
 
 setup(
 	ext_modules = [ Extension(name = 'gnocis.' + x, sources = ['gnocis/'+ x + '.cpp']) for x in ['biomarkers', 'common', 'features', 'featurenetwork', 'models', 'motifs', 'regions', 'sequences', 'validation'] ],
@@ -23,7 +19,7 @@ setup(
 	url = "https://github.com/bjornbredesen/gnocis",
 	license = "MIT",
 	description = "Gnocis is a system for the analysis and the modelling of cis-regulatory DNA sequences.",
-	long_description = readme,
+	long_description = open("README.md", encoding="utf-8").read(),
 	long_description_content_type = "text/markdown",
 	classifiers=[
 		"Development Status :: 4 - Beta",
