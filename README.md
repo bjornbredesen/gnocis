@@ -1,5 +1,5 @@
 
-![alt text](markdown/gnocis.png "")
+![alt text](https://github.com/bjornbredesen/gnocis/blob/8349df5140578bdc09c425c329cd7adea04dc653/markdown/gnocis.png "")
 
 # Gnocis
 Bjørn Bredesen, 2018-
@@ -167,7 +167,5 @@ SOFTWARE.
 ## Logo
 
 Logo: Copyright Bjørn Bredesen
-
-Font: Emporium. Credit: emnazar. https://www.dafont.com/emporium-2.font
 
 
