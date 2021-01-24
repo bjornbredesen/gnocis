@@ -2,13 +2,69 @@ name: Publish to PyPI
 
 on:
   release:
-    types: # This configuration does not affect the page_build event above
+    types:
       - created
 
 jobs:
 
-  test:
+  test-ubuntu:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest setuptools wheel twine cython numpy sklearn
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Build package
+      run: |
+        cython -3 --cplus gnocis/*.pyx
+        python setup.py sdist bdist_wheel
+        cp dist/gnocis-*.whl dist/gnocis.whl
+    - name: Install package
+      run: |
+        pip install dist/gnocis-*.whl
+        mv gnocis/ gnocis_repo/
+    - name: Run unit tests
+      run: |
+        python tests/run-all.py
+  
+  test-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [3.6]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest setuptools wheel twine cython numpy sklearn
+    - name: Build package
+      run: |
+        Get-ChildItem "gnocis" -Filter *.pyx | Foreach-Object { cython -3 --cplus $_.FullName }
+        python setup.py sdist bdist_wheel
+    - name: Install package
+      run: |
+        Get-ChildItem "dist" -Filter *.whl | Foreach-Object { pip install $_.FullName }
+        ren gnocis gnocis_repo
+    - name: Run unit tests
+      run: |
+        python tests/run-all.py
+  
+  test-mac:
+    runs-on: macos-latest
     strategy:
       matrix:
         python-version: [3.6]
@@ -37,7 +93,7 @@ jobs:
         python tests/run-all.py
   
   publish-source:
-    needs: [test]
+    needs: [test-ubuntu, test-windows, test-mac]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -67,7 +123,7 @@ jobs:
         twine upload dist/*
 
   publish-windows:
-    needs: [test]
+    needs: [test-ubuntu, test-windows, test-mac]
     runs-on: windows-latest
     strategy:
       matrix:
@@ -97,7 +153,7 @@ jobs:
         twine upload dist/*
 
   publish-mac:
-    needs: [test]
+    needs: [test-ubuntu, test-windows, test-mac]
     runs-on: macos-latest
     strategy:
       matrix:
