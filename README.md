@@ -42,6 +42,14 @@ Finally, Gnocis can be used by building from source and including the entire `gn
 `make all`
 
 
+## Installing dependencies for tutorial
+
+```
+sudo apt-get install python3-sphinx
+sudo pip3 install notebook pandas numpy matplotlib cupy tensorflow
+```
+
+
 ----------------------------------------------------------------------
 
 ## Documentation
