@@ -612,8 +612,12 @@ class GenomePlotTrackCVPredictions:
 			clip_on = False
 		))
 		tticks = [ (vMax, str(vMax)), (vMin, str(vMin)) ]
+		thrMean = None
 		if bpred.thresholdValue is not None:
-			tticks.append((bpred.thresholdValue, str(bpred.thresholdValue) + ' (threshold)'))
+			thr = [ p.thresholdValue for p in bpreds ]
+			thrMean = mean(thr)
+			thrCI = CI(thr)
+			tticks.append((thrMean, '%.2f +/- %.2f'%(thrMean, thrCI) + ' (threshold)'))
 		if vMin < 0. and vMax > 0.:
 			tticks.append((0.0, str(0.0)))
 		tticks = sorted(tticks, key = lambda p: p[0])
@@ -634,7 +638,16 @@ class GenomePlotTrackCVPredictions:
 					clip_on = False)
 		# Thresholded
 		if bpred.thresholdValue is not None:
-			tthr = V2Y(bpred.thresholdValue)
+			tthr = V2Y(thrMean)
+			tthrCI = V2Y(thrMean + thrCI) - tthr
+			ax.add_patch(Rectangle(
+				(coordStart, tthr - tthrCI),
+				coordEnd - coordStart,
+				tthrCI * 2.,
+				fc = (0.4, 0.4, 0.4, 0.3),
+				ec = colInvisible,
+				clip_on = False
+			))
 			ax.plot(
 				[ coordStart, coordEnd ],
 				[ tthr, tthr ],
@@ -698,7 +711,9 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 			for rs in tracks:
 				yA = y
 				nrs = None
-				if isinstance(rs, genome):
+				if isinstance(rs, GenomePlotTrack):
+					nrs = rs
+				elif isinstance(rs, genome):
 					nrs = GenomePlotTrackGenome(rs)
 				elif isinstance(rs, curves):
 					nrs = GenomePlotTrackCurve(rs)
