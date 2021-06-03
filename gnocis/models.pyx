@@ -30,6 +30,12 @@ multiprocessingPool = None
 nTreadFetch = 100000
 maxThreadFetchNT = nTreadFetch * 1000
 
+def setNThreadFetch(v):
+	global nTreadFetch
+	global maxThreadFetchNT
+	nTreadFetch = v
+	maxThreadFetchNT = nTreadFetch * 1000
+
 # Used for applying models in separate processes
 def multiprocessModelDeployer(args):
 	cdef sequences seqs
@@ -816,6 +822,51 @@ def createDummyPREdictorModel(name, motifs, windowSize=500, windowStep=10):
 def trainPREdictorModel(name, motifs, trainingSet, windowSize=500, windowStep=10, labelPositive = positive, labelNegative = negative):
 	return sequenceModelLogOdds(name, features.motifPairSpectrum(motifs, 219), trainingSet, windowSize, windowStep, labelPositive = labelPositive, labelNegative = labelNegative)
 
+class CVModelPredictions:
+	"""
+	Helper class that represents cross-validated model predictions..
+	
+	:param model: Model.
+	:param labelPredictionCurves: Labelled prediction curves.
+	
+	:type model: sequenceModel
+	:type labelPredictionCurves: dict
+	"""
+	
+	def __init__(self, model, labelPredictionCurves = None):
+		self.name = model.name
+		self.model = model
+		self._pred = {} if labelPredictionCurves is None else labelPredictionCurves
+	
+	def addPrediction(self, curve, label):
+		if label not in self._pred:
+			self._pred[label] = []
+		self._pred[label].append(curve)
+	
+	def getPrediction(self, label, repeat):
+		return self._pred[label][repeat]
+	
+	def nRepeats(self, label):
+		return len(self._pred[label])
+	
+	def getStatTable(self):
+		rtable = []
+		for label in self._pred:
+			npred = [ len(p.regions()) for p in self._pred[label] ]
+			meanlen = [ mean([ len(r) for r in p.regions() ]) for p in self._pred[label] ]
+			rtable.append({
+				'Label': label.name,
+				'Predictions': '%.2f +/- %.2f'%(mean(npred), CI(npred)),
+				'Mean length': '%.2f +/- %.2f'%(mean(meanlen), CI(meanlen))
+			})
+		return nctable('Predictions: ' + self.model.name, rtable)
+	
+	def __repr__(self):
+		return 'CVModelPredictions<' + str(self.model) + '>' + self.getStatTable().__repr__()
+	
+	def _repr_html_(self):
+		return '<div>' + self.getStatTable()._repr_html_() + '</div>'
+
 class crossvalidation:
 	"""
 	Helper class for cross-validations. Accepts binary training and validation sets and constructs cross-validation sets for a desired number of repeats. If a separate validation set is not given, the training set is used. The cross-validation set for each repeat contains numbers of training and test sequences determined by a training-to-testing sequence ratio, as well as a negative-per-positive test sequence ratio. When constructing the validation set, identities are checked for against the training set, to avoid contamination (will not work if sequences are cloned). Holds models and validation statistics. Integrates with terminal and IPython for visualization of results. Stores training and testing data, so new models can be added.
@@ -839,7 +890,7 @@ class crossvalidation:
 	:type ratioNegPos: float, optional
 	"""
 	
-	def __init__(self, models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = None):
+	def __init__(self, models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = None, storeTrained = True):
 		self.models = []
 		self.PRC = {}
 		self.ROC = {}
@@ -851,6 +902,9 @@ class crossvalidation:
 		self.ratioTrainTest = ratioTrainTest
 		self.trainingSet = trainingSet
 		self.validationSet = validationSet
+		self.storeTrained = storeTrained
+		self.trainedModels = {}
+		self.predictions = {}
 		# Construct cross-validation set
 		if validationSet == None:
 			validationSet = trainingSet
@@ -906,10 +960,12 @@ class crossvalidation:
 	def addModel(self, mdl):
 		self.PRC[mdl] = []
 		self.ROC[mdl] = []
+		self.trainedModels[mdl] = []
 		task = progressTask(mdl.name, steps = self.repeats*3)
 		for rep in range(self.repeats):
 			task.update(step = rep*3)
 			imdl = mdl.train(self.cvtrain[rep])
+			if self.storeTrained: self.trainedModels[mdl].append(imdl)
 			task.update(step = rep*3+1)
 			self.PRC[mdl].append(imdl.getPRC(self.cvval[rep], labelPositive = self.labelPositive, labelNegative = self.labelNegative))
 			task.update(step = rep*3+2)
@@ -917,6 +973,44 @@ class crossvalidation:
 			task.update(step = rep*3+3)
 		self.models.append(mdl)
 		task.done()
+	
+	def calibrate(self, calibrator, labelPositive = positive):
+		mtask = progressTask('Calibrating models', steps = len(self.models))
+		for imdl, mdl in enumerate(self.models):
+			mtask.update(step = imdl)
+			if mdl not in self.trainedModels or len(self.trainedModels[mdl]) != self.repeats:
+				print('Warning: model %s not trained. Skipping.'%(mdl.name))
+				continue
+			rtask = progressTask('Repeat', steps = self.repeats)
+			# TODO Implement multiclass calibration
+			for rep in range(self.repeats):
+				rtask.update(step = rep)
+				imdl = self.trainedModels[mdl][rep]
+				vpos = self.cvval[rep].withLabel(labelPositive)
+				calibrator(imdl, vpos, rep)
+			rtask.done()
+		mtask.done()
+	
+	def predict(self, genome):
+		mtask = progressTask('Predicting genome-wide', steps = len(self.models))
+		for imdl, mdl in enumerate(self.models):
+			mtask.update(step = imdl)
+			if mdl not in self.trainedModels or len(self.trainedModels[mdl]) != self.repeats:
+				print('Warning: model %s not trained. Skipping.'%(mdl.name))
+				continue
+			cvpred = []
+			rtask = progressTask('Repeat', steps = self.repeats)
+			# TODO Implement multiclass prediction
+			for rep in range(self.repeats):
+				rtask.update(step = rep)
+				imdl = self.trainedModels[mdl][rep]
+				pred = imdl.predict(genome.sequences)
+				cvpred.append(pred)
+			rtask.done()
+			# TODO Once multiclass prediction is implemented, replace with labels
+			self.predictions[mdl] = CVModelPredictions(mdl, { positive: cvpred })
+		mtask.done()
+		return [ self.predictions[mdl] for mdl in self.models ]
 	
 	def plotPRC(self, figsize = (9, 9), outpath = None, style = 'ggplot', returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
 		try:
@@ -1145,7 +1239,7 @@ class crossvalidation:
 				self.plotROC(returnHTML = True, figsize = (6., 6.), fontsizeLabels = 12, fontsizeLegend = 10, fontsizeAxis = 7)
 			) + '</div>'
 
-def crossvalidate(models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100.):
-	return crossvalidation(models = models, trainingSet = trainingSet, validationSet = validationSet, labelPositive = labelPositive, labelNegative = labelNegative, repeats = repeats, ratioTrainTest = ratioTrainTest, ratioNegPos = ratioNegPos)
+def crossvalidate(models, trainingSet, validationSet = None, labelPositive = positive, labelNegative = negative, repeats = 20, ratioTrainTest = 0.8, ratioNegPos = 100., storeTrained = True):
+	return crossvalidation(models = models, trainingSet = trainingSet, validationSet = validationSet, labelPositive = labelPositive, labelNegative = labelNegative, repeats = repeats, ratioTrainTest = ratioTrainTest, ratioNegPos = ratioNegPos, storeTrained = storeTrained)
 
 

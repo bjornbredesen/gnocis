@@ -46,7 +46,7 @@ Finally, Gnocis can be used by building from source and including the entire `gn
 
 ```
 sudo apt-get install python3-sphinx
-sudo pip3 install notebook pandas numpy matplotlib cupy tensorflow
+sudo pip3 install notebook pandas numpy matplotlib cupy sklearn tensorflow
 ```
 
 

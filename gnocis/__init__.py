@@ -14,7 +14,7 @@ from .curves import fixedStepCurve, variableStepCurveValue, variableStepCurve, c
 from .motifs import motifOccurrence, motifs, IUPACMotif, PWMMotif, loadMEMEPWMDatabase
 from .features import feature, features, scaledFeature, featureScaler, featureMotifOccurrenceFrequency, featurePREdictorMotifPairOccurrenceFrequency, kSpectrum, kSpectrumMM, kSpectrumGPS
 from .featurenetwork import featureNetworkNode, FNNMotifOccurrenceFrequencies, FNNMotifPairOccurrenceFrequencies, FNNLogOdds, kSpectrum, kSpectrumMM, FNNScaler, FNNWindow, FNNModel, baseModel, logOdds
-from .models import setNCores, sequenceModel, sequenceModelDummy, sequenceModelLogOdds, trainSinglePREdictorModel, createDummyPREdictorModel, trainPREdictorModel, crossvalidate
+from .models import setNCores, setNThreadFetch, sequenceModel, sequenceModelDummy, sequenceModelLogOdds, trainSinglePREdictorModel, createDummyPREdictorModel, trainPREdictorModel, crossvalidate
 from .biomarkers import biomarkers
 from .validation import point2D, validationPair, getROC, getPRC, getAUC, getConfusionMatrix, getConfusionMatrixStatistics, printValidationStatistics
 from .genome import gene, genome, plotGenomeTracks

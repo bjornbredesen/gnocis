@@ -12,6 +12,9 @@ import gzip
 from libcpp cimport bool
 from .sequences cimport *
 from .ioputil import nctable
+from .models import CVModelPredictions
+from .sequences import positive
+from .common import mean, CI
 
 
 ############################################################################
@@ -175,7 +178,7 @@ cdef class regions:
 		isplit = int(len(rgns)*ratio)
 		random.shuffle(rgns)
 		return regions(self.name + ' (split A)', rgns[:isplit]),\
-		       regions(self.name + ' (split B)', rgns[isplit:])
+			   regions(self.name + ' (split B)', rgns[isplit:])
 	
 	# Returns a random sample of the regopns
 	def sample(self, n = 0):
@@ -857,15 +860,28 @@ def predictionBarplot(predictionSets, figsize = (8, 8), outpath = None, returnHT
 	import matplotlib.ticker as mtick
 	with plt.style.context(style):
 		width = 0.5
-		bw = width / (len(predictionSets)-1)
+		bw = width / max(len(predictionSets)-1, 1)
 		fig, ax = plt.subplots(figsize = figsize)
 		for psi, ps in enumerate(predictionSets):
-			ax.bar(bw*psi, len(ps), bw, label = ps.name)
-			plt.text(bw*psi, len(ps), str(len(ps)),
-									verticalalignment = 'bottom',
-									horizontalalignment = 'center',
-									color = 'black',
-									fontsize = 10)
+			if isinstance(ps, CVModelPredictions):
+				# TODO Add multiclass support
+				npred = [ len(p.regions()) for p in ps._pred[positive] ]
+				mnpred = mean(npred)
+				cinpred = CI(npred)
+				btop = mnpred + cinpred
+				ax.bar(bw*psi, mnpred, bw, label = ps.name, yerr=cinpred)
+				plt.text(bw*psi, btop, '%.2f +/- %.2f'%(mnpred, cinpred),
+										verticalalignment = 'bottom',
+										horizontalalignment = 'center',
+										color = 'black',
+										fontsize = 10)
+			else:
+				ax.bar(bw*psi, len(ps), bw, label = ps.name)
+				plt.text(bw*psi, len(ps), str(len(ps)),
+										verticalalignment = 'bottom',
+										horizontalalignment = 'center',
+										color = 'black',
+										fontsize = 10)
 		ax.set_ylabel('Predictions', fontsize = fontsizeLabels)
 		plt.yticks(fontsize = fontsizeAxis, rotation = 0)
 		ax.set_xticks([ -10 ])
@@ -923,18 +939,41 @@ def overlapPrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), outpat
 	import matplotlib.ticker as mtick
 	with plt.style.context(style):
 		width = 0.5
-		bw = width / (len(predictionSets)-1)
+		bw = width / max(len(predictionSets)-1, 1)
 		fig, ax = plt.subplots(figsize = figsize)
 		for psi, ps in enumerate(predictionSets):
 			x = [
 				float(rsi) - (width/2) + (bw*psi)
 				for rsi in range(len(regionSets))
 			]
-			v = [
-				100. * len(ps.overlap(rs)) / len(ps)
-				for rs in regionSets
-			]
-			ax.bar(x, v, bw, label = ps.name)
+			if isinstance(ps, CVModelPredictions):
+				# TODO Add multiclass support
+				prs = [
+					_ps.regions()
+					for _ps in ps._pred[positive]
+				]
+				v = [
+					[
+						100. * len(_ps.overlap(rs)) / len(_ps)
+						for _ps in prs
+					]
+					for rs in regionSets
+				]
+				vMean = [
+					mean(cv)
+					for cv in v
+				]
+				vCI = [
+					CI(cv)
+					for cv in v
+				]
+				ax.bar(x, vMean, bw, label = ps.name, yerr = vCI)
+			else:
+				v = [
+					100. * len(ps.overlap(rs)) / len(ps)
+					for rs in regionSets
+				]
+				ax.bar(x, v, bw, label = ps.name)
 		ax.set_ylabel('Overlap precision', fontsize = fontsizeLabels)
 		ax.set_xticks([ float(i) for i in range(len(regionSets)) ])
 		ax.set_xticklabels([ rs.name for rs in regionSets ])
@@ -994,18 +1033,41 @@ def overlapSensitivityBarplot(regionSets, predictionSets, figsize = (8, 8), outp
 	import matplotlib.ticker as mtick
 	with plt.style.context(style):
 		width = 0.5
-		bw = width / (len(predictionSets)-1)
+		bw = width / max(len(predictionSets)-1, 1)
 		fig, ax = plt.subplots(figsize = figsize)
 		for psi, ps in enumerate(predictionSets):
 			x = [
 				float(rsi) - (width/2) + (bw*psi)
 				for rsi in range(len(regionSets))
 			]
-			v = [
-				100. * len(rs.overlap(ps)) / len(rs)
-				for rs in regionSets
-			]
-			ax.bar(x, v, bw, label = ps.name)
+			if isinstance(ps, CVModelPredictions):
+				# TODO Add multiclass support
+				prs = [
+					_ps.regions()
+					for _ps in ps._pred[positive]
+				]
+				v = [
+					[
+						100. * len(rs.overlap(_ps)) / len(rs)
+						for _ps in prs
+					]
+					for rs in regionSets
+				]
+				vMean = [
+					mean(cv)
+					for cv in v
+				]
+				vCI = [
+					CI(cv)
+					for cv in v
+				]
+				ax.bar(x, vMean, bw, label = ps.name, yerr = vCI)
+			else:
+				v = [
+					100. * len(rs.overlap(ps)) / len(rs)
+					for rs in regionSets
+				]
+				ax.bar(x, v, bw, label = ps.name)
 		ax.set_ylabel('Overlap sensitivity', fontsize = fontsizeLabels)
 		ax.set_xticks([ float(i) for i in range(len(regionSets)) ])
 		ax.set_xticklabels([ rs.name for rs in regionSets ])
@@ -1065,18 +1127,41 @@ def nucleotidePrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), out
 	import matplotlib.ticker as mtick
 	with plt.style.context(style):
 		width = 0.5
-		bw = width / (len(predictionSets)-1)
+		bw = width / max(len(predictionSets)-1, 1)
 		fig, ax = plt.subplots(figsize = figsize)
 		for psi, ps in enumerate(predictionSets):
 			x = [
 				float(rsi) - (width/2) + (bw*psi)
 				for rsi in range(len(regionSets))
 			]
-			v = [
-				100. * sum(len(r) for r in ps &rs) / sum(len(r) for r in ps)
-				for rs in regionSets
-			]
-			ax.bar(x, v, bw, label = ps.name)
+			if isinstance(ps, CVModelPredictions):
+				# TODO Add multiclass support
+				prs = [
+					_ps.regions()
+					for _ps in ps._pred[positive]
+				]
+				v = [
+					[
+						100. * sum(len(r) for r in _ps & rs) / sum(len(r) for r in _ps)
+						for _ps in prs
+					]
+					for rs in regionSets
+				]
+				vMean = [
+					mean(cv)
+					for cv in v
+				]
+				vCI = [
+					CI(cv)
+					for cv in v
+				]
+				ax.bar(x, vMean, bw, label = ps.name, yerr = vCI)
+			else:
+				v = [
+					100. * sum(len(r) for r in ps & rs) / sum(len(r) for r in ps)
+					for rs in regionSets
+				]
+				ax.bar(x, v, bw, label = ps.name)
 		ax.set_ylabel('Nucleotide precision', fontsize = fontsizeLabels)
 		ax.set_xticks([ float(i) for i in range(len(regionSets)) ])
 		ax.set_xticklabels([ rs.name for rs in regionSets ])
