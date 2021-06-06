@@ -1958,8 +1958,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</li>
 <li><strong>predictionSets</strong> (<em>list</em>) – List of prediction region sets.</li>
+<li><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</li>
 <li><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size.</li>
 <li><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path.</li>
 <li><strong>returnHTML</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, an HTML node will be returned.</li>
@@ -1970,6 +1970,36 @@
 <li><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</li>
 <li><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</li>
 <li><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</li>
+<li><strong>showValues</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, values will be plotted.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.regions.nucleotideRegionF1Barplot">
+<code class="descclassname">gnocis.regions.</code><code class="descname">nucleotideRegionF1Barplot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.nucleotideRegionF1Barplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a barplot of F1-measures, where the recall is based on region overlap sensitivity and precision is based on nucleotide precision.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>predictionSets</strong> (<em>list</em>) – List of prediction region sets.</li>
+<li><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</li>
+<li><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size.</li>
+<li><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path.</li>
+<li><strong>returnHTML</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, an HTML node will be returned.</li>
+<li><strong>fontsizeLabels</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of label font.</li>
+<li><strong>fontsizeLegend</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of legend font.</li>
+<li><strong>fontsizeAxis</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of axis font.</li>
+<li><strong>style</strong> (<em>str</em><em>, </em><em>optional</em>) – Plot style to use.</li>
+<li><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</li>
+<li><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</li>
+<li><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</li>
+<li><strong>showValues</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, values will be plotted.</li>
 </ul>
 </td>
 </tr>
@@ -1986,8 +2016,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</li>
 <li><strong>predictionSets</strong> (<em>list</em>) – List of prediction region sets.</li>
+<li><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</li>
 <li><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size.</li>
 <li><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path.</li>
 <li><strong>returnHTML</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, an HTML node will be returned.</li>
@@ -1998,6 +2028,7 @@
 <li><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</li>
 <li><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</li>
 <li><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</li>
+<li><strong>showValues</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, values will be plotted.</li>
 </ul>
 </td>
 </tr>
@@ -2014,8 +2045,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</li>
 <li><strong>predictionSets</strong> (<em>list</em>) – List of prediction region sets.</li>
+<li><strong>regionSets</strong> (<em>list</em>) – List of validation region sets.</li>
 <li><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size.</li>
 <li><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path.</li>
 <li><strong>returnHTML</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, an HTML node will be returned.</li>
@@ -2026,6 +2057,7 @@
 <li><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</li>
 <li><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</li>
 <li><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</li>
+<li><strong>showValues</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, values will be plotted.</li>
 </ul>
 </td>
 </tr>
@@ -2053,6 +2085,7 @@
 <li><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</li>
 <li><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</li>
 <li><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</li>
+<li><strong>showValues</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, values will be plotted.</li>
 </ul>
 </td>
 </tr>
@@ -2160,6 +2193,38 @@
 <code class="descname">strand</code><a class="headerlink" href="#gnocis.regions.region.strand" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="gnocis.regions.regionBarplot">
+<code class="descclassname">gnocis.regions.</code><code class="descname">regionBarplot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.regions.regionBarplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a barplot of a measure (lambda) for predicted regions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mainRegions</strong> (<em>list</em>) – List of main region sets.</li>
+<li><strong>measure</strong> (<em>function</em>) – Function to compute measure.</li>
+<li><strong>measureName</strong> (<em>str</em>) – Name of measure.</li>
+<li><strong>testRegions</strong> (<em>list</em><em>, </em><em>optional</em>) – List of test region sets, to check against (or None if not relevant).</li>
+<li><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size.</li>
+<li><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path.</li>
+<li><strong>returnHTML</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, an HTML node will be returned.</li>
+<li><strong>fontsizeLabels</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of label font.</li>
+<li><strong>fontsizeLegend</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of legend font.</li>
+<li><strong>fontsizeAxis</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of axis font.</li>
+<li><strong>style</strong> (<em>str</em><em>, </em><em>optional</em>) – Plot style to use.</li>
+<li><strong>showLegend</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag for whether or not to render legend.</li>
+<li><strong>bboxAnchorTo</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Legend anchor point.</li>
+<li><strong>legendLoc</strong> (<em>str</em><em>, </em><em>optional</em>) – Legend location.</li>
+<li><strong>showValues</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, values will be plotted.</li>
+<li><strong>isPercent</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, values will be plotted as percentages.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">

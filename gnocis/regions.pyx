@@ -825,11 +825,14 @@ def loadCoordinateList(path, dropChr = True):
 	rs.sort()
 	return rs
 
-# Generates a prediction overlap precision barplot
-def predictionBarplot(predictionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
-	""" Generates a prediction overlap precision barplot.
+# Generates a barplot for a region-based measure
+def regionBarplot(mainRegions, measure, measureName, testRegions = None, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeValues = 12, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left', showValues = False, isPercent = False):
+	""" Generates a barplot of a measure (lambda) for predicted regions.
 	
-	:param predictionSets: List of prediction region sets.
+	:param mainRegions: List of main region sets.
+	:param measure: Function to compute measure.
+	:param measureName: Name of measure.
+	:param testRegions: List of test region sets, to check against (or None if not relevant).
 	:param figsize: Figure size.
 	:param outpath: Output path.
 	:param returnHTML: If True, an HTML node will be returned.
@@ -840,8 +843,13 @@ def predictionBarplot(predictionSets, figsize = (8, 8), outpath = None, returnHT
 	:param showLegend: Flag for whether or not to render legend.
 	:param bboxAnchorTo: Legend anchor point.
 	:param legendLoc: Legend location.
+	:param showValues: If True, values will be plotted.
+	:param isPercent: If True, values will be plotted as percentages.
 	
-	:type predictionSets: list
+	:type mainRegions: list
+	:type measure: function
+	:type measureName: str
+	:type testRegions: list, optional
 	:type figsize: tuple, optional
 	:type outpath: str, optional
 	:type returnHTML: bool, optional
@@ -852,6 +860,8 @@ def predictionBarplot(predictionSets, figsize = (8, 8), outpath = None, returnHT
 	:type showLegend: bool, optional
 	:type bboxAnchorTo: tuple, optional
 	:type legendLoc: str, optional
+	:type showValues: bool, optional
+	:type isPercent: bool, optional
 	"""
 	import matplotlib.pyplot as plt
 	import base64
@@ -860,91 +870,16 @@ def predictionBarplot(predictionSets, figsize = (8, 8), outpath = None, returnHT
 	import matplotlib.ticker as mtick
 	with plt.style.context(style):
 		width = 0.5
-		bw = width / max(len(predictionSets)-1, 1)
+		bw = width / max(len(mainRegions)-1, 1)
 		fig, ax = plt.subplots(figsize = figsize)
-		for psi, ps in enumerate(predictionSets):
-			if isinstance(ps, CVModelPredictions):
-				# TODO Add multiclass support
-				npred = [ len(p.regions()) for p in ps._pred[positive] ]
-				mnpred = mean(npred)
-				cinpred = CI(npred)
-				btop = mnpred + cinpred
-				ax.bar(bw*psi, mnpred, bw, label = ps.name, yerr=cinpred)
-				plt.text(bw*psi, btop, '%.2f +/- %.2f'%(mnpred, cinpred),
-										verticalalignment = 'bottom',
-										horizontalalignment = 'center',
-										color = 'black',
-										fontsize = 10)
-			else:
-				ax.bar(bw*psi, len(ps), bw, label = ps.name)
-				plt.text(bw*psi, len(ps), str(len(ps)),
-										verticalalignment = 'bottom',
-										horizontalalignment = 'center',
-										color = 'black',
-										fontsize = 10)
-		ax.set_ylabel('Predictions', fontsize = fontsizeLabels)
-		plt.yticks(fontsize = fontsizeAxis, rotation = 0)
-		ax.set_xticks([ -10 ])
-		plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
-		if showLegend:
-			ax.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsizeLegend, fancybox = True)
-		fig.tight_layout()
-		if outpath is None:
-			bio = BytesIO()
-			fig.savefig(bio, format='png')
-			plt.close('all')
-			encoded = base64.b64encode(bio.getvalue()).decode('utf-8')
-			html = '<img src=\'data:image/png;base64,%s\'>'%encoded
-			if returnHTML:
-				return html
-			display(HTML(html))
-		else:
-			fig.savefig(outpath)
-			plt.close('all')
-
-# Generates a prediction overlap precision barplot
-def overlapPrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
-	""" Generates a prediction overlap precision barplot.
-	
-	:param regionSets: List of validation region sets.
-	:param predictionSets: List of prediction region sets.
-	:param figsize: Figure size.
-	:param outpath: Output path.
-	:param returnHTML: If True, an HTML node will be returned.
-	:param fontsizeLabels: Size of label font.
-	:param fontsizeLegend: Size of legend font.
-	:param fontsizeAxis: Size of axis font.
-	:param style: Plot style to use.
-	:param showLegend: Flag for whether or not to render legend.
-	:param bboxAnchorTo: Legend anchor point.
-	:param legendLoc: Legend location.
-	
-	:type regionSets: list
-	:type predictionSets: list
-	:type figsize: tuple, optional
-	:type outpath: str, optional
-	:type returnHTML: bool, optional
-	:type fontsizeLabels: float, optional
-	:type fontsizeLegend: float, optional
-	:type fontsizeAxis: float, optional
-	:type style: str, optional
-	:type showLegend: bool, optional
-	:type bboxAnchorTo: tuple, optional
-	:type legendLoc: str, optional
-	"""
-	import matplotlib.pyplot as plt
-	import base64
-	from io import BytesIO
-	from IPython.core.display import display, HTML
-	import matplotlib.ticker as mtick
-	with plt.style.context(style):
-		width = 0.5
-		bw = width / max(len(predictionSets)-1, 1)
-		fig, ax = plt.subplots(figsize = figsize)
-		for psi, ps in enumerate(predictionSets):
+		scaling = 100. if isPercent else 1.
+		hasTestRegions = testRegions is not None
+		if testRegions is None:
+			testRegions = [ 0 ]
+		for psi, ps in enumerate(mainRegions):
 			x = [
 				float(rsi) - (width/2) + (bw*psi)
-				for rsi in range(len(regionSets))
+				for rsi in range(len(testRegions))
 			]
 			if isinstance(ps, CVModelPredictions):
 				# TODO Add multiclass support
@@ -954,10 +889,10 @@ def overlapPrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), outpat
 				]
 				v = [
 					[
-						100. * len(_ps.overlap(rs)) / len(_ps)
+						scaling * measure(_ps, rs) #100. * len(rs.overlap(_ps)) / len(rs)
 						for _ps in prs
 					]
-					for rs in regionSets
+					for rs in testRegions
 				]
 				vMean = [
 					mean(cv)
@@ -968,18 +903,31 @@ def overlapPrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), outpat
 					for cv in v
 				]
 				ax.bar(x, vMean, bw, label = ps.name, yerr = vCI)
+				if showValues:
+					for cx, (m, ci) in zip(x, zip(vMean, vCI)):
+						plt.text(cx, m+ci,
+							'%.2f +/- %.2f'%(m, ci) + (' %' if isPercent else ''),
+							horizontalalignment = 'center', verticalalignment = 'bottom',
+							fontsize = fontsizeValues)
 			else:
 				v = [
-					100. * len(ps.overlap(rs)) / len(ps)
-					for rs in regionSets
+					scaling * measure(ps, rs) #100. * len(rs.overlap(ps)) / len(rs)
+					for rs in testRegions
 				]
 				ax.bar(x, v, bw, label = ps.name)
-		ax.set_ylabel('Overlap precision', fontsize = fontsizeLabels)
-		ax.set_xticks([ float(i) for i in range(len(regionSets)) ])
-		ax.set_xticklabels([ rs.name for rs in regionSets ])
+				if showValues:
+					for cx, cv in zip(x, v):
+						plt.text(cx, m+ci,
+							'%.2f'%(cv) + (' %' if isPercent else ''),
+							horizontalalignment = 'center', verticalalignment = 'bottom',
+							fontsize = fontsizeValues)
+		ax.set_ylabel(measureName, fontsize = fontsizeLabels)
+		ax.set_xticks([ float(i) for i in range(len(testRegions)) ])
+		ax.set_xticklabels([ rs.name if hasTestRegions else '' for rs in testRegions ])
 		plt.xticks(fontsize = fontsizeLabels, rotation = 0)
 		plt.yticks(fontsize = fontsizeAxis, rotation = 0)
-		ax.yaxis.set_major_formatter(mtick.PercentFormatter())
+		if isPercent:
+			ax.yaxis.set_major_formatter(mtick.PercentFormatter())
 		if showLegend:
 			ax.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsizeLegend, fancybox = True)
 		fig.tight_layout()
@@ -996,12 +944,42 @@ def overlapPrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), outpat
 			fig.savefig(outpath)
 			plt.close('all')
 
-# Generates a prediction overlap recall barplot
-def overlapSensitivityBarplot(regionSets, predictionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
+def predictionBarplot(predictionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left', showValues = True):
+	""" Generates a prediction overlap precision barplot.
+	
+	:param predictionSets: List of prediction region sets.
+	:param figsize: Figure size.
+	:param outpath: Output path.
+	:param returnHTML: If True, an HTML node will be returned.
+	:param fontsizeLabels: Size of label font.
+	:param fontsizeLegend: Size of legend font.
+	:param fontsizeAxis: Size of axis font.
+	:param style: Plot style to use.
+	:param showLegend: Flag for whether or not to render legend.
+	:param bboxAnchorTo: Legend anchor point.
+	:param legendLoc: Legend location.
+	:param showValues: If True, values will be plotted.
+	
+	:type predictionSets: list
+	:type figsize: tuple, optional
+	:type outpath: str, optional
+	:type returnHTML: bool, optional
+	:type fontsizeLabels: float, optional
+	:type fontsizeLegend: float, optional
+	:type fontsizeAxis: float, optional
+	:type style: str, optional
+	:type showLegend: bool, optional
+	:type bboxAnchorTo: tuple, optional
+	:type legendLoc: str, optional
+	:type showValues: bool, optional
+	"""
+	regionBarplot(mainRegions = predictionSets, measure = (lambda rs, _: len(rs)), measureName = 'Predictions', testRegions = None, figsize = figsize, outpath = outpath, returnHTML = returnHTML, fontsizeLabels = fontsizeLabels, fontsizeLegend = fontsizeLegend, fontsizeAxis = fontsizeAxis, style = style, showLegend = showLegend, bboxAnchorTo = bboxAnchorTo, legendLoc = legendLoc, showValues = showValues, isPercent = False)
+
+def overlapSensitivityBarplot(predictionSets, regionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left', showValues = True):
 	""" Generates a prediction overlap sensitivity barplot.
 	
-	:param regionSets: List of validation region sets.
 	:param predictionSets: List of prediction region sets.
+	:param regionSets: List of validation region sets.
 	:param figsize: Figure size.
 	:param outpath: Output path.
 	:param returnHTML: If True, an HTML node will be returned.
@@ -1012,9 +990,10 @@ def overlapSensitivityBarplot(regionSets, predictionSets, figsize = (8, 8), outp
 	:param showLegend: Flag for whether or not to render legend.
 	:param bboxAnchorTo: Legend anchor point.
 	:param legendLoc: Legend location.
+	:param showValues: If True, values will be plotted.
 	
-	:type regionSets: list
 	:type predictionSets: list
+	:type regionSets: list
 	:type figsize: tuple, optional
 	:type outpath: str, optional
 	:type returnHTML: bool, optional
@@ -1025,77 +1004,48 @@ def overlapSensitivityBarplot(regionSets, predictionSets, figsize = (8, 8), outp
 	:type showLegend: bool, optional
 	:type bboxAnchorTo: tuple, optional
 	:type legendLoc: str, optional
+	:type showValues: bool, optional
 	"""
-	import matplotlib.pyplot as plt
-	import base64
-	from io import BytesIO
-	from IPython.core.display import display, HTML
-	import matplotlib.ticker as mtick
-	with plt.style.context(style):
-		width = 0.5
-		bw = width / max(len(predictionSets)-1, 1)
-		fig, ax = plt.subplots(figsize = figsize)
-		for psi, ps in enumerate(predictionSets):
-			x = [
-				float(rsi) - (width/2) + (bw*psi)
-				for rsi in range(len(regionSets))
-			]
-			if isinstance(ps, CVModelPredictions):
-				# TODO Add multiclass support
-				prs = [
-					_ps.regions()
-					for _ps in ps._pred[positive]
-				]
-				v = [
-					[
-						100. * len(rs.overlap(_ps)) / len(rs)
-						for _ps in prs
-					]
-					for rs in regionSets
-				]
-				vMean = [
-					mean(cv)
-					for cv in v
-				]
-				vCI = [
-					CI(cv)
-					for cv in v
-				]
-				ax.bar(x, vMean, bw, label = ps.name, yerr = vCI)
-			else:
-				v = [
-					100. * len(rs.overlap(ps)) / len(rs)
-					for rs in regionSets
-				]
-				ax.bar(x, v, bw, label = ps.name)
-		ax.set_ylabel('Overlap sensitivity', fontsize = fontsizeLabels)
-		ax.set_xticks([ float(i) for i in range(len(regionSets)) ])
-		ax.set_xticklabels([ rs.name for rs in regionSets ])
-		plt.xticks(fontsize = fontsizeLabels, rotation = 0)
-		plt.yticks(fontsize = fontsizeAxis, rotation = 0)
-		ax.yaxis.set_major_formatter(mtick.PercentFormatter())
-		if showLegend:
-			ax.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsizeLegend, fancybox = True)
-		fig.tight_layout()
-		if outpath is None:
-			bio = BytesIO()
-			fig.savefig(bio, format='png')
-			plt.close('all')
-			encoded = base64.b64encode(bio.getvalue()).decode('utf-8')
-			html = '<img src=\'data:image/png;base64,%s\'>'%encoded
-			if returnHTML:
-				return html
-			display(HTML(html))
-		else:
-			fig.savefig(outpath)
-			plt.close('all')
+	regionBarplot(mainRegions = predictionSets, testRegions = regionSets, measure = (lambda ps, rs: len(rs.overlap(ps)) / len(rs)), measureName = 'Overlap sensitivity', figsize = figsize, outpath = outpath, returnHTML = returnHTML, fontsizeLabels = fontsizeLabels, fontsizeLegend = fontsizeLegend, fontsizeAxis = fontsizeAxis, style = style, showLegend = showLegend, bboxAnchorTo = bboxAnchorTo, legendLoc = legendLoc, showValues = showValues, isPercent = True)
 
-# Generates a prediction nucleotide precision barplot
-def nucleotidePrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left'):
+def overlapPrecisionBarplot(predictionSets, regionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left', showValues = True):
+	""" Generates a prediction overlap precision barplot.
+	
+	:param predictionSets: List of prediction region sets.
+	:param regionSets: List of validation region sets.
+	:param figsize: Figure size.
+	:param outpath: Output path.
+	:param returnHTML: If True, an HTML node will be returned.
+	:param fontsizeLabels: Size of label font.
+	:param fontsizeLegend: Size of legend font.
+	:param fontsizeAxis: Size of axis font.
+	:param style: Plot style to use.
+	:param showLegend: Flag for whether or not to render legend.
+	:param bboxAnchorTo: Legend anchor point.
+	:param legendLoc: Legend location.
+	:param showValues: If True, values will be plotted.
+	
+	:type predictionSets: list
+	:type regionSets: list
+	:type figsize: tuple, optional
+	:type outpath: str, optional
+	:type returnHTML: bool, optional
+	:type fontsizeLabels: float, optional
+	:type fontsizeLegend: float, optional
+	:type fontsizeAxis: float, optional
+	:type style: str, optional
+	:type showLegend: bool, optional
+	:type bboxAnchorTo: tuple, optional
+	:type legendLoc: str, optional
+	:type showValues: bool, optional
+	"""
+	regionBarplot(mainRegions = predictionSets, testRegions = regionSets, measure = (lambda ps, rs: len(ps.overlap(rs)) / len(ps)), measureName = 'Overlap precision', figsize = figsize, outpath = outpath, returnHTML = returnHTML, fontsizeLabels = fontsizeLabels, fontsizeLegend = fontsizeLegend, fontsizeAxis = fontsizeAxis, style = style, showLegend = showLegend, bboxAnchorTo = bboxAnchorTo, legendLoc = legendLoc, showValues = showValues, isPercent = True)
+
+def nucleotidePrecisionBarplot(predictionSets, regionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left', showValues = True):
 	""" Generates a prediction nucleotide precision barplot.
 	
-	:param regionSets: List of validation region sets.
 	:param predictionSets: List of prediction region sets.
+	:param regionSets: List of validation region sets.
 	:param figsize: Figure size.
 	:param outpath: Output path.
 	:param returnHTML: If True, an HTML node will be returned.
@@ -1106,9 +1056,10 @@ def nucleotidePrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), out
 	:param showLegend: Flag for whether or not to render legend.
 	:param bboxAnchorTo: Legend anchor point.
 	:param legendLoc: Legend location.
+	:param showValues: If True, values will be plotted.
 	
-	:type regionSets: list
 	:type predictionSets: list
+	:type regionSets: list
 	:type figsize: tuple, optional
 	:type outpath: str, optional
 	:type returnHTML: bool, optional
@@ -1119,68 +1070,44 @@ def nucleotidePrecisionBarplot(regionSets, predictionSets, figsize = (8, 8), out
 	:type showLegend: bool, optional
 	:type bboxAnchorTo: tuple, optional
 	:type legendLoc: str, optional
+	:type showValues: bool, optional
 	"""
-	import matplotlib.pyplot as plt
-	import base64
-	from io import BytesIO
-	from IPython.core.display import display, HTML
-	import matplotlib.ticker as mtick
-	with plt.style.context(style):
-		width = 0.5
-		bw = width / max(len(predictionSets)-1, 1)
-		fig, ax = plt.subplots(figsize = figsize)
-		for psi, ps in enumerate(predictionSets):
-			x = [
-				float(rsi) - (width/2) + (bw*psi)
-				for rsi in range(len(regionSets))
-			]
-			if isinstance(ps, CVModelPredictions):
-				# TODO Add multiclass support
-				prs = [
-					_ps.regions()
-					for _ps in ps._pred[positive]
-				]
-				v = [
-					[
-						100. * sum(len(r) for r in _ps & rs) / sum(len(r) for r in _ps)
-						for _ps in prs
-					]
-					for rs in regionSets
-				]
-				vMean = [
-					mean(cv)
-					for cv in v
-				]
-				vCI = [
-					CI(cv)
-					for cv in v
-				]
-				ax.bar(x, vMean, bw, label = ps.name, yerr = vCI)
-			else:
-				v = [
-					100. * sum(len(r) for r in ps & rs) / sum(len(r) for r in ps)
-					for rs in regionSets
-				]
-				ax.bar(x, v, bw, label = ps.name)
-		ax.set_ylabel('Nucleotide precision', fontsize = fontsizeLabels)
-		ax.set_xticks([ float(i) for i in range(len(regionSets)) ])
-		ax.set_xticklabels([ rs.name for rs in regionSets ])
-		plt.xticks(fontsize = fontsizeLabels, rotation = 0)
-		plt.yticks(fontsize = fontsizeAxis, rotation = 0)
-		ax.yaxis.set_major_formatter(mtick.PercentFormatter())
-		if showLegend:
-			ax.legend(bbox_to_anchor = bboxAnchorTo, loc = legendLoc, fontsize = fontsizeLegend, fancybox = True)
-		fig.tight_layout()
-		if outpath is None:
-			bio = BytesIO()
-			fig.savefig(bio, format='png')
-			plt.close('all')
-			encoded = base64.b64encode(bio.getvalue()).decode('utf-8')
-			html = '<img src=\'data:image/png;base64,%s\'>'%encoded
-			if returnHTML:
-				return html
-			display(HTML(html))
-		else:
-			fig.savefig(outpath)
-			plt.close('all')
+	regionBarplot(mainRegions = predictionSets, testRegions = regionSets, measure = (lambda ps, rs: sum(len(r) for r in ps & rs) / sum(len(r) for r in ps)), measureName = 'Nucleotide precision', figsize = figsize, outpath = outpath, returnHTML = returnHTML, fontsizeLabels = fontsizeLabels, fontsizeLegend = fontsizeLegend, fontsizeAxis = fontsizeAxis, style = style, showLegend = showLegend, bboxAnchorTo = bboxAnchorTo, legendLoc = legendLoc, showValues = showValues, isPercent = True)
+
+def nucleotideRegionF1Barplot(predictionSets, regionSets, figsize = (8, 8), outpath = None, returnHTML = False, fontsizeLabels = 18, fontsizeLegend = 12, fontsizeAxis = 10, style = 'ggplot', showLegend = True, bboxAnchorTo = (0., -0.15), legendLoc = 'upper left', showValues = True):
+	""" Generates a barplot of F1-measures, where the recall is based on region overlap sensitivity and precision is based on nucleotide precision.
+	
+	:param predictionSets: List of prediction region sets.
+	:param regionSets: List of validation region sets.
+	:param figsize: Figure size.
+	:param outpath: Output path.
+	:param returnHTML: If True, an HTML node will be returned.
+	:param fontsizeLabels: Size of label font.
+	:param fontsizeLegend: Size of legend font.
+	:param fontsizeAxis: Size of axis font.
+	:param style: Plot style to use.
+	:param showLegend: Flag for whether or not to render legend.
+	:param bboxAnchorTo: Legend anchor point.
+	:param legendLoc: Legend location.
+	:param showValues: If True, values will be plotted.
+	
+	:type predictionSets: list
+	:type regionSets: list
+	:type figsize: tuple, optional
+	:type outpath: str, optional
+	:type returnHTML: bool, optional
+	:type fontsizeLabels: float, optional
+	:type fontsizeLegend: float, optional
+	:type fontsizeAxis: float, optional
+	:type style: str, optional
+	:type showLegend: bool, optional
+	:type bboxAnchorTo: tuple, optional
+	:type legendLoc: str, optional
+	:type showValues: bool, optional
+	"""
+	def measure(ps, rs):
+		p = sum(len(r) for r in ps & rs) / sum(len(r) for r in ps)
+		r = len(rs.overlap(ps)) / len(rs)
+		return 2 * (p*r) / (p+r)
+	regionBarplot(mainRegions = predictionSets, testRegions = regionSets, measure = measure, measureName = 'Nucleotide/region F1 score', figsize = figsize, outpath = outpath, returnHTML = returnHTML, fontsizeLabels = fontsizeLabels, fontsizeLegend = fontsizeLegend, fontsizeAxis = fontsizeAxis, style = style, showLegend = showLegend, bboxAnchorTo = bboxAnchorTo, legendLoc = legendLoc, showValues = showValues, isPercent = False)
 
