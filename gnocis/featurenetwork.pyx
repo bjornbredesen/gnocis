@@ -607,7 +607,7 @@ cdef class FNNLogOdds(featureNetworkNode):
 			weights = weights,
 			labelPositive = self.labelPositive,
 			labelNegative = self.labelNegative,
-			trainingSet = trainingSet)
+			trainingSet = str(trainingSet))
 
 #---------------------
 # Node type: Scaler
@@ -1005,7 +1005,7 @@ class FNNModel(featureNetworkNode):
 			for lbl in trainingSet.labels()
 		}
 		model = self.mdl.train(ts)
-		return FNNModel(features = fs, model = model, trainingSet = trainingSet)
+		return FNNModel(features = fs, model = model, trainingSet = str(trainingSet))
 
 #---------------------
 # Sequence model
