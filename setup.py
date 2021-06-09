@@ -10,7 +10,7 @@ from setuptools import setup
 from setuptools.extension import Extension
 
 setup(
-	ext_modules = [ Extension(name = 'gnocis.' + x, sources = ['gnocis/'+ x + '.cpp']) for x in ['biomarkers', 'common', 'features', 'featurenetwork', 'models', 'motifs', 'regions', 'sequences', 'validation'] ],
+	ext_modules = [ Extension(name = 'gnocis.' + x, sources = ['gnocis/'+ x + '.cpp']) for x in ['biomarkers', 'common', 'features', 'featurenetwork', 'models', 'motifs', 'regions', 'curves', 'sequences', 'validation'] ],
 	name = "gnocis",
 	packages = [ "gnocis" ],
 	author = "Bjørn Bredesen",
