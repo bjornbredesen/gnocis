@@ -14,10 +14,73 @@ from .ioputil import nctable
 #from libcpp cimport bool
 #from .sequences cimport *
 #from .ioputil import nctable
+from libc.stdlib cimport malloc, realloc, free
 
 
 ############################################################################
 # Fixed step curve
+
+#@cython.final
+cdef class doubleList:
+	cdef char* data
+	cdef public unsigned int bufsize
+	
+	def __init__(self, initial):
+		cdef unsigned int dlen
+		cdef int i
+		cdef double v
+		cdef list initialList = initial
+		dlen = 0 if initial is None else len(initial)
+		self.data = <char*> malloc(dlen * sizeof(double))
+		self.bufsize = dlen
+		if self.bufsize > 0:
+			view = <double[:self.bufsize]> (<double*> self.data)
+			for i, v in enumerate(initialList):
+				view[i] = v
+	
+	def __dealloc__(self):
+		if self.data != <char*>0:
+			free(self.data)
+	
+	def append(self, e):
+		self.bufsize += 1
+		self.data = <char*> realloc(self.data, self.bufsize * sizeof(double))
+		view = <double[:self.bufsize]> (<double*> self.data)
+		view[-1] = e
+	
+	def __iter__(self):
+		if self.bufsize > 0:
+			view = <double[:self.bufsize]> (<double*> self.data)
+			for v in view:
+				yield v
+	
+	def __getitem__(self, key):
+		cdef int i
+		cdef list lst
+		cdef double v
+		if self.bufsize == 0:
+			raise Exception("Index out of bounds")
+		if isinstance(key, slice):
+			lst = [ v for v in self ]
+			return doubleList(lst[key])
+		view = <double[:self.bufsize]> (<double*> self.data)
+		if key < 0:
+			key += self.bufsize
+		if key < 0 or key >= self.bufsize:
+			raise Exception("Index out of bounds")
+		return view[key]
+	
+	cdef inline int len(self) nogil:
+		return self.bufsize
+	
+	def __len__(self):
+		return self.len()
+	
+	def __str__(self):
+		return 'doubleList[' + ', '.join(str(e) for e in self) + ']'
+	
+	def __repr__(self):
+		return self.__str__()
 
 class fixedStepCurve:
 	
@@ -29,7 +92,8 @@ class fixedStepCurve:
 		self.start = start
 		self.span = span
 		self.step = step
-		self.values = [] if values is None else values
+		self.values = doubleList(values)
+		#self.values = [] if values is None else values
 	
 	def __iter__(self):
 		return self.values.__iter__()
