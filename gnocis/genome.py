@@ -500,9 +500,9 @@ class GenomePlotTrackCVPredictions:
 		self.rs = rs
 	def getHeight(self):
 		# TODO Add multiclass support
-		bpred = self.rs._pred[positive][0]
+		bpred = self.rs.predictionCurves[positive][0]
 		if bpred.thresholdValue is not None:
-			return 3.0
+			return 3.0 + (1. if self.rs.hasCores else 0.)
 		else:
 			return 1.0
 	def getName(self):
@@ -514,7 +514,7 @@ class GenomePlotTrackCVPredictions:
 		colInvisible = [ 0., 0., 0., 0. ]
 		height = self.yB - self.yA
 		# TODO Add multiclass support
-		bpreds = self.rs._pred[positive]
+		bpreds = self.rs.predictionCurves[positive]
 		bpred = bpreds[0]
 		ccurves = [
 			next((c for c in p if c.seq == chromosome), None)
@@ -568,6 +568,8 @@ class GenomePlotTrackCVPredictions:
 			yBottom = min(yBottom, bpred.thresholdValue)
 			yTop = max(yTop, bpred.thresholdValue)
 			cheight -= predHeight
+			if self.rs.hasCores:
+				cheight -= predHeight
 		vScale = (cheight - rmargin*2.) / (yTop - yBottom)
 		
 		polypts = [ ]
@@ -654,8 +656,8 @@ class GenomePlotTrackCVPredictions:
 				linestyle = '-',
 				color = 'grey',
 				label = 'Expected at random')
-			for _bpred in bpreds:
-				frs = _bpred.regions().filter('', lambda r: r.seq == chromosome\
+			for rs in self.rs.regions(label = positive):
+				frs = rs.filter('', lambda r: r.seq == chromosome\
 					and r.end >= coordStart\
 					and r.start <= coordEnd)
 				for r in frs:
@@ -664,6 +666,17 @@ class GenomePlotTrackCVPredictions:
 						maxYB = maxYB,
 						fc = colour[:3] + [0.4 / len(bpreds)],
 						ec = [ c*0.5 for c in colour[:3] ] + [1. / len(bpreds)])
+			if self.rs.hasCores:
+				for c in self.rs.predictionCurves[positive]:
+					frs = c.regions().filter('', lambda r: r.seq == chromosome\
+						and r.end >= coordStart\
+						and r.start <= coordEnd)
+					for r in frs:
+						drawRoundBox(ax = ax, start = r.start, end = r.end, width = width,
+							y = self.yB - predHeight*2 + rmargin, height = predHeight - 2*rmargin,
+							maxYB = maxYB,
+							fc = colour[:3] + [0.4 / len(bpreds)],
+							ec = [ c*0.5 for c in colour[:3] ] + [1. / len(bpreds)])
 			# Legend
 			geneheight = 1. - 2.*rmargin
 			drawRoundBox(ax = ax, start = coordEnd + width*0.01, width = width,
@@ -672,8 +685,17 @@ class GenomePlotTrackCVPredictions:
 				height = geneheight,
 				fc = colour[:3] + [0.4],
 				ec = [ c*0.5 for c in colour[:3] ] + [1.],
-				rlabel = 'Thresholded',
+				rlabel = 'Cores' if self.rs.hasCores else 'Thresholded',
 				clip_on = False)
+			if self.rs.hasCores:
+				drawRoundBox(ax = ax, start = coordEnd + width*0.01, width = width,
+					end = coordEnd + width*0.01 + 3. * 0.006 * width,
+					y = self.yB - 0.1*2 - geneheight*2, maxYB = maxYB,
+					height = geneheight,
+					fc = colour[:3] + [0.4],
+					ec = [ c*0.5 for c in colour[:3] ] + [1.],
+					rlabel = 'Thresholded',
+					clip_on = False)
 
 #------------------------------------
 
@@ -692,6 +714,7 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 		from io import BytesIO
 		from IPython.core.display import display, HTML
 		from matplotlib.transforms import ScaledTranslation
+		import matplotlib.ticker as mticker
 		import struct
 		with plt.style.context(style):
 			fig, ax = plt.subplots(1, figsize = figsize)
@@ -699,7 +722,8 @@ def plotGenomeTracks(tracks, chromosome, coordStart, coordEnd, style = 'ggplot',
 			plt.yticks(range(len(tracks)))
 			ax.set_xlim(coordStart, coordEnd)
 			ax.set_ylim(0, len(tracks))
-			ticks = ax.get_xticks()
+			ticks = ax.get_xticks().tolist()
+			ax.xaxis.set_major_locator(mticker.FixedLocator(ticks))
 			ax.set_xticklabels([ coordFmt(t) for t in ticks ], fontsize = 12)
 			ax.set_yticklabels([  ])
 			setYA = []

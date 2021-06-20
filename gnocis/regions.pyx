@@ -883,10 +883,7 @@ def regionBarplot(mainRegions, measure, measureName, testRegions = None, figsize
 			]
 			if isinstance(ps, CVModelPredictions):
 				# TODO Add multiclass support
-				prs = [
-					_ps.regions()
-					for _ps in ps._pred[positive]
-				]
+				prs = ps.regions(label = positive)
 				v = [
 					[
 						scaling * measure(_ps, rs) #100. * len(rs.overlap(_ps)) / len(rs)
@@ -917,7 +914,7 @@ def regionBarplot(mainRegions, measure, measureName, testRegions = None, figsize
 				ax.bar(x, v, bw, label = ps.name)
 				if showValues:
 					for cx, cv in zip(x, v):
-						plt.text(cx, m+ci,
+						plt.text(cx, cv,
 							'%.2f'%(cv) + (' %' if isPercent else ''),
 							horizontalalignment = 'center', verticalalignment = 'bottom',
 							fontsize = fontsizeValues)

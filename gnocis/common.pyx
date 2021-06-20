@@ -45,11 +45,17 @@ def std(X):
 	xM = mean(X)
 	return ( (1/(len(X) - 1)) * sum( ( x - xM )**2. for x in X ) )**0.5
 
-def SE(X):
-	return std(X) / (len(X)**0.5)
-
-def CI(X, cif = 1.96):
-	return SE(X) * cif
+def CI(X, cif = 0.95, useNorm = False):
+	import numpy as np
+	import scipy.stats as st
+	m = mean(X)
+	se = st.sem(X)
+	if len(X) < 2 or se == 0.0: return 0.
+	if useNorm:
+		a, b = st.norm.interval(cif, loc = m, scale = se)
+	else:
+		a, b = st.t.interval(cif, len(X)-1, loc = m, scale = se)
+	return b - m
 
 def KLdiv(muA, varA, muB, varB):
 	sigmaA, sigmaB = varA**0.5, varB**0.5

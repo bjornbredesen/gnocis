@@ -652,6 +652,18 @@ class sequenceModel:
 			ret = ret.threshold(self.threshold)
 		return ret
 	
+	# Predicts core regions.
+	def predictCore(self, genome):
+		""" Predicts cores. Not implemented by default. Models that use core prediction should implement this.
+		
+		:param genome: Genome.
+		:type genome: genome
+		
+		:return: Predicted core regions if implemented, or None otherwise
+		:rtype: regions
+		"""
+		return None
+	
 	# Short-hand for predictSequenceStreamRegions.
 	def predict(self, stream, curves = True):
 		""" Applies the model using a sliding window across an input sequence stream or sequence set. Windows with a score >= self.threshold are predicted, and predicted windows are merged into non-overlapping predictions.
@@ -833,27 +845,41 @@ class CVModelPredictions:
 	:type labelPredictionCurves: dict
 	"""
 	
-	def __init__(self, model, labelPredictionCurves = None):
+	def __init__(self, model, trainedModels = [], labelPredictionCurves = None):
 		self.name = model.name
 		self.model = model
-		self._pred = {} if labelPredictionCurves is None else labelPredictionCurves
+		self.trainedModels = trainedModels
+		self.predictionCurves = {} if labelPredictionCurves is None else labelPredictionCurves
+		self.predictedRegions = {}
+		self.hasCores = False
 	
-	def addPrediction(self, curve, label):
-		if label not in self._pred:
-			self._pred[label] = []
-		self._pred[label].append(curve)
+	def regions(self, label):
+		if label in self.predictedRegions:
+			return self.predictedRegions[label]
+		return [ c.regions() for c in self.predictionCurves[label] ]
 	
-	def getPrediction(self, label, repeat):
-		return self._pred[label][repeat]
+	def setCorePredictions(self, label, cores):
+		self.predictedRegions[label] = cores
+		self.hasCores = True
 	
-	def nRepeats(self, label):
-		return len(self._pred[label])
+	def predictCore(self, genome):
+		task = progressTask('Predicting cores', steps = len(self.trainedModels))
+		cores = []
+		for i, mdl in enumerate(self.trainedModels):
+			task.update(step = i)
+			core = mdl.predictCore(genome)
+			if core is not None:
+				cores.append(core)
+		if len(cores) > 0:
+			self.setCorePredictions(label = positive, cores = cores)
+		task.done()
 	
 	def getStatTable(self):
 		rtable = []
-		for label in self._pred:
-			npred = [ len(p.regions()) for p in self._pred[label] ]
-			meanlen = [ mean([ len(r) for r in p.regions() ]) for p in self._pred[label] ]
+		for label in self.predictionCurves:
+			npred = [ len(p.regions()) for p in self.predictionCurves[label] ]
+			meanlen = [ mean([ len(r) for r in p.regions() ])
+						for p in self.predictionCurves[label] ]
 			rtable.append({
 				'Label': label.name,
 				'Predictions': '%.2f +/- %.2f'%(mean(npred), CI(npred)),
@@ -1008,7 +1034,10 @@ class crossvalidation:
 				cvpred.append(pred)
 			rtask.done()
 			# TODO Once multiclass prediction is implemented, replace with labels
-			self.predictions[mdl] = CVModelPredictions(mdl, { positive: cvpred })
+			self.predictions[mdl] = CVModelPredictions(
+				model = mdl,
+				trainedModels = self.trainedModels[mdl],
+				labelPredictionCurves = { positive: cvpred })
 		mtask.done()
 		return [ self.predictions[mdl] for mdl in self.models ]
 	

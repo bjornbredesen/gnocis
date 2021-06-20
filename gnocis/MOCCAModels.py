@@ -126,29 +126,12 @@ class SVMMOCCA(sequenceModel):
 		pred.sort()
 		return pred
 	
-	def predictCore(self, vpos, genome, factor = 0.5, precision = 0.8, bgModelOrder = 4):
-		cmd = self.cpath
+	def predictCore(self, genome):
+		cmd = self.cpath + ''
 		
-		# Positives
-		vposPath = self.tmpPath + 'vpos.fa'
-		vpos.saveFASTA(vposPath)
-		cmd += ' -calibrate:FASTA ' + vposPath + ' +'
-
-		# Negatives
-		seqLens = genome.sequenceLengths()
-		genomeLen = sum(seqLens[chrom] for chrom in seqLens.keys())
-		meanLen = int(sum(len(s) for s in vpos) / len(vpos))
-		if bgModelOrder > 0:
-			bgModel = MarkovChain(trainingSequences = genome, degree = bgModelOrder)
-		else:
-			bgModel = IID(trainingSequences = genome, degree = bgModelOrder)
-		vneg = bgModel.generateSet(n = int(factor * genomeLen / meanLen), length = meanLen)
-		vnegPath = self.tmpPath + 'vneg.fa'
-		vneg.saveFASTA(vnegPath)
-		cmd += ' -calibrate:FASTA ' + vnegPath + ' -'
-
+		cmd += ' -threshold ' + str(self.threshold)
+		
 		# Run
-		cmd += ' -calibrate:precision ' + str(precision)
 		cmd += ' -predict:core'
 		outGFFPath = self.tmpPath + 'pred.gff'
 		cmd += ' -predict:GFF ' + outGFFPath

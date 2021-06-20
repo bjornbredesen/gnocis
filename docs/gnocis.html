@@ -168,11 +168,6 @@
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="gnocis.common.SE">
-<code class="descclassname">gnocis.common.</code><code class="descname">SE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.SE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="gnocis.common.getFloat">
 <code class="descclassname">gnocis.common.</code><code class="descname">getFloat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gnocis.common.getFloat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to get floating point values of the same precision as used for <cite>float</cite> by Cython.</p>
@@ -939,23 +934,23 @@
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="gnocis.models.CVModelPredictions.addPrediction">
-<code class="descname">addPrediction</code><a class="headerlink" href="#gnocis.models.CVModelPredictions.addPrediction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="gnocis.models.CVModelPredictions.getPrediction">
-<code class="descname">getPrediction</code><a class="headerlink" href="#gnocis.models.CVModelPredictions.getPrediction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="gnocis.models.CVModelPredictions.getStatTable">
 <code class="descname">getStatTable</code><a class="headerlink" href="#gnocis.models.CVModelPredictions.getStatTable" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="gnocis.models.CVModelPredictions.nRepeats">
-<code class="descname">nRepeats</code><a class="headerlink" href="#gnocis.models.CVModelPredictions.nRepeats" title="Permalink to this definition">¶</a></dt>
+<dt id="gnocis.models.CVModelPredictions.predictCore">
+<code class="descname">predictCore</code><a class="headerlink" href="#gnocis.models.CVModelPredictions.predictCore" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.CVModelPredictions.regions">
+<code class="descname">regions</code><a class="headerlink" href="#gnocis.models.CVModelPredictions.regions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.CVModelPredictions.setCorePredictions">
+<code class="descname">setCorePredictions</code><a class="headerlink" href="#gnocis.models.CVModelPredictions.setCorePredictions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1325,6 +1320,24 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>stream</strong> (<em>sequences/sequenceStream/str</em>) – Sequence material that the model is applied to for prediction.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Set of non-overlapping (merged) predicted regions</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gnocis.models.sequenceModel.predictCore">
+<code class="descname">predictCore</code><a class="headerlink" href="#gnocis.models.sequenceModel.predictCore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts cores. Not implemented by default. Models that use core prediction should implement this.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>genome</strong> (<em>genome</em>) – Genome.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Predicted core regions if implemented, or None otherwise</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#gnocis.regions.regions" title="gnocis.regions.regions">regions</a></td>
 </tr>
