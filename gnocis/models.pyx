@@ -1108,7 +1108,7 @@ class crossvalidation:
 					plt.plot(
 						[ pt.x for pt in meanCurve ],
 						[ pt.y for pt in meanCurve ],
-						label = '%s - AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
+						label = '%s; AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
 				plt.xticks(fontsize = fontsizeAxis, rotation = 0)
 				plt.yticks(fontsize = fontsizeAxis, rotation = 0)
 				plt.xlabel('Recall', fontsize = fontsizeLabels)
@@ -1195,7 +1195,7 @@ class crossvalidation:
 					plt.plot(
 						[ pt.x for pt in meanCurve ],
 						[ pt.y for pt in meanCurve ],
-						label = '%s - AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
+						label = '%s; AUC = %.2f +/- %.2f %%'%(mdl.name, mean(AUCs), CI(AUCs)))
 				plt.xticks(fontsize = fontsizeAxis, rotation = 0)
 				plt.yticks(fontsize = fontsizeAxis, rotation = 0)
 				plt.xlabel('False Positive Rate', fontsize = fontsizeLabels)
