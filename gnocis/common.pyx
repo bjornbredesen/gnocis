@@ -45,17 +45,49 @@ def std(X):
 	xM = mean(X)
 	return ( (1/(len(X) - 1)) * sum( ( x - xM )**2. for x in X ) )**0.5
 
-def CI(X, cif = 0.95, useNorm = False):
-	import numpy as np
+def SE(X):
+	return std(X) / (len(X)**0.5)
+
+_CIFunc = lambda X: SE(X) * 1.96
+
+def setConfidenceIntervalFunction(CIfunc):
+	"""
+	Sets the function for calculating confidence intervals.
+	
+	:param CIfunc: Function that takes a set of values and outputs the confidence interval difference from the mean. A symmetric confidence interval is assumed.
+	:type CIfunc: function
+	"""
+	global _CIFunc
+	_CIFunc = CIfunc
+
+def useSciPyConfidenceIntervals(alpha = 0.95, useT = False):
+	"""
+	Sets the function for calculating confidence intervals.
+	
+	:param CIfunc: Function that takes a set of values and outputs the confidence interval difference from the mean. A symmetric confidence interval is assumed.
+	:type CIfunc: function
+	"""
 	import scipy.stats as st
-	m = mean(X)
-	se = st.sem(X)
-	if len(X) < 2 or se == 0.0: return 0.
-	if useNorm:
-		a, b = st.norm.interval(cif, loc = m, scale = se)
-	else:
-		a, b = st.t.interval(cif, len(X)-1, loc = m, scale = se)
-	return b - m
+	def cif(X):
+		m = mean(X)
+		se = st.sem(X)
+		if len(X) < 2 or se == 0.0: return 0.
+		if useT: a, b = st.t.interval(alpha, len(X)-1, loc = m, scale = se)
+		else: a, b = st.norm.interval(alpha, loc = m, scale = se)
+		return b - m
+	setConfidenceIntervalFunction(cif)
+
+def CI(X):
+	"""
+	Calculates a confidence interval of the mean for a set of values. By default, Gnocis calculates a 95% confidence interval with a normal distribution. It is recommended to replace this with an appropriate distribution depending on the analysis performed.
+	
+	:param X: Values.
+	:type X: list
+	
+	:return: Confidence interval difference from the mean.
+	:rtype: float
+	"""
+	return _CIFunc(X)
 
 def KLdiv(muA, varA, muB, varB):
 	sigmaA, sigmaB = varA**0.5, varB**0.5

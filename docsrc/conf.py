@@ -21,7 +21,7 @@ copyright = '2021, Bjørn Bredesen'
 author = 'Bjørn Bredesen'
 
 # The full version, including alpha/beta/rc tags
-release = '0.9.11'
+release = '0.9.12'
 
 master_doc = 'index'
 
