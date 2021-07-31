@@ -1,5 +1,5 @@
 
-![alt text](https://github.com/bjornbredesen/gnocis/blob/8349df5140578bdc09c425c329cd7adea04dc653/markdown/gnocis.png "")
+![Gnocis](https://github.com/bjornbredesen/gnocis/blob/e6098dc9333f198d1d8d071e7ff4f7eede5a66bf/markdown/gnocis.png "")
 
 # Gnocis
 Bjørn Bredesen, 2018-
