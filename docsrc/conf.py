@@ -17,8 +17,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Gnocis'
-copyright = '2021, Bjørn Bredesen'
-author = 'Bjørn Bredesen'
+copyright = '2021, Bjørn André Bredesen-Aa'
+author = 'Bjørn André Bredesen-Aa'
 
 # The full version, including alpha/beta/rc tags
 release = '0.9.12'

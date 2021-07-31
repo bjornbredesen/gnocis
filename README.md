@@ -2,7 +2,7 @@
 ![Gnocis](https://github.com/bjornbredesen/gnocis/blob/e6098dc9333f198d1d8d071e7ff4f7eede5a66bf/markdown/gnocis.png "")
 
 # Gnocis
-Bjørn Bredesen, 2018-
+Bjørn André Bredesen-Aa, 2018-
 
 #### Stability
 
@@ -150,7 +150,7 @@ If you use Gnocis in published research, Gnocis must be cited. An article for Gn
 
 MIT License
 
-Copyright (c) 2018- Bjørn Bredesen
+Copyright (c) 2018- Bjørn André Bredesen-Aa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -174,6 +174,6 @@ SOFTWARE.
 
 ## Logo
 
-Logo: Copyright Bjørn Bredesen
+Logo: Copyright Bjørn André Bredesen-Aa
 
 

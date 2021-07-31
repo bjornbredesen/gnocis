@@ -13,7 +13,7 @@ setup(
 	ext_modules = [ Extension(name = 'gnocis.' + x, sources = ['gnocis/'+ x + '.cpp']) for x in ['biomarkers', 'common', 'features', 'featurenetwork', 'models', 'motifs', 'regions', 'curves', 'sequences', 'validation'] ],
 	name = "gnocis",
 	packages = [ "gnocis" ],
-	author = "Bjørn Bredesen",
+	author = "Bjørn André Bredesen-Aa",
 	author_email = "bjorn@bjornbredesen.no",
 	version = "0.9.12",
 	url = "https://github.com/bjornbredesen/gnocis",
