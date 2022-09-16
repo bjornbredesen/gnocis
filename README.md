@@ -141,7 +141,7 @@ For an in-depth tutorial, see the Jupyter Notebooks in the `tutorial/` folder.
 -------------------------------------------------
 
 ## Citing
-If you use Gnocis in published research, Gnocis must be cited. An article for Gnocis is in the process of being submitted for peer review. Please check back for an updated citation policy.
+If you use Gnocis in published research, please cite: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0274338.
 
 
 ----------------------------------------------------------------------
